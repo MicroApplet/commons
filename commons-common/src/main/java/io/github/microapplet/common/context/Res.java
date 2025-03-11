@@ -29,6 +29,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Res implements ResCode {
+    KeyParameterIllegal(false,"0005","关键参数异常"),
+    KeyParameterTypeErr(false,"0004","关键参数类型不匹配"),
+    KeyParameterEmptyErr(false,"0003","关键参数为空"),
     ValidParameterErr(false,"0002","参数校验失败"),
     IllegalParameter(false, "0001", "参数非法"),
     Ok(true, "0", "成功"),

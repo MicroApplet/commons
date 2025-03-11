@@ -18,6 +18,7 @@ package io.github.microapplet.web.mvc.config;
 
 import io.github.microapplet.common.context.Res;
 import io.github.microapplet.common.context.Result;
+import io.github.microapplet.web.mvc.annotation.ResultWrap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpRequest;
@@ -31,6 +32,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -86,10 +88,23 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
             return body;
 
         //noinspection OptionalOfNullableMisuse
+        String type = Optional.ofNullable(mediaType).map(MediaType::getType).orElse(StringUtils.EMPTY);
+        //noinspection OptionalOfNullableMisuse
         String subType = Optional.ofNullable(mediaType).map(MediaType::getSubtype).orElse("");
 
         if (StringUtils.equalsAnyIgnoreCase(subType, "json", "xml"))
             return Res.Ok.create(body);
+
+        ResultWrap resultWrap = returnType.getMethodAnnotation(ResultWrap.class);
+        if (Objects.nonNull(resultWrap)) {
+            Result<Object> objectResult = Res.Ok.create(body);
+            if (StringUtils.equalsIgnoreCase(type, "text")) {
+                response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+                return String.valueOf(objectResult);
+            }
+            return objectResult;
+        }
+
         return body;
     }
 }

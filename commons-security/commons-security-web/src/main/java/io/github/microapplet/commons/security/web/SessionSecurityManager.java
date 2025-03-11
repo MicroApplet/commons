@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.advice;
+package io.github.microapplet.commons.security.web;
 
-import io.github.microapplet.common.context.Result;
-import io.github.microapplet.common.exception.BusinessException;
+import io.github.microapplet.commons.security.SecurityManager;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * 基础错误增强
+ * 会话安全管理器
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/2/27, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-public abstract class BaseControllerAdvice {
+public interface SessionSecurityManager extends SecurityManager {
 
-    protected Result<Void> doHandleBizException(BusinessException e){
-        return e.create();
-    }
+    /**
+     * 登录检查
+     */
+    void loginCheck(HttpServletRequest request) throws UnLoginException;
 }

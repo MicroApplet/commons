@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.exception;
-
-import io.github.microapplet.common.context.ResCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+package io.github.microapplet.common.cons;
 
 /**
- * 系统异常返回
+ * HTTP 请求头
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/3, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
-@AllArgsConstructor
-public enum SystemResCode implements ResCode {
-    SysBusy( "-2", "系统繁忙");
+public interface HttpHeaderCons {
 
-    private final String code;
-    private final String msg;
+    String HTTP_LOG_LEVEL = "X-App-Log-Level";
+    String APPID = "X-App-Appid";
+    String CHL_CODE = "X-App-Chl-Code";
+    String CHL_APPID = "X-App-Chl-Appid";
+    String CHL_APP_TYPE = "X-App-Chl-App-Type";
+    String Authorization = "Authorization";
 
-    @Override
-    public boolean isSuccess() {
-        return false;
-    }
 }

@@ -16,6 +16,7 @@
 
 package io.github.microapplet.common.context;
 
+import io.github.microapplet.common.jackson.JsonUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -39,4 +40,8 @@ public class Result<T> implements ResCode, Serializable {
     private String msg;
     private T data;
     private List<Object> errs;
+
+    public String toString() {
+        return JsonUtil.toJson(this);
+    }
 }

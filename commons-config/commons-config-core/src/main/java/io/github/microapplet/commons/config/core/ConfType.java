@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.exception;
-
-import io.github.microapplet.common.context.ResCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+package io.github.microapplet.commons.config.core;
 
 /**
- * 系统异常返回
+ * 配置类型
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/3, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/10, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
-@AllArgsConstructor
-public enum SystemResCode implements ResCode {
-    SysBusy( "-2", "系统繁忙");
-
-    private final String code;
-    private final String msg;
-
-    @Override
-    public boolean isSuccess() {
-        return false;
-    }
+public enum ConfType {
+    System,Business
 }

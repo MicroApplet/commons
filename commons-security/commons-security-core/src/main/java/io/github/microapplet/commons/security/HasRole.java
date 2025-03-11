@@ -14,29 +14,23 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.exception;
+package io.github.microapplet.commons.security;
 
-import io.github.microapplet.common.context.ResCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * 系统异常返回
+ * 权限要求
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/3, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
-@AllArgsConstructor
-public enum SystemResCode implements ResCode {
-    SysBusy( "-2", "系统繁忙");
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface HasRole {
 
-    private final String code;
-    private final String msg;
-
-    @Override
-    public boolean isSuccess() {
-        return false;
-    }
+    long[] value();
 }

@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.exception;
+package io.github.microapplet.commons.security;
 
 import io.github.microapplet.common.context.ResCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 系统异常返回
+ * 角色与权限相关的业务响应代码
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/3, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Getter
 @AllArgsConstructor
-public enum SystemResCode implements ResCode {
-    SysBusy( "-2", "系统繁忙");
-
+public enum AuthorityRes implements ResCode {
+    NoSignIn(false,"40100","用户未登录"),
+    NoRole(false, "40101", "用户角色不符"),
+    NoPermission(false, "40102", "用户权限不足"),
+    OK(true, "0", "ok");
+    private final boolean success;
     private final String code;
     private final String msg;
-
-    @Override
-    public boolean isSuccess() {
-        return false;
-    }
 }

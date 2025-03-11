@@ -16,6 +16,7 @@
 
 package io.github.microapplet.common.event;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -28,6 +29,8 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * 事件工具
@@ -58,9 +61,22 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
+        Executor executor;
+        String[] executorNames = applicationContext.getBeanNamesForType(Executor.class);
+        if (ArrayUtils.isEmpty(executorNames)){
+            executor = Executors.newFixedThreadPool(1);
+        } else {
+            executor = applicationContext.getBean(executorNames[0],Executor.class);
+        }
+
         String[] names = applicationContext.getBeanNamesForType(Listener.class);
         for (String name : names) {
             Listener bean = applicationContext.getBean(name, Listener.class);
+            if (bean instanceof BaseAsyncListener){
+                BaseAsyncListener baseAsyncListener = (BaseAsyncListener) bean;
+                baseAsyncListener.setExecutor(executor);
+            }
+
             Class beanClass = bean.getClass();
             if (AopUtils.isAopProxy(bean)) {
                 beanClass = AopUtils.getTargetClass(bean);

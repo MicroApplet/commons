@@ -18,6 +18,7 @@
         <module>commons-web</module>
         <module>commons-zen-dependencies</module>
         <module>commons-triple-dependencies</module>
+        <module>commons-security</module>
     </modules>
 
     <packaging>pom</packaging>

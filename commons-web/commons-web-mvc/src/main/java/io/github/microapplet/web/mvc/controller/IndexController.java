@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.exception;
+package io.github.microapplet.web.mvc.controller;
 
-import io.github.microapplet.common.context.ResCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import io.github.microapplet.web.mvc.annotation.ResultWrap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 系统异常返回
+ * 门面
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/3, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
-@AllArgsConstructor
-public enum SystemResCode implements ResCode {
-    SysBusy( "-2", "系统繁忙");
+@RestController
+@RequestMapping("/index")
+public class IndexController {
 
-    private final String code;
-    private final String msg;
-
-    @Override
-    public boolean isSuccess() {
-        return false;
+    @ResultWrap
+    @GetMapping
+    public String index(){
+        return "index";
     }
 }

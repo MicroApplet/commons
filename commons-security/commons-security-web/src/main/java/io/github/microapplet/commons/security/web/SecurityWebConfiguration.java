@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.exception;
+package io.github.microapplet.commons.security.web;
 
-import io.github.microapplet.common.context.ResCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
 
 /**
- * 系统异常返回
+ * 网络安全配置
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/3, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
-@AllArgsConstructor
-public enum SystemResCode implements ResCode {
-    SysBusy( "-2", "系统繁忙");
+@Configuration
+@ComponentScan
+public class SecurityWebConfiguration {
 
-    private final String code;
-    private final String msg;
-
-    @Override
-    public boolean isSuccess() {
-        return false;
+    @Bean
+    @ConditionalOnMissingBean
+    public SessionSecurityManager unSupportSessionSecurityManager(){
+        return request -> {
+            throw new UnsupportedOperationException("当前系统未初始化登录认证组件");
+        };
     }
 }

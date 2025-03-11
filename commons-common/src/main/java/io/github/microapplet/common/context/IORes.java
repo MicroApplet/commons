@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.exception;
+package io.github.microapplet.common.context;
 
-import io.github.microapplet.common.context.ResCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 系统异常返回
+ * IO 相关错误
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/3, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Getter
 @AllArgsConstructor
-public enum SystemResCode implements ResCode {
-    SysBusy( "-2", "系统繁忙");
+public enum IORes implements ResCode {
+    IOErr("-11", "IO异常"),
+    TimeoutErr("-12", "任务超时异常"),
+    SocketTimeoutErr("-13","网络超时"),
+    OK("0","Ok"){
+        @Override
+        public boolean isSuccess() {
+            return true;
+        }
+    };
 
     private final String code;
     private final String msg;
+
 
     @Override
     public boolean isSuccess() {

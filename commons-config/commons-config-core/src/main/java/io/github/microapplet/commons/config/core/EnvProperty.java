@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.exception;
+package io.github.microapplet.commons.config.core;
 
-import io.github.microapplet.common.context.ResCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * 系统异常返回
+ * 环境信息
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/3, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/10, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
-@AllArgsConstructor
-public enum SystemResCode implements ResCode {
-    SysBusy( "-2", "系统繁忙");
-
-    private final String code;
-    private final String msg;
+@Data
+@Configuration
+@ConfigurationProperties(prefix = "sys")
+public class EnvProperty implements Conf<EnvProperty>{
+    public static final String envKey = "sys.env";
+    private Env env;
 
     @Override
-    public boolean isSuccess() {
-        return false;
+    public final EnvProperty deftConf() {
+        return this;
     }
 }

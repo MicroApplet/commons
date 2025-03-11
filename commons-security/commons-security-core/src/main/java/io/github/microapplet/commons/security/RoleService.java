@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.common.exception;
+package io.github.microapplet.commons.security;
 
-import io.github.microapplet.common.context.ResCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.util.List;
 
 /**
- * 系统异常返回
+ * 角色服务
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/3, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
-@AllArgsConstructor
-public enum SystemResCode implements ResCode {
-    SysBusy( "-2", "系统繁忙");
+public interface RoleService {
 
-    private final String code;
-    private final String msg;
-
-    @Override
-    public boolean isSuccess() {
-        return false;
-    }
+    /**
+     * 根据用户编号，获取当前用户所有的权限列表
+	 * @param userid {@link String userid}
+     * @return {@link List<Role> }
+     * @since 2025/3/11
+     */
+    List<Role> queryRoleByUserid(String userid);
 }

@@ -26,11 +26,27 @@
     </parent>
 
     <artifactId>commons-config</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>commons-config-core</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.github.microapplet</groupId>
+                <artifactId>commons-triple-dependencies</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
