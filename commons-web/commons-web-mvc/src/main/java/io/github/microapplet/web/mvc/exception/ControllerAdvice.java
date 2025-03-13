@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -51,47 +52,53 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @RestControllerAdvice
-public class ControllerAdvice  {
+public class ControllerAdvice {
 
     @ExceptionHandler(BusinessException.class)
-    public Result<Void> handleBizException(BusinessException e) {
+    public ResponseEntity<Result<Void>> handleBizException(BusinessException e) {
         log.info("业务错误：{}", e.toString());
-        return e.create();
+        int status = e.getStatus();
+        Result<Void> objectResult = e.create();
+        HttpStatus resolve = Optional.ofNullable( HttpStatus.resolve(status)).orElse(HttpStatus.OK);
+        return new ResponseEntity<>(objectResult, resolve);
     }
 
     @ExceptionHandler(SystemException.class)
-    public Result<Void> handleSysException(SystemException e) {
+    public ResponseEntity<Result<Void>> handleSysException(SystemException e) {
         log.info("系统错误：{}", e.toString());
-        return e.<Void>create().setErrs(Collections.singletonList(e.getTrace()));
+        int status = e.getStatus();
+        Result<Void> objectResult = e.create();
+        HttpStatus resolve = Optional.ofNullable( HttpStatus.resolve(status)).orElse(HttpStatus.OK);
+        return new ResponseEntity<>(objectResult, resolve);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public Result<Void> handleMissingServletRequestParameterException(MissingServletRequestParameterException e){
+    public Result<Void> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         String parameterName = e.getParameterName();
-        log.info("关键参数：{} 缺失异常",parameterName);
+        log.info("关键参数：{} 缺失异常", parameterName);
         return Res.KeyParameterEmptyErr.create(Collections.singletonList(parameterName));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public Result<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e){
+    public Result<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         String name = e.getName();
-        log.info("关键参数：{} 类型异常",name);
+        log.info("关键参数：{} 类型异常", name);
         return Res.KeyParameterTypeErr.create(Collections.singletonList(name));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
-    public Result<Void> handleIllegalArgumentException(IllegalArgumentException e){
+    public Result<Void> handleIllegalArgumentException(IllegalArgumentException e) {
         String message = e.getMessage();
-        log.info("关键参数：{} 非法",message);
+        log.info("关键参数：{} 非法", message);
         return Res.KeyParameterIllegal.create(Collections.singletonList(message));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
-    public Result<Void> handleIllegalArgumentException(BindException e){
+    public Result<Void> handleIllegalArgumentException(BindException e) {
         List<Object> errors = Optional.ofNullable(e)
                 .map(BindException::getBindingResult)
                 .map(Errors::getAllErrors)
@@ -99,30 +106,30 @@ public class ControllerAdvice  {
                 .orElseGet(Stream::empty)
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
-        log.info("参数验证错误：{}",errors);
+        log.info("参数验证错误：{}", errors);
         return Res.KeyParameterIllegal.create(errors);
     }
 
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler(TimeoutException.class)
-    public Result<Void> handleTimeoutException(TimeoutException e){
+    public Result<Void> handleTimeoutException(TimeoutException e) {
         String message = e.getMessage();
-        log.info("系统超时：{}",message);
+        log.info("系统超时：{}", message);
         return IORes.TimeoutErr.create(Collections.singletonList(message));
     }
 
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler(SocketTimeoutException.class)
-    public Result<Void> handleTimeoutException(SocketTimeoutException e){
+    public Result<Void> handleTimeoutException(SocketTimeoutException e) {
         String message = e.getMessage();
-        log.info("三方系统网络超时：{}",message);
+        log.info("三方系统网络超时：{}", message);
         return IORes.SocketTimeoutErr.create(Collections.singletonList(message));
     }
 
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<Void> handleIOException(IOException e){
-        log.info("IO 异常：{}",e.getMessage());
+    public Result<Void> handleIOException(IOException e) {
+        log.info("IO 异常：{}", e.getMessage());
         return IORes.IOErr.create();
     }
 
@@ -130,7 +137,7 @@ public class ControllerAdvice  {
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Result<Void> throwable(Throwable e, HttpServletRequest request) {
         String logLevel = request.getHeader(HttpHeaderCons.HTTP_LOG_LEVEL);
-        if (StringUtils.equalsIgnoreCase(logLevel,"debug")){
+        if (StringUtils.equalsIgnoreCase(logLevel, "debug")) {
             List<Object> errs = new ArrayList<>();
             errs.add(e.getMessage());
             errs.add("\r\n");
@@ -138,11 +145,12 @@ public class ControllerAdvice  {
                 errs.add(throwable.getMessage());
             }
 
-            log.error("未明确类型错误：{}",e.getMessage());
+            e.printStackTrace();
+            log.error("未明确类型错误：{}", e.getMessage());
             return Res.SysBusy.create(errs);
         }
 
-        log.error("未明确类型错误：{}",e.getMessage());
+        log.error("未明确类型错误：{}", e.getMessage());
         return Res.SysBusy.create();
     }
 }

@@ -36,6 +36,7 @@ public class Result<T> implements ResCode, Serializable {
     private static final long serialVersionUID = 3132415215925116395L;
 
     private boolean success;
+    private int status;
     private String code;
     private String msg;
     private T data;

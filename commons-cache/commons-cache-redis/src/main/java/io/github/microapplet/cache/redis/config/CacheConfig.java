@@ -17,9 +17,15 @@
 package io.github.microapplet.cache.redis.config;
 
 import io.github.microapplet.common.cache.CacheNameAndTTLHub;
+import lombok.Setter;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -30,6 +36,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Collections;
 
 
 /**
@@ -39,10 +48,17 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * @version 1.0
  * @since 2025/2/27, &nbsp;&nbsp; <em>version:1.0</em>
  */
+@Setter
 @Configuration
 @EnableCaching
 public class CacheConfig extends CachingConfigurerSupport {
     private static final GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        return cacheManager(connectionFactory, new CacheNameAndTTLHub(Collections.emptyList()));
+    }
 
     @Bean
     @ConditionalOnBean

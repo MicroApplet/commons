@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.microapplet.commons.security.web;
+package io.github.microapplet.common.exception;
 
 /**
  * 用户未登录异常

@@ -16,6 +16,7 @@
 
 package io.github.microapplet.commons.security.web;
 
+import io.github.microapplet.common.exception.UnLoginException;
 import io.github.microapplet.commons.security.SecurityManager;
 
 import javax.servlet.http.HttpServletRequest;

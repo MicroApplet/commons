@@ -30,6 +30,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SystemException extends RuntimeException implements ResCode {
+    private final int status;
     private final String code;
     private final String msg;
     private final String trace;

@@ -16,6 +16,7 @@
 
 package io.github.microapplet.commons.security.web;
 
+import io.github.microapplet.common.exception.UnLoginException;
 import io.github.microapplet.commons.security.AuthorityRes;
 import io.github.microapplet.commons.security.HasRole;
 import io.github.microapplet.commons.security.Tourist;

@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -84,7 +85,7 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
         if (Boolean.TRUE.equals(skip))
             return body;
 
-        if (body instanceof Result)
+        if (body instanceof Result || body instanceof ResponseEntity)
             return body;
 
         //noinspection OptionalOfNullableMisuse

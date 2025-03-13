@@ -32,6 +32,8 @@ import java.util.List;
 public interface ResCode {
     boolean isSuccess();
 
+    default int getStatus(){return 200;}
+
     /**
      * 响应代码
      */
@@ -71,19 +73,22 @@ public interface ResCode {
     }
 
     default <T> Result<T> create(boolean success, String code, String msg, T data, List<Object> errs) {
-        return new Result<T>().setSuccess(success).setCode(code).setMsg(msg).setData(data).setErrs(errs);
+        return new Result<T>().setStatus(getStatus()).setSuccess(success).setCode(code).setMsg(msg).setData(data).setErrs(errs);
+    }
+    default <T> Result<T> create(boolean success, int status, String code, String msg, T data, List<Object> errs) {
+        return new Result<T>().setStatus(status).setSuccess(success).setCode(code).setMsg(msg).setData(data).setErrs(errs);
     }
 
     default BusinessException bizException() {
-        return new BusinessException(getCode(), getMsg());
+        return new BusinessException(getStatus(),getCode(), getMsg());
     }
 
     default SystemException sysException() {
-        return new SystemException(getCode(), getMsg(), getTrace());
+        return new SystemException(getStatus(),getCode(), getMsg(), getTrace());
     }
 
     default SystemException sysException(String trace) {
-        return new SystemException(getCode(), getMsg(), trace);
+        return new SystemException(getStatus(),getCode(), getMsg(), trace);
     }
 
     default void throwBiz() {

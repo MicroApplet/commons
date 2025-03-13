@@ -32,6 +32,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class BusinessException extends RuntimeException implements ResCode {
+    private final int status;
     private final String code;
     private final String msg;
 
