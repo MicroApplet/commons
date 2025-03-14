@@ -49,19 +49,19 @@
     </developers>
 
     <organization>
-        <name>Micro Bank</name>
-        <url>https://gitee.com/micro-bank</url>
+        <name>Micro Applet</name>
+        <url>https://github.com/MicroApplet</url>
     </organization>
 
     <issueManagement>
-        <system>Gitee Issue</system>
-        <url>https://gitee.com/micro-bank/commons/issues</url>
+        <system>Github Issue</system>
+        <url>https://github.com/MicroApplet/commons/issues</url>
     </issueManagement>
 
     <scm>
-        <connection>scm:git:git@gitee.com:micro-bank/commons.git</connection>
-        <developerConnection>scm:git:git@gitee.com:micro-bank/commons.git</developerConnection>
-        <url>https://gitee.com/micro-bank/commons</url>
+        <connection>scm:git:git@github.com:MicroApplet/commons.git</connection>
+        <developerConnection>scm:git:git@github.com:MicroApplet/commons.git</developerConnection>
+        <url>https://github.com/MicroApplet/commons</url>
         <tag>HEAD</tag>
     </scm>
 
