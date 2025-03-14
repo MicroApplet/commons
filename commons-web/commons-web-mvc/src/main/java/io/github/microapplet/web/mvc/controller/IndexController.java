@@ -16,6 +16,8 @@
 
 package io.github.microapplet.web.mvc.controller;
 
+import io.github.microapplet.common.application.AppStarted;
+import io.github.microapplet.common.event.Listener;
 import io.github.microapplet.web.mvc.annotation.ResultWrap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +32,17 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/index")
-public class IndexController {
+public class IndexController implements Listener<AppStarted> {
+    private String name;
 
     @ResultWrap
-    @GetMapping
-    public String index(){
-        return "index";
+    @GetMapping("/index")
+    public String index() {
+        return name + " Index";
+    }
+
+    @Override
+    public void doOnEvent(AppStarted event) {
+        this.name = event.ctx.getEnvironment().getProperty("spring.application.name");
     }
 }

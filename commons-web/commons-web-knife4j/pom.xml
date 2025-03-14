@@ -21,35 +21,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.microapplet</groupId>
-        <artifactId>commons</artifactId>
+        <artifactId>commons-web</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>commons-web</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>commons-web-knife4j</artifactId>
+    <name>Commons Web Knife4j</name>
     <modules>
-        <module>commons-web-mvc</module>
-        <module>commons-web-flux</module>
-        <module>commons-web-feign</module>
-        <module>commons-web-knife4j</module>
+        <module>commons-web-knife4j-mvc</module>
     </modules>
+    <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.github.microapplet</groupId>
-                <artifactId>commons-triple-dependencies</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 </project>

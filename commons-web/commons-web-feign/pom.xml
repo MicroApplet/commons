@@ -21,18 +21,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.microapplet</groupId>
-        <artifactId>commons</artifactId>
+        <artifactId>commons-web</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>commons-web</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>commons-web-mvc</module>
-        <module>commons-web-flux</module>
-        <module>commons-web-feign</module>
-        <module>commons-web-knife4j</module>
-    </modules>
+    <artifactId>commons-web-feign</artifactId>
+    <name>Commons Web Feign</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -40,16 +34,17 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.github.microapplet</groupId>
-                <artifactId>commons-triple-dependencies</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>io.github.microapplet</groupId>
+            <artifactId>commons-common</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <!--suppress VulnerableLibrariesLocal -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
