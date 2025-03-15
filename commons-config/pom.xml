@@ -20,7 +20,7 @@
     <parent>
         <groupId>io.github.microapplet</groupId>
         <artifactId>commons</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>commons-config</artifactId>
@@ -40,7 +40,7 @@
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-triple-dependencies</artifactId>
-                <version>1.0.1</version>
+                <version>1.0.2-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
