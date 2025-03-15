@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.github.microapplet</groupId>
         <artifactId>commons-config</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>commons-config-core</artifactId>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>io.github.microapplet</groupId>
             <artifactId>commons-common</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
