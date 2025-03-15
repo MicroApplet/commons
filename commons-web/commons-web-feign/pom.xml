@@ -20,7 +20,7 @@
     <parent>
         <groupId>io.github.microapplet</groupId>
         <artifactId>commons-web</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2</version>
     </parent>
 
     <artifactId>commons-web-feign</artifactId>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>io.github.microapplet</groupId>
             <artifactId>commons-common</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.2</version>
         </dependency>
         <!--suppress VulnerableLibrariesLocal -->
         <dependency>

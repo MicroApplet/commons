@@ -20,7 +20,7 @@
     <parent>
         <groupId>io.github.microapplet</groupId>
         <artifactId>commons</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2</version>
     </parent>
 
     <artifactId>commons-zen-dependencies</artifactId>
@@ -37,67 +37,67 @@
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-security</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-security-core</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-cache</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-cache-redis</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-common</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-config</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-crypt</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-crypt-core</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-web</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-web-flux</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-web-mvc</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
             <dependency>
                 <groupId>io.github.microapplet</groupId>
                 <artifactId>commons-web-knife4j-mvc</artifactId>
-                <version>1.0.2-SNAPSHOT</version>
+                <version>1.0.2</version>
             </dependency>
 
         </dependencies>
