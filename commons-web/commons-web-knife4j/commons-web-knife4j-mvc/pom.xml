@@ -20,7 +20,7 @@
     <parent>
         <groupId>io.github.microapplet</groupId>
         <artifactId>commons-web-knife4j</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>commons-web-knife4j-mvc</artifactId>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>io.github.microapplet</groupId>
             <artifactId>commons-web-mvc</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
