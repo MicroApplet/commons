@@ -20,10 +20,12 @@
     <parent>
         <groupId>com.asialjim.microapplet</groupId>
         <artifactId>commons-security</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>commons-security-core</artifactId>
+    <name>Commons Security Core</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -56,7 +58,7 @@
         <dependency>
             <groupId>com.asialjim.microapplet</groupId>
             <artifactId>commons-common</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>

@@ -20,7 +20,8 @@
     <parent>
         <groupId>com.asialjim.microapplet</groupId>
         <artifactId>commons-web</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>commons-web-knife4j</artifactId>

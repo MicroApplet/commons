@@ -20,10 +20,12 @@
     <parent>
         <groupId>com.asialjim.microapplet</groupId>
         <artifactId>commons-web</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>commons-web-mvc</artifactId>
+    <name>Commons Web MVC</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -56,7 +58,7 @@
         <dependency>
             <groupId>com.asialjim.microapplet</groupId>
             <artifactId>commons-common</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
