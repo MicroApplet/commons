@@ -189,7 +189,6 @@
                 <configuration>
                     <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
-
             </plugin>
 
             <!-- 签名 -->
