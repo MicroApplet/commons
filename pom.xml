@@ -121,7 +121,6 @@
                     <publishingServerId>ossrh</publishingServerId>
                     <autoPublish>true</autoPublish>
                     <deploymentName>Commons</deploymentName>
-                    <waitUntil>published</waitUntil>
                 </configuration>
             </plugin>
 
