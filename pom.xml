@@ -168,7 +168,6 @@
                         versions:use-releases
                         versions:update-properties
                         versions:update-parent
-                        install
                         verify
                     </preparationGoals>
                 </configuration>
@@ -198,12 +197,6 @@
                             <goal>update-child-modules</goal>
                             <goal>update-properties</goal>
                         </goals>
-                        <configuration>
-                            <properties>
-                                <!--suppress MavenModelInspection, MybatisPlusMapperXmlInspection, MybatisXMapperXmlInspection -->
-                                <com.asialjim.microapplet>${asialjimVersion}</com.asialjim.microapplet>
-                            </properties>
-                        </configuration>
                     </execution>
                     <!-- 发布后更新到下一个SNAPSHOT版本 -->
                     <execution>
@@ -215,12 +208,6 @@
                             <goal>update-child-modules</goal>
                             <goal>update-properties</goal>
                         </goals>
-                        <configuration>
-                            <properties>
-                                <!--suppress MavenModelInspection, MybatisPlusMapperXmlInspection, MybatisXMapperXmlInspection -->
-                                <com.asialjim.microapplet>${developmentVersion}</com.asialjim.microapplet>
-                            </properties>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
