@@ -138,7 +138,7 @@
                 <configuration>
                     <publishingServerId>ossrh</publishingServerId>
                     <autoPublish>true</autoPublish>
-                    <deploymentName>WeChat</deploymentName>
+                    <deploymentName>Commons</deploymentName>
                     <ignorePublishedComponents>true</ignorePublishedComponents>
                     <waitUntil>validated</waitUntil>
                 </configuration>
