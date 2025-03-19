@@ -110,8 +110,7 @@
         <profile>
             <id>release</id>
             <properties>
-                <!--suppress XmlUnresolvedReference -->
-                <com.asialjim.microapplet>${asialjimVersion}</com.asialjim.microapplet>
+                <com.asialjim.microapplet>${project.version}</com.asialjim.microapplet>
             </properties>
         </profile>
     </profiles>
