@@ -70,7 +70,7 @@ public enum Env implements Iterator<Env> {
     Beta(2, "预发布环境/UAT[用户验收环境]") {
         @Override
         public Env next() {
-            return null;
+            return Gray;
         }
     },
 
