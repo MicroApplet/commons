@@ -35,6 +35,7 @@
         <module>commons-zen-dependencies</module>
         <module>commons-triple-dependencies</module>
         <module>commons-security</module>
+        <module>commons-mybatis</module>
     </modules>
 
     <packaging>pom</packaging>

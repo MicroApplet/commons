@@ -78,6 +78,23 @@
 
             <dependency>
                 <groupId>com.asialjim.microapplet</groupId>
+                <artifactId>commons-mybatis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.asialjim.microapplet</groupId>
+                <artifactId>commons-mybatis-plus</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.asialjim.microapplet</groupId>
+                <artifactId>commons-mybatis-flex</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.asialjim.microapplet</groupId>
                 <artifactId>commons-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
