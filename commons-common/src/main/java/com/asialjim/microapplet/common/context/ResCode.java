@@ -32,7 +32,9 @@ import java.util.List;
 public interface ResCode {
     boolean isSuccess();
 
-    default int getStatus(){return 200;}
+    default int getStatus() {
+        return 200;
+    }
 
     /**
      * 响应代码
@@ -75,20 +77,21 @@ public interface ResCode {
     default <T> Result<T> create(boolean success, String code, String msg, T data, List<Object> errs) {
         return new Result<T>().setStatus(getStatus()).setSuccess(success).setCode(code).setMsg(msg).setData(data).setErrs(errs);
     }
+
     default <T> Result<T> create(boolean success, int status, String code, String msg, T data, List<Object> errs) {
         return new Result<T>().setStatus(status).setSuccess(success).setCode(code).setMsg(msg).setData(data).setErrs(errs);
     }
 
     default BusinessException bizException() {
-        return new BusinessException(getStatus(),getCode(), getMsg());
+        return new BusinessException(getStatus(), getCode(), getMsg());
     }
 
     default SystemException sysException() {
-        return new SystemException(getStatus(),getCode(), getMsg(), getTrace());
+        return new SystemException(getStatus(), getCode(), getMsg(), getTrace());
     }
 
     default SystemException sysException(String trace) {
-        return new SystemException(getStatus(),getCode(), getMsg(), trace);
+        return new SystemException(getStatus(), getCode(), getMsg(), trace);
     }
 
     default void throwBiz() {
@@ -98,7 +101,32 @@ public interface ResCode {
     default void throwSys() {
         throw sysException();
     }
+
     default void throwSys(String trace) {
         throw sysException(trace);
+    }
+
+    static <T> Result<T> of(String code, String msg) {
+        return new Result<T>().setStatus(200).setSuccess(true).setCode(code).setMsg(msg);
+    }
+
+    static <T> Result<T> of(boolean success, String code, String msg) {
+        return new Result<T>().setStatus(200).setSuccess(success).setCode(code).setMsg(msg);
+    }
+
+    static <T> Result<T> of(int status, String code, String msg) {
+        return new Result<T>().setStatus(status).setSuccess(status >= 200 && status < 400).setCode(code).setMsg(msg);
+    }
+
+    static <T> Result<T> of(boolean success, int status, String code, String msg) {
+        return new Result<T>().setStatus(status).setSuccess(success).setCode(code).setMsg(msg);
+    }
+
+    static <T> Result<T> of(boolean success, int status, String code, String msg, T data) {
+        return new Result<T>().setStatus(status).setSuccess(success).setCode(code).setMsg(msg).setData(data);
+    }
+
+    static <T> Result<T> of(boolean success, int status, String code, String msg, T data, List<Object> errs) {
+        return new Result<T>().setStatus(status).setSuccess(success).setCode(code).setMsg(msg).setData(data).setErrs(errs);
     }
 }
