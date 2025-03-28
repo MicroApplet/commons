@@ -41,19 +41,19 @@ import java.util.Objects;
 public class PageData<T> implements Serializable {
     private static final long serialVersionUID = 5125243427769117213L;
 
-    // 当前页码
+    /** 当前页码*/
     private Long page;
-    // 总页码
+    /** 总页码*/
     private Long pages;
-    // 页宽度
+    /** 页宽度*/
     private Long size;
-    // 当前页记录条数
+    /** 当前页记录条数*/
     private Long recordSize;
-    // 总记录条数
+    /** 总记录条数*/
     private Long total;
-    // 是否有下一页
+    /** 是否有下一页*/
     private Boolean hasNext;
-    // 当前页记录
+    /** 当前页记录*/
     private Collection<T> records;
 
     @SuppressWarnings("unused")
@@ -77,7 +77,6 @@ public class PageData<T> implements Serializable {
         return Objects.nonNull(records) ? records.size() : 0L;
     }
 
-    @SuppressWarnings("unused")
     public Long getPages() {
         Long total = this.getTotal();
         Long size = this.getSize();
