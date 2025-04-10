@@ -127,4 +127,16 @@ public class App {
         }
     }
 
+    public static <T> T beanAndThenOrThrow(Class<T> clazz, Consumer<T> consumer, Supplier<? extends RuntimeException> supplier) {
+        Optional<T> t = beanOpt(clazz);
+        if (!t.isPresent()) {
+            if (Objects.nonNull(supplier))
+                throw supplier.get();
+            return null;
+        } else {
+            t.ifPresent(consumer);
+        }
+
+        return t.get();
+    }
 }

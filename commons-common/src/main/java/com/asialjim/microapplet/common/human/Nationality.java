@@ -178,4 +178,8 @@ public enum Nationality {
     public static Nationality codeOf(String code) {
         return Arrays.stream(values()).filter(item -> StringUtils.equals(code, item.getCode())).findFirst().orElse(None);
     }
+
+    public static Nationality cnNameOf(String nationality) {
+        return Arrays.stream(values()).filter(item -> StringUtils.equals(nationality, item.getCnName())).findFirst().orElse(None);
+    }
 }
