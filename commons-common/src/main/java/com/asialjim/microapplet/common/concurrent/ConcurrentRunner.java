@@ -42,15 +42,44 @@ public class ConcurrentRunner {
     private static ConcurrentRunner instance;
     private Executor executor;
 
-
+    /**
+     * 异步运行所有任务，并等待所有任务结束（任务并行运行）
+     *
+     * @param runnable {@link Runnable runnable...}
+     * @since 2025/4/10
+     */
     public static void runAllTask(Runnable... runnable) {
         getInstance()._runAllTask(runnable);
     }
 
+    /**
+     * 异步运行所有任务，并等待所有任务结束（任务并行运行）
+     *
+     * @param executor {@link Executor executor}
+     * @param runnable {@link Runnable runnable...}
+     * @since 2025/4/10
+     */
     public static void runAllTask(Executor executor, Runnable... runnable) {
         getInstance()._runAllTask(executor, runnable);
     }
 
+    /**
+     * 异步运行所有任务，不等待任务结束
+     *
+     * @param runnable {@link Runnable runnable...}
+     * @since 2025/4/10
+     */
+    public static void runAllTaskAsync(Runnable... runnable) {
+        getInstance()._runAllTaskAsync(runnable);
+    }
+
+    /**
+     * 异步运行所有任务，不等待任务结束
+     *
+     * @param executor {@link Executor executor}
+     * @param runnable {@link Runnable runnable...}
+     * @since 2025/4/10
+     */
     public static void runAllTaskAsync(Executor executor, Runnable... runnable) {
         getInstance()._runAllTaskAsync(executor, runnable);
     }
@@ -85,11 +114,23 @@ public class ConcurrentRunner {
                 .orElseGet(Executors::newSingleThreadExecutor);
     }
 
-
+    /**
+     * 异步运行所有任务，并等待所有任务结束（任务并行运行）
+     *
+     * @param runnable {@link Runnable runnable...}
+     * @since 2025/4/10
+     */
     public void _runAllTask(Runnable... runnable) {
         _runAllTask(this.executor, runnable);
     }
 
+    /**
+     * 异步运行所有任务，并等待所有任务结束（任务并行运行）
+     *
+     * @param executor {@link Executor executor}
+     * @param runnable {@link Runnable runnable...}
+     * @since 2025/4/10
+     */
     public void _runAllTask(Executor executor, Runnable... runnable) {
         if (ArrayUtils.isEmpty(runnable))
             return;
@@ -102,6 +143,23 @@ public class ConcurrentRunner {
         CompletableFuture.allOf(tasks).join();
     }
 
+    /**
+     * 异步运行所有任务，不等待任务结束
+     *
+     * @param runnable {@link Runnable runnable...}
+     * @since 2025/4/10
+     */
+    public void _runAllTaskAsync(Runnable... runnable) {
+        _runAllTaskAsync(executor, runnable);
+    }
+
+    /**
+     * 异步运行所有任务，不等待任务结束
+     *
+     * @param executor {@link Executor executor}
+     * @param runnable {@link Runnable runnable...}
+     * @since 2025/4/10
+     */
     public void _runAllTaskAsync(Executor executor, Runnable... runnable) {
         if (ArrayUtils.isEmpty(runnable))
             return;
