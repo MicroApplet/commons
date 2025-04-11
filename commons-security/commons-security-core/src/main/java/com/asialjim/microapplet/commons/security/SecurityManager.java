@@ -25,4 +25,5 @@ package com.asialjim.microapplet.commons.security;
  * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
 public interface SecurityManager {
+
 }

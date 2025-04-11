@@ -26,7 +26,7 @@ import java.util.List;
  * @version 1.0
  * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-public class Tourist implements Role {
+public class Tourist implements RoleWithPermission {
     public static final long code = 0L;
     public static final Role instance = new Tourist();
 

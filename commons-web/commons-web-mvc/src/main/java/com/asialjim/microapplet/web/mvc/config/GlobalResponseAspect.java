@@ -82,7 +82,8 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
                 .map(URI::getPath)
                 .map(skipUris::contains)
                 .orElse(false);
-        if (Boolean.TRUE.equals(skip))
+
+       if (Boolean.TRUE.equals(skip))
             return body;
 
         if (body instanceof Result || body instanceof ResponseEntity)

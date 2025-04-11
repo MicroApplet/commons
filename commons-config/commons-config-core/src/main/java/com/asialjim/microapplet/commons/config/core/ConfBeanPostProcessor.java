@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Modifier;
 import java.util.Objects;
@@ -39,6 +40,7 @@ import java.util.Objects;
  * @since 2025/3/10, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Setter
+@Component
 public class ConfBeanPostProcessor implements BeanPostProcessor, EnvironmentAware, ApplicationContextAware, Ordered {
     private ApplicationContext applicationContext;
     private Environment environment;

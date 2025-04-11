@@ -30,8 +30,19 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface SessionSecurityManager extends SecurityManager {
 
+    default boolean skip(HttpServletRequest request) {
+        return false;
+    }
+
+    default void loginCheck(HttpServletRequest request) {
+        boolean skip = skip(request);
+        if (skip)
+            return;
+        doLoginCheck(request);
+    }
+
     /**
      * 登录检查
      */
-    void loginCheck(HttpServletRequest request) throws UnLoginException;
+    void doLoginCheck(HttpServletRequest request) throws UnLoginException;
 }

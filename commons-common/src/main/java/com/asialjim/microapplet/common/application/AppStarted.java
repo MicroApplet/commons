@@ -16,7 +16,7 @@
 
 package com.asialjim.microapplet.common.application;
 
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
 
 /**
  * 应用启动事件
@@ -26,9 +26,9 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @since 2025/2/27, &nbsp;&nbsp; <em>version:1.0</em>
  */
 public class AppStarted {
-    public final ConfigurableApplicationContext ctx;
+    public final ApplicationContext ctx;
 
-    public AppStarted(ConfigurableApplicationContext ctx) {
+    public AppStarted(ApplicationContext ctx) {
         this.ctx = ctx;
     }
 }

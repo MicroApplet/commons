@@ -18,6 +18,9 @@ package com.asialjim.microapplet.common.human;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
 
 /**
  * 证件类型
@@ -57,4 +60,8 @@ public enum IdCardType {
      * 证件类型中文名
      */
     private final String cnName;
+
+    public static IdCardType codeOf(String code) {
+        return Arrays.stream(values()).filter(item -> StringUtils.equals(code, item.getCode())).findFirst().orElse(null);
+    }
 }

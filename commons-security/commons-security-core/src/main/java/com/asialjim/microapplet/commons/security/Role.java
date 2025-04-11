@@ -36,9 +36,4 @@ public interface Role {
      * 角色描述信息
      */
     String getDesc();
-
-    /**
-     * 角色拥有的权限
-     */
-    List<Permission> getPermissions();
 }

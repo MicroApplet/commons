@@ -17,8 +17,11 @@
 package com.asialjim.microapplet.common.application;
 
 import com.asialjim.microapplet.common.event.EventUtil;
+import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -33,8 +36,14 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 2025/2/26, &nbsp;&nbsp; <em>version:1.0</em>
  */
-public class App {
-    public static ConfigurableApplicationContext ctx;
+@Configuration
+public class App implements ApplicationContextAware {
+    public static ApplicationContext ctx;
+
+    @Override
+    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+        App.ctx = ctx;
+    }
 
     public static Set<String> beanNames(Class<?> clazz) {
         String[] names = ctx.getBeanNamesForType(clazz);
@@ -139,4 +148,5 @@ public class App {
 
         return t.get();
     }
+
 }
