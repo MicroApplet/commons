@@ -21,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -41,6 +38,21 @@ import java.util.stream.Stream;
 public class ConcurrentRunner {
     private static ConcurrentRunner instance;
     private Executor executor;
+
+    @PostConstruct
+    public void init() {
+        ConcurrentRunner.instance = this;
+    }
+
+    @Autowired
+    public void setExecutor(List<Executor> executors) {
+        this.executor = Optional.ofNullable(executors)
+                .map(Collection::stream)
+                .orElseGet(Stream::empty)
+                .filter(Objects::nonNull)
+                .findAny()
+                .orElseGet(Executors::newSingleThreadExecutor);
+    }
 
     /**
      * 异步运行所有任务，并等待所有任务结束（任务并行运行）
@@ -84,35 +96,6 @@ public class ConcurrentRunner {
         getInstance()._runAllTaskAsync(executor, runnable);
     }
 
-    private static ConcurrentRunner getInstance() {
-        if (Objects.nonNull(instance))
-            return instance;
-
-        synchronized (ConcurrentRunner.class) {
-            if (Objects.nonNull(instance))
-                return instance;
-
-            instance = new ConcurrentRunner();
-            instance.init();
-            instance.setExecutor(null);
-        }
-        return instance;
-    }
-
-    @PostConstruct
-    public void init() {
-        ConcurrentRunner.instance = this;
-    }
-
-    @Autowired
-    public void setExecutor(List<Executor> executors) {
-        this.executor = Optional.ofNullable(executors)
-                .map(Collection::stream)
-                .orElseGet(Stream::empty)
-                .filter(Objects::nonNull)
-                .findAny()
-                .orElseGet(Executors::newSingleThreadExecutor);
-    }
 
     /**
      * 异步运行所有任务，并等待所有任务结束（任务并行运行）
@@ -167,5 +150,20 @@ public class ConcurrentRunner {
         for (Runnable item : runnable) {
             executor.execute(item);
         }
+    }
+
+    private static ConcurrentRunner getInstance() {
+        if (Objects.nonNull(instance))
+            return instance;
+
+        synchronized (ConcurrentRunner.class) {
+            if (Objects.nonNull(instance))
+                return instance;
+
+            instance = new ConcurrentRunner();
+            instance.init();
+            instance.setExecutor(null);
+        }
+        return instance;
     }
 }
