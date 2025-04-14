@@ -29,8 +29,8 @@ import java.util.Arrays;
  * @version 1.0
  * @since 2025/4/10, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
 @AllArgsConstructor
+@SuppressWarnings("LombokGetterMayBeUsed")
 public enum IdCardType {
     ResidentIdentityCard("01", "ResidentIdentityCard", "居民身份证"),
     HouseholdRegister("02", "HouseholdRegister", "户口簿"),
@@ -60,6 +60,18 @@ public enum IdCardType {
      * 证件类型中文名
      */
     private final String cnName;
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getEnName() {
+        return enName;
+    }
+
+    public String getCnName() {
+        return cnName;
+    }
 
     public static IdCardType codeOf(String code) {
         return Arrays.stream(values()).filter(item -> StringUtils.equals(code, item.getCode())).findFirst().orElse(null);
