@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * 环境信息
@@ -30,8 +31,8 @@ import java.util.Iterator;
  * @version 1.0
  * @since 2025/3/10, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
 @AllArgsConstructor
+@SuppressWarnings("LombokGetterMayBeUsed")
 public enum Env implements Iterator<Env> {
 
     Init(-2, "初始化环境") {
@@ -105,9 +106,21 @@ public enum Env implements Iterator<Env> {
     private final int code;
     private final String desc;
 
+    public int getCode() {
+        return code;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
     public static Env nameOf(String property) {
         return Arrays.stream(values()).filter(item -> StringUtils.equalsIgnoreCase(item.name(), property))
                 .findFirst().orElse(Prod);
+    }
+
+    public static Env codeOf(Integer env) {
+        return Arrays.stream(values()).filter(item -> Objects.equals(env, item.getCode())).findFirst().orElse(Prod);
     }
 
     @Override

@@ -133,15 +133,6 @@ public interface ConfPropertyRepository {
         property.setEnable(true);
         property.setCreateTime(LocalDateTime.now());
         property.setUpdateTime(LocalDateTime.now());
-        TreeSet<ConfProperty> exists = query(annotation.type(), annotation.business(), annotation.code(), env);
-        if (CollectionUtils.isNotEmpty(exists)) {
-            ConfProperty last = exists.last();
-            boolean contentEquals = property.contentAndEnvEquals(last);
-            if (contentEquals)
-                return;
-        }
-        int version = CollectionUtils.size(exists) + 1;
-        property.setVersion(version);
         put(property);
     }
 }

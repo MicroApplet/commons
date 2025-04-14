@@ -29,6 +29,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>commons-config-core</module>
+        <module>commons-config-mybatis-flex</module>
     </modules>
 
     <properties>
