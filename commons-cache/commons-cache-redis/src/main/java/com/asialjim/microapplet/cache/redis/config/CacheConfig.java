@@ -17,6 +17,7 @@
 package com.asialjim.microapplet.cache.redis.config;
 
 import com.asialjim.microapplet.common.cache.CacheNameAndTTLHub;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,17 +48,32 @@ import java.util.Collections;
 @Configuration
 @EnableCaching
 public class CacheConfig extends CachingConfigurerSupport {
-    private static final GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
 
     @Bean
     @ConditionalOnMissingBean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        return cacheManager(connectionFactory, new CacheNameAndTTLHub(Collections.emptyList()));
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public GenericJackson2JsonRedisSerializer jsonSerializer(ObjectMapper objectMapper) {
+        return new GenericJackson2JsonRedisSerializer(objectMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory,
+                                          GenericJackson2JsonRedisSerializer jsonSerializer) {
+
+        return cacheManager(connectionFactory, new CacheNameAndTTLHub(Collections.emptyList()), jsonSerializer);
     }
 
     @Bean
     @ConditionalOnBean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory, CacheNameAndTTLHub cacheNameAndTTLHub) {
+    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory,
+                                          CacheNameAndTTLHub cacheNameAndTTLHub,
+                                          GenericJackson2JsonRedisSerializer jsonSerializer) {
+
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer.UTF_8))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer));
@@ -69,7 +85,9 @@ public class CacheConfig extends CachingConfigurerSupport {
 
     @Bean
     @ConditionalOnBean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory,
+                                                       GenericJackson2JsonRedisSerializer jsonSerializer) {
+
         RedisTemplate<String, Object> res = new RedisTemplate<>();
         res.setKeySerializer(StringRedisSerializer.UTF_8);
         res.setValueSerializer(jsonSerializer);
