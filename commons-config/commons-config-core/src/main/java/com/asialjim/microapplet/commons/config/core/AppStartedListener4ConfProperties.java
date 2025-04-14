@@ -20,15 +20,10 @@ import com.asialjim.microapplet.common.application.AppStarted;
 import com.asialjim.microapplet.common.event.BaseAsyncListener;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.TreeSet;
 
 /**
  * 应用启动后，自动注册配置信息

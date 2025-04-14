@@ -18,6 +18,7 @@ package com.asialjim.microapplet.common.event;
 
 import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -42,11 +43,10 @@ import java.util.concurrent.Executors;
 @Component
 @SuppressWarnings("rawtypes")
 public class EventUtil implements ApplicationContextAware, InitializingBean {
-    private static final String LISTENER_CLASS_NAME = Listener.class.getName();
     private static final Map<Type, Set<Listener>> listenerHub = new HashMap<>();
     private ApplicationContext applicationContext;
 
-    private static void add(Type type, Listener listener) {
+    public static void add(Type type, Listener listener) {
         if (Objects.isNull(type) || Objects.isNull(listener))
             return;
 
@@ -62,55 +62,92 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
     public void afterPropertiesSet() {
         Executor executor;
         String[] executorNames = applicationContext.getBeanNamesForType(Executor.class);
-        if (ArrayUtils.isEmpty(executorNames)){
+        if (ArrayUtils.isEmpty(executorNames)) {
             executor = Executors.newFixedThreadPool(1);
         } else {
-            executor = applicationContext.getBean(executorNames[0],Executor.class);
+            executor = applicationContext.getBean(executorNames[0], Executor.class);
         }
 
         String[] names = applicationContext.getBeanNamesForType(Listener.class);
         for (String name : names) {
             Listener bean = applicationContext.getBean(name, Listener.class);
-            if (bean instanceof BaseAsyncListener){
-                BaseAsyncListener baseAsyncListener = (BaseAsyncListener) bean;
-                baseAsyncListener.setExecutor(executor);
-            }
-
-            Class beanClass = bean.getClass();
-            if (AopUtils.isAopProxy(bean)) {
-                beanClass = AopUtils.getTargetClass(bean);
-            }
-
-            Type[] genericInterfaces = beanClass.getGenericInterfaces();
-            for (Type type : genericInterfaces) {
-                if (Objects.isNull(type))
-                    continue;
-
-                if (!(type instanceof ParameterizedType))
-                    continue;
-
-                ParameterizedType parameterizedType = (ParameterizedType) type;
-                Type rawType = parameterizedType.getRawType();
-                if (Objects.isNull(rawType))
-                    continue;
-                String typeName = rawType.getTypeName();
-                if (!LISTENER_CLASS_NAME.equals(typeName))
-                    continue;
-
-                // 获取接口的泛型参数
-                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                //noinspection RedundantLengthCheck
-                if (Objects.isNull(actualTypeArguments) || actualTypeArguments.length == 0)
-                    continue;
-
-                for (Type actualTypeArgument : actualTypeArguments) {
-                    add(actualTypeArgument, bean);
-                }
-            }
-
+            putListener(bean, executor);
         }
     }
 
+    private static void genericInterfaces(Set<Type> types, Class<?> clazz) {
+        if (Objects.isNull(types) || Objects.isNull(clazz))
+            return;
+        Type[] genericInterfaces = clazz.getGenericInterfaces();
+        if (ArrayUtils.isNotEmpty(genericInterfaces))
+            types.addAll(Arrays.asList(genericInterfaces));
+        Class<?> superclass = clazz.getSuperclass();
+        if (Objects.isNull(superclass))
+            return;
+        if (superclass.isAssignableFrom(Object.class))
+            return;
+        if (Listener.class.isAssignableFrom(superclass)) {
+            types.add(clazz.getGenericSuperclass());
+            genericInterfaces(types, superclass);
+        }
+    }
+
+    public static void putListener(Listener bean, Executor executor) {
+        if (bean instanceof BaseAsyncListener) {
+            BaseAsyncListener baseAsyncListener = (BaseAsyncListener) bean;
+            baseAsyncListener.setExecutor(executor);
+        }
+
+        Class beanClass = bean.getClass();
+        if (AopUtils.isAopProxy(bean)) {
+            beanClass = AopUtils.getTargetClass(bean);
+        }
+
+        Set<Type> genericInterfaces = new HashSet<>();
+        genericInterfaces(genericInterfaces, beanClass);
+        for (Type type : genericInterfaces) {
+            addType(bean, type);
+        }
+    }
+
+    private static void addType(Listener bean, Type type) {
+        if (Objects.isNull(type))
+            return;
+
+        if (!(type instanceof ParameterizedType))
+            return;
+
+        ParameterizedType parameterizedType = (ParameterizedType) type;
+        Type rawType = parameterizedType.getRawType();
+        if (!candidateType(rawType))
+            return;
+
+        // 获取接口的泛型参数
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+        //noinspection RedundantLengthCheck
+        if (Objects.isNull(actualTypeArguments) || actualTypeArguments.length == 0)
+            return;
+
+        for (Type actualTypeArgument : actualTypeArguments) {
+            add(actualTypeArgument, bean);
+        }
+    }
+
+    private static boolean candidateType(Type rawType) {
+        if (Objects.isNull(rawType))
+            return false;
+        String typeName = rawType.getTypeName();
+        if (StringUtils.isBlank(typeName))
+            return false;
+        try {
+            Class<?> aClass = Class.forName(typeName);
+            return Listener.class.isAssignableFrom(aClass);
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unused")
     public static <E> void push(Optional<E> event) {
         event.ifPresent(EventUtil::push);
     }

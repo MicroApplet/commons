@@ -51,6 +51,8 @@ public class CachedConfPropertyRepositoryBaseOnMyBatis implements ConfPropertyRe
 
     @Override
     public void put(ConfProperty source) {
+        source.setEnable(true);
+
         ConfType type = source.getType();
         String business = source.getBusiness();
         String name = source.getConfCode();
@@ -60,12 +62,13 @@ public class CachedConfPropertyRepositoryBaseOnMyBatis implements ConfPropertyRe
         Integer version = CollectionUtils.size(exist) + 1;
         source.setVersion(version);
 
-        ConfProperty last = exist.last();
-        boolean contentEquals = source.contentAndEnvEquals(last);
-        if (contentEquals)
-            return;
+        if (CollectionUtils.isNotEmpty(exist)) {
+            ConfProperty last = exist.last();
+            boolean contentEquals = source.contentAndEnvEquals(last);
+            if (contentEquals)
+                return;
+        }
 
-        source.setEnable(true);
         this.confPropertyMapperService.put(source);
     }
 }
