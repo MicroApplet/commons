@@ -20,7 +20,7 @@
     <parent>
         <groupId>com.asialjim.microapplet</groupId>
         <artifactId>commons</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -63,6 +63,12 @@
                 <artifactId>commons-config-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.asialjim.microapplet</groupId>
+                <artifactId>commons-config-mybatis-flex</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.asialjim.microapplet</groupId>
@@ -93,6 +99,7 @@
             </dependency>
 
 
+
             <dependency>
                 <groupId>com.asialjim.microapplet</groupId>
                 <artifactId>commons-security</artifactId>
@@ -121,6 +128,16 @@
             </dependency>
             <dependency>
                 <groupId>com.asialjim.microapplet</groupId>
+                <artifactId>commons-web-tomcat</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.asialjim.microapplet</groupId>
+                <artifactId>commons-web-undertow</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.asialjim.microapplet</groupId>
                 <artifactId>commons-web-feign</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -139,6 +156,7 @@
                 <artifactId>commons-web-flux</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 

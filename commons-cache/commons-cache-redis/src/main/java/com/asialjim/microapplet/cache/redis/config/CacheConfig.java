@@ -57,6 +57,7 @@ public class CacheConfig extends CachingConfigurerSupport {
 
     @Bean
     public GenericJackson2JsonRedisSerializer jsonSerializer(ObjectMapper objectMapper) {
+        GenericJackson2JsonRedisSerializer.registerNullValueSerializer(objectMapper, "@class");
         return new GenericJackson2JsonRedisSerializer(objectMapper);
     }
 

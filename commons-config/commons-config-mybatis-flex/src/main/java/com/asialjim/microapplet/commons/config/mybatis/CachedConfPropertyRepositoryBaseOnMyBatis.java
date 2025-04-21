@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Comparator;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -39,9 +40,12 @@ public class CachedConfPropertyRepositoryBaseOnMyBatis implements ConfPropertyRe
 
     @Override
     public TreeSet<ConfProperty> query(ConfType type, String business, String code, Env env) {
-        TreeSet<ConfProperty> res = this.confPropertyMapperService.treeSetByTypeAndBusinessAndCodeAndEnv(type.name(), business, code, env.getCode());
-        if (CollectionUtils.isNotEmpty(res))
-            return res;
+         List<ConfProperty> res = this.confPropertyMapperService.treeSetByTypeAndBusinessAndCodeAndEnv(type.name(), business, code, env.getCode());
+        if (CollectionUtils.isNotEmpty(res)){
+            TreeSet<ConfProperty> target = new TreeSet<>(Comparator.comparingInt(ConfProperty::getVersion));
+            target.addAll(res);
+            return target;
+        }
 
         if (env.hasNext())
             return query(type, business, code, env.next());

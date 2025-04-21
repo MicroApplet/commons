@@ -21,31 +21,39 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.asialjim.microapplet</groupId>
-        <artifactId>commons-mybatis</artifactId>
+        <artifactId>commons-web</artifactId>
         <version>1.1.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>commons-mybatis-flex</artifactId>
-    <name>Commons MyBatis Flex</name>
+    <artifactId>commons-web-undertow</artifactId>
+    <name>Commons Web Undertow</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
+        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
-            <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
-            <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-spring</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.asialjim.microapplet</groupId>
-            <artifactId>commons-common</artifactId>
+            <artifactId>commons-web-mvc</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

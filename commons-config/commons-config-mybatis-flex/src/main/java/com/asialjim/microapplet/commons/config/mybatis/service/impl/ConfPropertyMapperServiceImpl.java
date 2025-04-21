@@ -31,7 +31,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * 通用配置信息数据服务
@@ -48,17 +50,14 @@ public class ConfPropertyMapperServiceImpl
 
     @Override
     @Cacheable(value = CacheName.Name.CONF_CACHE, key = "#type + ':' + #business + ':' + #code + ':' + #envCode")
-    public TreeSet<ConfProperty> treeSetByTypeAndBusinessAndCodeAndEnv(String type, String business, String code, int envCode) {
+    public List<ConfProperty> treeSetByTypeAndBusinessAndCodeAndEnv(String type, String business, String code, int envCode) {
         QueryChain<ConfPropertyPo> chain = queryChain();
         chain.where(ConfPropertyPo::getTp).eq(type);
         chain.where(ConfPropertyPo::getBiz).eq(business);
         chain.where(ConfPropertyPo::getName).eq(code);
         chain.where(ConfPropertyPo::getEnv).eq(envCode);
         List<ConfPropertyPo> list = chain.list();
-
-        TreeSet<ConfProperty> res = new TreeSet<>(Comparator.comparingInt(ConfProperty::getVersion));
-        list.stream().map(ConfPropertyPo::fromPo).forEach(res::add);
-        return res;
+        return list.stream().map(ConfPropertyPo::fromPo).collect(Collectors.toList());
     }
 
     @Override

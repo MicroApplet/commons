@@ -21,12 +21,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.asialjim.microapplet</groupId>
-        <artifactId>commons-mybatis</artifactId>
+        <artifactId>commons-web</artifactId>
         <version>1.1.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>commons-mybatis-flex</artifactId>
-    <name>Commons MyBatis Flex</name>
+    <artifactId>commons-web-tomcat</artifactId>
+    <name>Commons Web Tomcat</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -35,19 +35,18 @@
     </properties>
 
     <dependencies>
+        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
-            <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-spring</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>com.asialjim.microapplet</groupId>
-            <artifactId>commons-common</artifactId>
+            <artifactId>commons-web-mvc</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+
     </dependencies>
 
 </project>
