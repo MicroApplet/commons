@@ -78,6 +78,8 @@ public class PageData<T> implements Serializable {
     }
 
     public Long getPages() {
+        if (Objects.nonNull(this.pages))
+            return this.pages;
         Long total = this.getTotal();
         Long size = this.getSize();
         if (Objects.isNull(total) || Objects.isNull(size) || size == 0L)

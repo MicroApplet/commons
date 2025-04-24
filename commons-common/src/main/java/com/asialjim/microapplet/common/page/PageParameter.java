@@ -37,4 +37,12 @@ public class PageParameter implements Serializable {
 
     private final long page;
     private final long size;
+
+    public static PageParameter pageOf() {
+        return new PageParameter(1,10);
+    }
+
+    public static PageParameter pageOf(long page, long size) {
+        return new PageParameter(page,size);
+    }
 }

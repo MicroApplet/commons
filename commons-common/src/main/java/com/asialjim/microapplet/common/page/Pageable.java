@@ -30,6 +30,10 @@ import java.util.function.Supplier;
  */
 public class Pageable {
 
+    public static <Page> Page ofPage(PageParameter pageParameter, Function<PageParameter,Page> pageFun) {
+        return pageFun.apply(pageParameter);
+    }
+
     public static <Page> Page ofPage(Supplier<PageParameter> pageParameterFun, Function<PageParameter, Page> pageFun) {
         if (Objects.isNull(pageParameterFun) || Objects.isNull(pageFun))
             return null;
