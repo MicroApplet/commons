@@ -17,6 +17,7 @@
 package com.asialjim.microapplet.commons.config.mybatis;
 
 import com.asialjim.microapplet.commons.config.core.*;
+import com.asialjim.microapplet.commons.config.mybatis.po.ConfPropertyPo;
 import com.asialjim.microapplet.commons.config.mybatis.service.ConfPropertyMapperService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
@@ -40,10 +41,10 @@ public class CachedConfPropertyRepositoryBaseOnMyBatis implements ConfPropertyRe
 
     @Override
     public TreeSet<ConfProperty> query(ConfType type, String business, String code, Env env) {
-         List<ConfProperty> res = this.confPropertyMapperService.treeSetByTypeAndBusinessAndCodeAndEnv(type.name(), business, code, env.getCode());
+         List<ConfPropertyPo> res = this.confPropertyMapperService.treeSetByTypeAndBusinessAndCodeAndEnv(type.name(), business, code, env.getCode());
         if (CollectionUtils.isNotEmpty(res)){
             TreeSet<ConfProperty> target = new TreeSet<>(Comparator.comparingInt(ConfProperty::getVersion));
-            target.addAll(res);
+            res.stream().map(ConfPropertyPo::fromPo).forEach(target::add);
             return target;
         }
 

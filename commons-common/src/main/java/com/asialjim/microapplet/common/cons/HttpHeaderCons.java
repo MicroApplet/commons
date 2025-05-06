@@ -16,6 +16,10 @@
 
 package com.asialjim.microapplet.common.cons;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * HTTP 请求头
  *
@@ -25,11 +29,19 @@ package com.asialjim.microapplet.common.cons;
  */
 public interface HttpHeaderCons {
 
-    String HTTP_LOG_LEVEL = "X-App-Log-Level";
-    String APPID = "X-App-Appid";
-    String CHL_CODE = "X-App-Chl-Code";
-    String CHL_APPID = "X-App-Chl-Appid";
-    String CHL_APP_TYPE = "X-App-Chl-App-Type";
+    String CloudSessionId = "X-Cloud-Session-Id";
+    String CloudTraceId = "X-Cloud-Trace-Id";
+    String CloudAgent = "X-Cloud-Agent";
+
+    String HTTPLogLevel = "X-App-Log-Level";
+    String Appid = "X-App-Appid";
+    String ChlCode = "X-App-Chl-Code";
+    String ChlAppid = "X-App-Chl-Appid";
+    String ChlAppType = "X-App-Chl-App-Type";
+
     String Authorization = "Authorization";
 
+    Set<String> headers = Stream.of(
+            CloudSessionId, CloudTraceId, CloudAgent, HTTPLogLevel, Appid, ChlCode, ChlAppid, ChlAppType, Authorization
+    ).collect(Collectors.toSet());
 }

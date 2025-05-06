@@ -18,6 +18,7 @@ package com.asialjim.microapplet.cache.redis.config;
 
 import com.asialjim.microapplet.common.cache.CacheNameAndTTLHub;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Setter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -52,13 +53,21 @@ public class CacheConfig extends CachingConfigurerSupport {
     @Bean
     @ConditionalOnMissingBean
     public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
     }
 
     @Bean
+    @ConditionalOnBean
     public GenericJackson2JsonRedisSerializer jsonSerializer(ObjectMapper objectMapper) {
-        GenericJackson2JsonRedisSerializer.registerNullValueSerializer(objectMapper, "@class");
-        return new GenericJackson2JsonRedisSerializer(objectMapper);
+        return new GenericJsonRedisSerializer(objectMapper, "@class");
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public GenericJackson2JsonRedisSerializer ignoredJsonSerializer() {
+        return new GenericJsonRedisSerializer(new ObjectMapper(), "@class");
     }
 
     @Bean

@@ -50,14 +50,13 @@ public class ConfPropertyMapperServiceImpl
 
     @Override
     @Cacheable(value = CacheName.Name.CONF_CACHE, key = "#type + ':' + #business + ':' + #code + ':' + #envCode")
-    public List<ConfProperty> treeSetByTypeAndBusinessAndCodeAndEnv(String type, String business, String code, int envCode) {
+    public List<ConfPropertyPo> treeSetByTypeAndBusinessAndCodeAndEnv(String type, String business, String code, int envCode) {
         QueryChain<ConfPropertyPo> chain = queryChain();
         chain.where(ConfPropertyPo::getTp).eq(type);
         chain.where(ConfPropertyPo::getBiz).eq(business);
         chain.where(ConfPropertyPo::getName).eq(code);
         chain.where(ConfPropertyPo::getEnv).eq(envCode);
-        List<ConfPropertyPo> list = chain.list();
-        return list.stream().map(ConfPropertyPo::fromPo).collect(Collectors.toList());
+        return chain.list();
     }
 
     @Override

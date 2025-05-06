@@ -42,7 +42,7 @@ public interface ConfPropertyMapperService extends IService<ConfPropertyPo> {
      * @return {@link TreeSet<ConfProperty>}
      * @since 2025/4/14
      */
-     List<ConfProperty> treeSetByTypeAndBusinessAndCodeAndEnv(String name, String business, String code, int envCode);
+     List<ConfPropertyPo> treeSetByTypeAndBusinessAndCodeAndEnv(String name, String business, String code, int envCode);
 
     /**
      * 注册：更新配置

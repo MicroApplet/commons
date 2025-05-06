@@ -136,7 +136,7 @@ public class ControllerAdvice {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Result<Void> throwable(Throwable e, HttpServletRequest request) {
-        String logLevel = request.getHeader(HttpHeaderCons.HTTP_LOG_LEVEL);
+        String logLevel = request.getHeader(HttpHeaderCons.HTTPLogLevel);
         if (StringUtils.equalsIgnoreCase(logLevel, "debug")) {
             List<Object> errs = new ArrayList<>();
             errs.add(e.getMessage());

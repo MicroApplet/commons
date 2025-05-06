@@ -19,6 +19,7 @@ package com.asialjim.microapplet.commons.config.mybatis.po;
 import com.asialjim.microapplet.commons.config.core.ConfProperty;
 import com.asialjim.microapplet.commons.config.core.ConfType;
 import com.asialjim.microapplet.commons.config.core.Env;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
@@ -58,8 +59,10 @@ public class ConfPropertyPo implements Serializable {
     private Boolean enable;
 
     @Column(onInsertValue = "now()")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(onInsertValue = "now()", onUpdateValue = "now()")
     private LocalDateTime updateTime;
 
