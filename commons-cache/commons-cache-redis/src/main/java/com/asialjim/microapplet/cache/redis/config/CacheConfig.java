@@ -26,6 +26,7 @@ import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
@@ -51,7 +52,6 @@ import java.util.Collections;
 public class CacheConfig extends CachingConfigurerSupport {
 
     @Bean
-    @ConditionalOnMissingBean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -59,22 +59,14 @@ public class CacheConfig extends CachingConfigurerSupport {
     }
 
     @Bean
-    @ConditionalOnBean
     public GenericJackson2JsonRedisSerializer jsonSerializer(ObjectMapper objectMapper) {
         return new GenericJsonRedisSerializer(objectMapper, "@class");
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public GenericJackson2JsonRedisSerializer ignoredJsonSerializer() {
-        return new GenericJsonRedisSerializer(new ObjectMapper(), "@class");
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory,
                                           GenericJackson2JsonRedisSerializer jsonSerializer) {
-
         return cacheManager(connectionFactory, new CacheNameAndTTLHub(Collections.emptyList()), jsonSerializer);
     }
 
