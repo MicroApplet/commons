@@ -16,10 +16,22 @@
 
 package com.asialjim.microapplet.commons.web.feign;
 
+import com.asialjim.microapplet.common.cons.HttpHeaderCons;
 import feign.Logger;
+import feign.RequestInterceptor;
 import feign.Retryer;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 通用 Feign 配置
@@ -39,5 +51,29 @@ public class CommonsFeignConfig {
     @Bean
     public Retryer retryer() {
         return new Retryer.Default(100, 1000, 3); // 重试策略
+    }
+
+    @Bean
+    public RequestInterceptor requestInterceptorWithAgentAndTraceId() {
+        return template -> {
+            try {
+                RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+                if (Objects.nonNull(requestAttributes)) {
+                    ServletRequestAttributes request = (ServletRequestAttributes) requestAttributes;
+                    HttpServletRequest httpServletRequest = request.getRequest();
+                    for (String name : HttpHeaderCons.headers) {
+                        String header = httpServletRequest.getHeader(name);
+                        if (StringUtils.isBlank(header))
+                            continue;
+                        template.header(name,header);
+                    }
+                }
+            } catch (Throwable ignored) {
+
+            }
+
+            template.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+            template.header(HttpHeaders.USER_AGENT, HttpHeaderCons.CloudAgent);
+        };
     }
 }

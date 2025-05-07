@@ -16,11 +16,13 @@
 
 package com.asialjim.microapplet.web.mvc.config;
 
+import com.asialjim.microapplet.common.cons.HttpHeaderCons;
 import com.asialjim.microapplet.common.context.Res;
 import com.asialjim.microapplet.common.context.Result;
 import com.asialjim.microapplet.web.mvc.annotation.ResultWrap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +34,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 全局通用响应结果拦截器
@@ -87,6 +86,11 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
             return body;
 
         if (body instanceof Result || body instanceof ResponseEntity)
+            return body;
+
+        HttpHeaders headers = request.getHeaders();
+        List<String> agents = Optional.ofNullable(headers.get(HttpHeaders.USER_AGENT)).orElseGet(ArrayList::new);
+        if (agents.contains(HttpHeaderCons.CloudAgent))
             return body;
 
         //noinspection OptionalOfNullableMisuse
