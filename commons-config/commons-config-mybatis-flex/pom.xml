@@ -36,6 +36,11 @@
     <dependencies>
         <!--suppress VulnerableLibrariesLocal -->
         <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <!--suppress VulnerableLibrariesLocal -->
+        <dependency>
             <groupId>com.asialjim.microapplet</groupId>
             <artifactId>commons-config-core</artifactId>
             <version>${project.version}</version>
