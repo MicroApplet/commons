@@ -21,7 +21,6 @@ import feign.Logger;
 import feign.RequestInterceptor;
 import feign.Retryer;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;

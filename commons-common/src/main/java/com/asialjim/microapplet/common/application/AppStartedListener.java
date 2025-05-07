@@ -35,7 +35,7 @@ public class AppStartedListener implements Listener<AppStarted> {
     @Override
     public void doOnEvent(AppStarted event) {
         String name = event.ctx.getEnvironment().getProperty("spring.application.name");
-        String format = String.format("%s Started", name);
+        String format = String.format("---%s Started---", name);
         log.info(format);
     }
 }
