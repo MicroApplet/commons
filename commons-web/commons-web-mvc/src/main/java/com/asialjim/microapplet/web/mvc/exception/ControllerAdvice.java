@@ -59,7 +59,7 @@ public class ControllerAdvice {
         log.info("业务错误：{}", e.toString());
         int status = e.getStatus();
         Result<Void> objectResult = e.create();
-        HttpStatus resolve = Optional.ofNullable( HttpStatus.resolve(status)).orElse(HttpStatus.OK);
+        HttpStatus resolve = Optional.ofNullable(HttpStatus.resolve(status)).orElse(HttpStatus.OK);
         return new ResponseEntity<>(objectResult, resolve);
     }
 
@@ -68,7 +68,7 @@ public class ControllerAdvice {
         log.info("系统错误：{}", e.toString());
         int status = e.getStatus();
         Result<Void> objectResult = e.create();
-        HttpStatus resolve = Optional.ofNullable( HttpStatus.resolve(status)).orElse(HttpStatus.OK);
+        HttpStatus resolve = Optional.ofNullable(HttpStatus.resolve(status)).orElse(HttpStatus.OK);
         return new ResponseEntity<>(objectResult, resolve);
     }
 
@@ -137,20 +137,18 @@ public class ControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Result<Void> throwable(Throwable e, HttpServletRequest request) {
         String logLevel = request.getHeader(HttpHeaderCons.HTTPLogLevel);
-        if (StringUtils.equalsIgnoreCase(logLevel, "debug")) {
-            List<Object> errs = new ArrayList<>();
-            errs.add(e.getMessage());
-            errs.add("\r\n");
-            for (Throwable throwable : e.getSuppressed()) {
-                errs.add(throwable.getMessage());
-            }
+        List<Object> errs = new ArrayList<>();
+        errs.add(e.getMessage());
+        errs.add("\r\n");
+        for (Throwable throwable : e.getSuppressed()) {
+            errs.add(throwable.getMessage());
+        }
 
-            e.printStackTrace();
-            log.error("未明确类型错误：{}", e.getMessage());
+        log.error("未明确类型错误：{} >>> {}",e.getMessage(), errs);
+        if (StringUtils.equalsIgnoreCase(logLevel, "debug")) {
             return Res.SysBusy.create(errs);
         }
 
-        log.error("未明确类型错误：{}", e.getMessage());
         return Res.SysBusy.create();
     }
 }
