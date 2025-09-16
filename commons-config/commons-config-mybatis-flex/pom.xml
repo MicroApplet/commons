@@ -24,6 +24,7 @@
     </parent>
 
     <artifactId>commons-config-mybatis-flex</artifactId>
+    <name>Commons Config MyBatis Plus</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
