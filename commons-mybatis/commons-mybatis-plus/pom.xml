@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>commons-mybatis-plus</artifactId>
+    <name>Commons MyBatis Plus</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
