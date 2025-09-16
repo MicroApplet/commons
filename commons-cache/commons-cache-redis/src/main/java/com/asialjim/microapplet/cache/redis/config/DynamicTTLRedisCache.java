@@ -24,6 +24,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.util.ByteUtils;
 
 import java.time.Duration;
+import java.util.Objects;
 
 /**
  * 动态缓存过期时间Redis缓存器
@@ -64,8 +65,10 @@ public class DynamicTTLRedisCache extends RedisCache {
                 ? BINARY_NULL_VALUE
                 : ByteUtils.getBytes(this.configuration.getValueSerializationPair().write(value));
 
-        // 自定义写入逻辑
-        //noinspection DataFlowIssue
-        getNativeCache().put(name, keyBytes, valueBytes, ttl);
+        // 缓存时间不为空
+        if  (Objects.nonNull(ttl) && !Duration.ZERO.equals(ttl))
+            // 自定义写入逻辑
+            //noinspection DataFlowIssue
+            getNativeCache().put(name, keyBytes, valueBytes, ttl);
     }
 }
