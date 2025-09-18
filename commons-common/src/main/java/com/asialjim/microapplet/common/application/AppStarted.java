@@ -16,19 +16,19 @@
 
 package com.asialjim.microapplet.common.application;
 
-import org.springframework.context.ApplicationContext;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
-/**
- * 应用启动事件
- *
- * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
- * @version 1.0
- * @since 2025/2/27, &nbsp;&nbsp; <em>version:1.0</em>
- */
-public class AppStarted {
-    public final ApplicationContext ctx;
-
-    public AppStarted(ApplicationContext ctx) {
-        this.ctx = ctx;
+@Slf4j
+@Component
+public class AppStarted implements CommandLineRunner {
+    @Override
+    public void run(String... args) {
+        String l = """
+                \r\t-——————————————————————————-
+                \r\t|   Application  started   |
+                \r\t-——————————————————————————-""";
+        log.info(l);
     }
 }

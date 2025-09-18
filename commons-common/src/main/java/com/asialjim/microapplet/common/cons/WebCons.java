@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package com.asialjim.microapplet.web.mvc.annotation;
+package com.asialjim.microapplet.common.cons;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public interface WebCons {
+    @SuppressWarnings("HttpUrlsUsage")
+    String HTTP_PROTOCOL = "http://";
 
-
-/**
- * 标记响应结果用{@link com.asialjim.microapplet.common.context.Result}包装
- * <p/>
- * 仅对简单类型使用
- *
- * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
- * @version 1.0
- * @since 2025/3/11, &nbsp;&nbsp; <em>version:</em>
- */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ResultWrap {
+    String BEARER_PREFIX = "Bearer ";
+    String TOKEN = "token";
+    String TICKET = "ticket";
+    String ACCESS_TOKEN = "access_token";
+    String CODE = "code";
+    String STATE = "state";
 }

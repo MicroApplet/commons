@@ -18,7 +18,9 @@ package com.asialjim.microapplet.common.page;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -29,8 +31,9 @@ import java.io.Serializable;
  * @since 2025/3/28, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Data
-@AllArgsConstructor
+@Accessors(chain = true)
 public class PageParameter implements Serializable {
+    @Serial
     private static final long serialVersionUID = -5786924401647566489L;
     public static final String pageName = "page";
     public static final String sizeName = "size";

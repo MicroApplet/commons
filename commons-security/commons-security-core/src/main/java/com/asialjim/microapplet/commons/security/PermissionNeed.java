@@ -14,34 +14,24 @@
  * limitations under the License.
  */
 
-package com.asialjim.microapplet.common.cons;
+package com.asialjim.microapplet.commons.security;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * HTTP 请求头
+ * 具有权限
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
  * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-public interface HttpHeaderCons {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface PermissionNeed {
+    String[] all();
 
-    String CloudSessionId = "X-Cloud-Session-Id";
-    String CloudTraceId = "X-Cloud-Trace-Id";
-    String CloudAgent = "X-Cloud-Agent";
-
-    String HTTPLogLevel = "X-App-Log-Level";
-    String Appid = "X-App-Appid";
-    String ChlCode = "X-App-Chl-Code";
-    String ChlAppid = "X-App-Chl-Appid";
-    String ChlAppType = "X-App-Chl-App-Type";
-
-    String Authorization = "Authorization";
-
-    Set<String> headers = Stream.of(
-            CloudSessionId, CloudTraceId, CloudAgent, HTTPLogLevel, Appid, ChlCode, ChlAppid, ChlAppType, Authorization
-    ).collect(Collectors.toSet());
+    String[] any();
 }

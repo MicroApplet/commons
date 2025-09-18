@@ -22,6 +22,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
@@ -34,26 +35,38 @@ import java.util.Objects;
  * @since 2025/3/28, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Accessors(chain = true)
 public class PageData<T> implements Serializable {
+    @Serial
     private static final long serialVersionUID = 5125243427769117213L;
 
-    /** 当前页码*/
+    /**
+     * 当前页码
+     */
     private Long page;
-    /** 总页码*/
+    /**
+     * 总页码
+     */
     private Long pages;
-    /** 页宽度*/
+    /**
+     * 页宽度
+     */
     private Long size;
-    /** 当前页记录条数*/
+    /**
+     * 当前页记录条数
+     */
     private Long recordSize;
-    /** 总记录条数*/
+    /**
+     * 总记录条数
+     */
     private Long total;
-    /** 是否有下一页*/
+    /**
+     * 是否有下一页
+     */
     private Boolean hasNext;
-    /** 当前页记录*/
+    /**
+     * 当前页记录
+     */
     private Collection<T> records;
 
     @SuppressWarnings("unused")

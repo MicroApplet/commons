@@ -16,15 +16,15 @@
 
 package com.asialjim.microapplet.web.mvc.config;
 
-import com.asialjim.microapplet.common.cons.HttpHeaderCons;
-import com.fasterxml.jackson.databind.deser.std.MapDeserializer;
+import com.asialjim.microapplet.common.cons.Headers;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 /**
@@ -43,13 +43,16 @@ public class GlobalLogFilter implements Filter {
                          ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
 
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
-        String sessionId = request.getHeader(HttpHeaderCons.CloudSessionId);
-        String traceId = request.getHeader(HttpHeaderCons.CloudTraceId);
-        MDC.put(HttpHeaderCons.CloudSessionId,sessionId);
-        MDC.put(HttpHeaderCons.CloudTraceId,traceId);
-        filterChain.doFilter(request, response);
-        MDC.clear();
+        try {
+            HttpServletRequest request = (HttpServletRequest) servletRequest;
+            HttpServletResponse response = (HttpServletResponse) servletResponse;
+            String sessionId = request.getHeader(Headers.CloudSessionId);
+            String traceId = request.getHeader(Headers.CloudTraceId);
+            MDC.put(Headers.CloudSessionId, sessionId);
+            MDC.put(Headers.CloudTraceId, traceId);
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.clear();
+        }
     }
 }

@@ -93,8 +93,7 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
     }
 
     public static void putListener(Listener bean, Executor executor) {
-        if (bean instanceof BaseAsyncListener) {
-            BaseAsyncListener baseAsyncListener = (BaseAsyncListener) bean;
+        if (bean instanceof BaseAsyncListener baseAsyncListener) {
             baseAsyncListener.setExecutor(executor);
         }
 
@@ -114,18 +113,16 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
         if (Objects.isNull(type))
             return;
 
-        if (!(type instanceof ParameterizedType))
+        if (!(type instanceof ParameterizedType parameterizedType))
             return;
 
-        ParameterizedType parameterizedType = (ParameterizedType) type;
         Type rawType = parameterizedType.getRawType();
         if (!candidateType(rawType))
             return;
 
         // 获取接口的泛型参数
         Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-        //noinspection RedundantLengthCheck
-        if (Objects.isNull(actualTypeArguments) || actualTypeArguments.length == 0)
+        if (ArrayUtils.isEmpty(actualTypeArguments))
             return;
 
         for (Type actualTypeArgument : actualTypeArguments) {

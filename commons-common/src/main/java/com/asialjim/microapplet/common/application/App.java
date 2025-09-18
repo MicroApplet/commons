@@ -16,15 +16,11 @@
 
 package com.asialjim.microapplet.common.application;
 
-import com.asialjim.microapplet.common.event.EventUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.boot.ApplicationContextFactory;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 
@@ -45,7 +41,7 @@ public class App implements ApplicationContextAware {
     public static ApplicationContext ctx;
 
     @Override
-    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+    public void setApplicationContext(@SuppressWarnings("NullableProblems") ApplicationContext ctx) throws BeansException {
         App.ctx = ctx;
     }
 
@@ -120,7 +116,7 @@ public class App implements ApplicationContextAware {
     @SuppressWarnings("UnusedReturnValue")
     public static <T> T beanAndThenOrThrow(Class<T> clazz, Consumer<T> consumer, Supplier<? extends RuntimeException> supplier) {
         Optional<T> t = beanOpt(clazz);
-        if (!t.isPresent()) {
+        if (t.isEmpty()) {
             if (Objects.nonNull(supplier))
                 throw supplier.get();
             return null;
@@ -135,32 +131,30 @@ public class App implements ApplicationContextAware {
      * 启动应用
      */
     public static void voidStart(Class<?> sourceClass, String[] args) {
-        //noinspection unused
-        AppStarted start = start(sourceClass, args);
+        start(sourceClass, args);
     }
 
     public static void voidStart(String appName, Class<?> sourceClass, String[] args) {
-        //noinspection unused
-        AppStarted start = start(appName, sourceClass, args);
+        start(appName, sourceClass, args);
     }
 
     public static void voidStart(String appName, String contextPath, Class<?> sourceClass, String[] args) {
-        //noinspection unused
-        AppStarted start = start(appName, contextPath, sourceClass, args);
+        start(appName, contextPath, sourceClass, args);
     }
 
     /**
      * 启动应用
      */
-    public static AppStarted start(Class<?> sourceClass, String[] args) {
+    @SuppressWarnings("UnusedReturnValue")
+    public static ApplicationContext start(Class<?> sourceClass, String[] args) {
         return start(StringUtils.EMPTY, sourceClass, args);
     }
 
-    public static AppStarted start(String appName, Class<?> sourceClass, String[] args) {
+    public static ApplicationContext start(String appName, Class<?> sourceClass, String[] args) {
         return start(appName, StringUtils.EMPTY, sourceClass, args);
     }
 
-    public static AppStarted start(String appName, String contextPath, Class<?> sourceClass, String[] args) {
+    public static ApplicationContext start(String appName, String contextPath, Class<?> sourceClass, String[] args) {
         try {
             SpringApplicationBuilder builder = new SpringApplicationBuilder();
             Properties properties = new Properties();
@@ -172,7 +166,7 @@ public class App implements ApplicationContextAware {
                 properties.setProperty("spring.webflux.base-path", appName);
 
             App.ctx = builder.properties(properties).sources(sourceClass).run(args);
-            return EventUtil.push(new AppStarted(App.ctx));
+            return App.ctx;
         } catch (Throwable t) {
             System.err.println("\r\n\tApplication Start Failure: " + t.getMessage());
             //noinspection CallToPrintStackTrace

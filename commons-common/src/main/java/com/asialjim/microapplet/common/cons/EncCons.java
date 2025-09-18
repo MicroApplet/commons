@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package com.asialjim.microapplet.commons.config.jackson;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.Resource;
+package com.asialjim.microapplet.common.cons;
 
 /**
- * Jackson 工具
+ * 加解密常量
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/4/14, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/9/8, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Configuration
-public class JacksonConfig implements InitializingBean {
-    @Resource private ObjectMapper objectMapper;
+public interface EncCons {
 
-    @Override
-    public void afterPropertiesSet() {
-        objectMapper.registerModule(new JavaTimeModule());
-    }
+    /**
+     * 明文模式
+     */
+    String PLAINTEXT = "plaintext";
+
+    /**
+     * 密文模式
+     */
+    String CIPHERTEXT = "ciphertext";
+
+    /**
+     * 混合模式
+     */
+    String MIXING = "mixing";
 }

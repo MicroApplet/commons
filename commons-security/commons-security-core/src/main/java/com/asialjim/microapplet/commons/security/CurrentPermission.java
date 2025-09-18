@@ -16,10 +16,7 @@
 
 package com.asialjim.microapplet.commons.security;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * 当前用户持有的权限列表
@@ -38,25 +35,4 @@ public interface CurrentPermission {
      */
     List<Permission> hasPermission();
 
-    /**
-     * 当前用户持有的角色权限编号列表
-     *
-     * @return {@link List<Long>}
-     * @since 2025/3/11
-     */
-    default List<Long> permissionCodes() {
-        List<Permission> roles = Optional.ofNullable(hasPermission()).orElseGet(ArrayList::new);
-        return roles.stream().map(Permission::getCode).collect(Collectors.toList());
-    }
-
-    /**
-     * 此方法仅对权限编号采用位运算标记的情况
-     */
-    default long totalPermissionCode() {
-        long code = 0;
-        for (Long permissionCode : permissionCodes()) {
-            code += permissionCode;
-        }
-        return code;
-    }
 }

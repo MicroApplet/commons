@@ -28,9 +28,18 @@ import java.lang.annotation.Target;
  * @version 1.0
  * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HasRole {
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface RoleNeed {
 
-    long[] value();
+    /**
+     * 需要满足所有角色
+     */
+    Role[] all() default {};
+
+    /**
+     * 满足其中任何一个用户角色即可
+     */
+    Role[] any() default {};
+
 }

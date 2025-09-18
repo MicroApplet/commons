@@ -16,25 +16,30 @@
 
 package com.asialjim.microapplet.web.mvc.config;
 
-import com.asialjim.microapplet.common.cons.HttpHeaderCons;
+import com.asialjim.microapplet.common.cons.Headers;
 import com.asialjim.microapplet.common.context.Res;
+import com.asialjim.microapplet.common.context.ResCode;
 import com.asialjim.microapplet.common.context.Result;
-import com.asialjim.microapplet.web.mvc.annotation.ResultWrap;
+import com.asialjim.microapplet.common.utils.JsonUtil;
+import com.asialjim.microapplet.web.mvc.annotation.RwIgnore;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.*;
+
+import static com.asialjim.microapplet.common.cons.Headers.*;
 
 /**
  * 全局通用响应结果拦截器
@@ -43,6 +48,7 @@ import java.util.*;
  * @version 1.0
  * @since 2025/3/10, &nbsp;&nbsp; <em>version:1.0</em>
  */
+@Slf4j
 @ControllerAdvice
 public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
     private static final String SKIP_PARSE_RES_TO_RESULT = "_skip_parse_res_to_result_";
@@ -61,56 +67,87 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
     }
 
     @Override
-    public boolean supports(@SuppressWarnings("NullableProblems") MethodParameter returnType,
-                            @SuppressWarnings("NullableProblems") Class<? extends HttpMessageConverter<?>> converterType) {
+    @SuppressWarnings("NullableProblems,RedundantIfStatement")
+    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+        Method method = returnType.getMethod();
+        if (Objects.nonNull(method)) {
+            boolean annotatedByRsWrap = method.isAnnotationPresent(RwIgnore.class);
+            if (annotatedByRsWrap)
+                return false;
+            boolean annotatedByAsync = method.isAnnotationPresent(Async.class);
+            if (annotatedByAsync)
+                return false;
+
+            return true;
+        }
         return true;
     }
 
     @Override
+    @SuppressWarnings("NullableProblems")
     public Object beforeBodyWrite(Object body,
-                                  @SuppressWarnings("NullableProblems") MethodParameter returnType,
-                                  @SuppressWarnings("NullableProblems") MediaType mediaType,
-                                  @SuppressWarnings("NullableProblems") Class<? extends HttpMessageConverter<?>> selectedConverterType,
-                                  @SuppressWarnings("NullableProblems") ServerHttpRequest request,
-                                  @SuppressWarnings("NullableProblems") ServerHttpResponse response) {
+                                  MethodParameter returnType,
+                                  MediaType selectedContentType,
+                                  Class<? extends HttpMessageConverter<?>> selectedConverterType,
+                                  ServerHttpRequest request,
+                                  ServerHttpResponse response) {
 
+        Object o = doBeforeBody(body, request, response);
+        HttpHeaders headers = response.getHeaders();
 
-        //noinspection OptionalOfNullableMisuse
-        Boolean skip = Optional.ofNullable(request)
+        log.info("\r\n<<响应头: {}\r\n<<响应体: {}", headers, o);
+        return o;
+    }
+
+    private static Object doBeforeBody(Object body, ServerHttpRequest request, ServerHttpResponse response) {
+        boolean skip = Optional.ofNullable(request)
                 .map(HttpRequest::getURI)
                 .map(URI::getPath)
                 .map(skipUris::contains)
                 .orElse(false);
 
-       if (Boolean.TRUE.equals(skip))
+        if (skip)
             return body;
 
-        if (body instanceof Result || body instanceof ResponseEntity)
+        if (body instanceof ResponseEntity)
             return body;
 
-        HttpHeaders headers = request.getHeaders();
-        List<String> agents = Optional.ofNullable(headers.get(HttpHeaders.USER_AGENT)).orElseGet(ArrayList::new);
-        if (agents.contains(HttpHeaderCons.CloudAgent))
-            return body;
-
-        //noinspection OptionalOfNullableMisuse
-        String type = Optional.ofNullable(mediaType).map(MediaType::getType).orElse(StringUtils.EMPTY);
-        //noinspection OptionalOfNullableMisuse
-        String subType = Optional.ofNullable(mediaType).map(MediaType::getSubtype).orElse("");
-
-        if (StringUtils.equalsAnyIgnoreCase(subType, "json", "xml"))
-            return Res.Ok.create(body);
-
-        ResultWrap resultWrap = returnType.getMethodAnnotation(ResultWrap.class);
-        if (Objects.nonNull(resultWrap)) {
-            Result<Object> objectResult = Res.Ok.create(body);
-            if (StringUtils.equalsIgnoreCase(type, "text")) {
-                response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-                return String.valueOf(objectResult);
+        HttpHeaders requestHeaders = Optional.ofNullable(request).map(ServerHttpRequest::getHeaders).orElseGet(HttpHeaders::new);
+        List<String> clientTypes = Optional.of(requestHeaders).map(item -> item.get(Headers.CLIENT_TYPE)).orElseGet(Collections::emptyList);
+        // 云调用
+        if (clientTypes.contains(Headers.CLOUD_CLIENT)) {
+            //noinspection rawtypes
+            if (body instanceof Result result) {
+                response.setStatusCode(HttpStatusCode.valueOf(result.getStatus()));
+                HttpHeaders headers = response.getHeaders();
+                headers.set(X_RES_THROWABLE, String.valueOf(result.isThr()));
+                headers.set(X_RES_CODE, result.getCode());
+                headers.set(X_RES_MSG, result.getMsg());
+                headers.set(X_RES_ERRS, JsonUtil.instance.toStr(result.getErrs()));
+                headers.set(X_RES_STATUS, String.valueOf(result.getStatus()));
+                headers.set(X_RES_PAGE, String.valueOf(result.getPage()));
+                headers.set(X_RES_SIZE, String.valueOf(result.getSize()));
+                headers.set(X_RES_PAGES, String.valueOf(result.getPages()));
+                headers.set(X_RES_TOTAL, String.valueOf(result.getTotal()));
+                return result.getData();
             }
-            return objectResult;
+            return body;
         }
 
-        return body;
+        // 如果已经是 Result，则不再包装
+        //noinspection rawtypes
+        if (body instanceof Result result) {
+            int status = result.getStatus();
+            response.setStatusCode(HttpStatusCode.valueOf(status));
+            return result;
+        }
+
+        if (body instanceof ResCode cd) {
+            int status = cd.getStatus();
+            response.setStatusCode(HttpStatusCode.valueOf(status));
+            return cd.result();
+        }
+
+        return Res.OK.result(body);
     }
 }

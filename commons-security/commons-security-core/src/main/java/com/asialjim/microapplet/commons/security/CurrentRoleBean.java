@@ -41,12 +41,12 @@ public class CurrentRoleBean implements ApplicationContextAware {
     public CurrentRoles currentRole(){
         String[] names = this.applicationContext.getBeanNamesForType(CurrentRoles.class);
         if (ArrayUtils.isEmpty(names))
-            return () -> Collections.singletonList(Tourist.instance);
+            return () -> Collections.singletonList(Role.Tourist);
 
         for (String name : names) {
             return this.applicationContext.getBean(name, CurrentRoles.class);
         }
 
-        return () -> Collections.singletonList(Tourist.instance);
+        return () -> Collections.singletonList(Role.Tourist);
     }
 }

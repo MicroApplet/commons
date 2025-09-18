@@ -14,34 +14,39 @@
  * limitations under the License.
  */
 
-package com.asialjim.microapplet.commons.security;
+package com.asialjim.microapplet.common.exception;
 
-import java.util.Collections;
+import com.asialjim.microapplet.common.context.ResCode;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
 import java.util.List;
 
 /**
- * 游客
+ * 业务异常
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/8/22, &nbsp;&nbsp; <em>version:1.0</em>
  */
-public class Tourist implements RoleWithPermission {
-    public static final long code = 0L;
-    public static final Role instance = new Tourist();
+@Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+public class RsEx extends RuntimeException implements ResCode {
+    private int status;
+    private boolean thr;
+    private String code;
+    private String msg;
+    private List<Object> errs;
 
     @Override
-    public long getCode() {
-        return code;
+    public String getMessage() {
+        return "RsEx, Status: " + status + ", Throwable: " + thr + ", Code: " + code + ", Msg: " + msg + ", Errs: " + errs;
     }
 
-    @Override
-    public String getDesc() {
-        return "游客";
-    }
 
-    @Override
-    public List<Permission> getPermissions() {
-        return Collections.emptyList();
+    public void cast(){
+        throw this;
     }
 }

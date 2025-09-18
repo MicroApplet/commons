@@ -16,9 +16,9 @@
 
 package com.asialjim.microapplet.web.mvc.controller;
 
-import com.asialjim.microapplet.common.application.AppStarted;
-import com.asialjim.microapplet.common.event.Listener;
-import com.asialjim.microapplet.web.mvc.annotation.ResultWrap;
+import com.asialjim.microapplet.common.application.App;
+import com.asialjim.microapplet.web.mvc.annotation.RwIgnore;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,17 +32,17 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/index")
-public class IndexController implements Listener<AppStarted> {
+public class IndexController implements CommandLineRunner {
     private String name;
 
-    @ResultWrap
+    @RwIgnore
     @GetMapping("/index")
     public String index() {
         return name + " Index";
     }
 
     @Override
-    public void doOnEvent(AppStarted event) {
-        this.name = event.ctx.getEnvironment().getProperty("spring.application.name");
+    public void run(String... args) {
+        this.name = App.ctx.getEnvironment().getProperty("spring.application.name");
     }
 }

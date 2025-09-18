@@ -16,7 +16,7 @@
 
 package com.asialjim.microapplet.commons.web.feign;
 
-import com.asialjim.microapplet.common.cons.HttpHeaderCons;
+import com.asialjim.microapplet.common.cons.Headers;
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.Retryer;
@@ -30,7 +30,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 通用 Feign 配置
@@ -60,7 +60,7 @@ public class CommonsFeignConfig {
                 if (Objects.nonNull(requestAttributes)) {
                     ServletRequestAttributes request = (ServletRequestAttributes) requestAttributes;
                     HttpServletRequest httpServletRequest = request.getRequest();
-                    for (String name : HttpHeaderCons.headers) {
+                    for (String name : Headers.headers) {
                         String header = httpServletRequest.getHeader(name);
                         if (StringUtils.isBlank(header))
                             continue;
@@ -72,7 +72,7 @@ public class CommonsFeignConfig {
             }
 
             template.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-            template.header(HttpHeaders.USER_AGENT, HttpHeaderCons.CloudAgent);
+            template.header(HttpHeaders.USER_AGENT, Headers.CloudAgent);
         };
     }
 }

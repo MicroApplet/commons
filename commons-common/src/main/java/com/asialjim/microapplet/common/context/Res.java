@@ -29,16 +29,39 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Res implements ResCode {
-    KeyParameterIllegal(false,"0005","关键参数异常"),
-    KeyParameterTypeErr(false,"0004","关键参数类型不匹配"),
-    KeyParameterEmptyErr(false,"0003","关键参数为空"),
-    ValidParameterErr(false,"0002","参数校验失败"),
-    IllegalParameter(false, "0001", "参数非法"),
-    Ok(true, "0", "成功"),
-    Fail(false, "-1", "失败"),
-    SysBusy(false, "-2", "系统繁忙");
+    SysErr(500,true,"SYS:BUSINESS","系统繁忙，请稍后再试"),
+    ParameterIllegalEx(400,true,"PARAM:ILLEGAL:EX","非法参数异常"),
+    ParameterEmptyEx(400,true,"PARAM:EMPTY:EX","关键参数为空"),
+    ParameterTypeEx(400,true,"PARAM:TYPE:EX","参数类型不匹配"),
+    ParameterValidEx(400,true,"PARAM:VALID:EX","参数校验异常"),
 
-    private final boolean success;
+    UserAuthFailure401Thr(401, true, "USER:AUTH:EX", "请登录"),
+    UserAuthFailure401(401, "USER:AUTH:EX", "请登录"),
+    UserAuthFailureThr(true, "USER:AUTH:EX", "请登录"),
+
+    UserWithoutRole(400,true,"USER:ROLE:WITHOUT","用户没有以下角色"),
+    UserRoleNeedAtLeast(400,true,"USER:ROLE:NEED-AT-LEAST","用户至少需要以下其中一个角色"),
+
+    OK("0", "成功"),
+    Ok("0", "成功"),
+    Success("0", "成功");
+
+    private final int status;
+    private final boolean thr;
     private final String code;
     private final String msg;
+
+
+    Res(int status, String code, String msg) {
+        this(status, false, code, msg);
+    }
+
+    Res(boolean thr, String code, String msg) {
+        this(200, thr, code, msg);
+    }
+
+    Res(String code, String msg) {
+        this(200, false, code, msg);
+    }
+
 }

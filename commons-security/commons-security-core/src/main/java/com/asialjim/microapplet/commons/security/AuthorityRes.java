@@ -30,11 +30,12 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum AuthorityRes implements ResCode {
-    NoSignIn(false,"40100","用户未登录"),
-    NoRole(false, "40101", "用户角色不符"),
-    NoPermission(false, "40102", "用户权限不足"),
-    OK(true, "0", "ok");
-    private final boolean success;
+    NoSignIn(400, true, "USER:NO-SIGN-IN", "用户未登录"),
+    NoRole(400, true, "USER:ROLE:MISMATCH", "用户角色不符"),
+    NoPermission(400, true, "USER:PERMISSION:HAS-NOT", "权限不足");
+
+    private final int status;
+    private final boolean thr;
     private final String code;
     private final String msg;
 }

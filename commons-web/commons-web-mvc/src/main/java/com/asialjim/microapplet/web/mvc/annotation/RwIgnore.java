@@ -14,36 +14,24 @@
  * limitations under the License.
  */
 
-package com.asialjim.microapplet.common.exception;
+package com.asialjim.microapplet.web.mvc.annotation;
 
-import com.asialjim.microapplet.common.context.ResCode;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 
 /**
- * 业务异常
+ * 标记响应结果用{@link com.asialjim.microapplet.common.context.Result}包装
+ * <p/>
+ * 仅对简单类型使用
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/2/27, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/3/11, &nbsp;&nbsp; <em>version:</em>
  */
-@Getter
-@ToString
-@AllArgsConstructor
-public class BusinessException extends RuntimeException implements ResCode {
-    private final int status;
-    private final String code;
-    private final String msg;
-
-
-    @Override
-    public String getMessage() {
-        return this.msg;
-    }
-
-    @Override
-    public boolean isSuccess() {
-        return false;
-    }
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RwIgnore {
 }

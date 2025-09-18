@@ -30,9 +30,18 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum FeignResCode implements ResCode {
-    ServiceUnavailable(false, "500", "服务不可用"),
-    OK(true, "0", "OK");
-    private final boolean success;
+    ServiceUnavailable( "Cloud-Service:Unavailable", "服务不可用"),
+    OK("0", "OK");
     private final String code;
     private final String msg;
+
+    @Override
+    public int getStatus() {
+        return 500;
+    }
+
+    @Override
+    public boolean isThr() {
+        return true;
+    }
 }

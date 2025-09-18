@@ -16,10 +16,7 @@
 
 package com.asialjim.microapplet.commons.security;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * 获取当前用户持有的角色
@@ -37,26 +34,4 @@ public interface CurrentRoles {
      * @since 2025/3/11
      */
     List<Role> hasRole();
-
-    /**
-     * 当前用户持有的角色编号列表
-     *
-     * @return {@link List<Long>}
-     * @since 2025/3/11
-     */
-    default List<Long> roleCodes() {
-        List<Role> roles = Optional.ofNullable(hasRole()).orElseGet(ArrayList::new);
-        return roles.stream().map(Role::getCode).collect(Collectors.toList());
-    }
-
-    /**
-     * 此方法仅对角色编号采用位运算标记的情况
-     */
-    default long totalRoleCode() {
-        long code = 0;
-        for (Long roleCode : roleCodes()) {
-            code += roleCode;
-        }
-        return code;
-    }
 }

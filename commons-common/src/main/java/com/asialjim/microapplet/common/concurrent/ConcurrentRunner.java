@@ -16,16 +16,15 @@
 
 package com.asialjim.microapplet.common.concurrent;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.stream.Stream;
 
 /**
  * 并发应用
@@ -47,11 +46,11 @@ public class ConcurrentRunner {
     @Autowired
     public void setExecutor(List<Executor> executors) {
         this.executor = Optional.ofNullable(executors)
-                .map(Collection::stream)
-                .orElseGet(Stream::empty)
+                .stream()
+                .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .findAny()
-                .orElseGet(Executors::newSingleThreadExecutor);
+                .orElseGet(Executors::newVirtualThreadPerTaskExecutor);
     }
 
     /**

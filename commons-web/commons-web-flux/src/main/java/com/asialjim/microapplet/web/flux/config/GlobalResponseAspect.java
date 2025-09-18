@@ -65,8 +65,8 @@ public class GlobalResponseAspect {
 
         Object returnValue = result.getReturnValue();
 
-        Boolean skip = (skip(exchange.getAttributes()) || (returnValue instanceof Result));
-        if (!Boolean.TRUE.equals(skip)) {
+        boolean skip = (skip(exchange.getAttributes()) || (returnValue instanceof Result));
+        if (!skip) {
             Result<Object> res = Res.Ok.create(returnValue);
             HandlerResult handlerResult =
                     new HandlerResult(result.getHandler(),

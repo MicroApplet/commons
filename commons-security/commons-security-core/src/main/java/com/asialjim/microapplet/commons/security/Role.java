@@ -16,7 +16,9 @@
 
 package com.asialjim.microapplet.commons.security;
 
-import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * 角色
@@ -25,15 +27,28 @@ import java.util.List;
  * @version 1.0
  * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-public interface Role {
+@Getter
+@AllArgsConstructor
+public enum Role {
+    Authenticated("authenticated", 1 << 1, "登录用户"),
+    Phone("phone", 1 << 2, "手机号用户"),
+    WeChatUser("wechat", 1 << 3, "微信用户"),
+    WeChatMp("wechat:mp", (1 << 3) + (1 << 4), "微信公众号用户"),
+    WeChatApplet("wechat:applet", (1 << 3) + 1 << 5, "微信小程序用户"),
+    IdCardUser("id-card", 1 << 6, "实名证件用户"),
+    BankCardUser("bank-card", 1 << 7, "银行卡用户"),
 
-    /**
-     * 角色编号: 建议使用位运算，可快速判定用户是否具有某种角色
-     */
-    long getCode();
 
-    /**
-     * 角色描述信息
-     */
-    String getDesc();
+    Employee("employee", 1L << 62, "员工"),
+    System("system", 1L << 63, "系统管理员"),
+    Root("root", Long.MAX_VALUE, "超级管理员"),
+    Tourist("tourist", 1, "游客");
+
+    private final String code;
+    private final long bit;
+    private final String desc;
+
+    public boolean is(long role) {
+        return (this.bit & role) == this.bit;
+    }
 }

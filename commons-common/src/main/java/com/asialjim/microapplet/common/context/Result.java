@@ -16,33 +16,59 @@
 
 package com.asialjim.microapplet.common.context;
 
-import com.asialjim.microapplet.common.jackson.JsonUtil;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
- * 响应结果
+ * 通用响应结果
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/2/24, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/8/22, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Data
 @Accessors(chain = true)
-public class Result<T> implements ResCode, Serializable {
-    private static final long serialVersionUID = 3132415215925116395L;
-
-    private boolean success;
+public final class Result<T> implements ResCode, Serializable {
     private int status;
+    private boolean thr;
+    private boolean pageable;
     private String code;
     private String msg;
     private T data;
     private List<Object> errs;
+    private Integer page;
+    private Integer size;
+    private Integer pages;
+    private Integer total;
 
-    public String toString() {
-        return JsonUtil.toJson(this);
+    public Result<T> setErrs(List<?> errs) {
+        this.errs = new ArrayList<>(errs);
+        return this;
+    }
+
+    public List<Object> getErrs(){
+        return Optional.ofNullable(errs).orElseGet(ArrayList::new);
+    }
+
+    public static <Q, R> Result<R> result(Result<Q> s, Function<Q, R> f) {
+        Result<R> r = new Result<>();
+        r.setStatus(s.getStatus());
+        r.setPageable(s.isPageable());
+        r.setThr(s.isThr());
+        r.setCode(s.getCode());
+        r.setMsg(s.getMsg());
+        r.setData(f.apply(s.getData()));
+        r.setErrs(s.getErrs());
+        r.setPage(s.getPage());
+        r.setSize(s.getSize());
+        r.setPages(s.getPages());
+        r.setTotal(s.getTotal());
+        return r;
     }
 }

@@ -37,7 +37,7 @@ public class CurrentPermissionBean implements ApplicationContextAware {
     public static final String CURRENT_PERMISSION_BEAN = "innerCurrentPermissionBean";
     private ApplicationContext applicationContext;
 
-    public CurrentPermission currentPermission(){
+    public CurrentPermission currentPermission() {
         String[] names = this.applicationContext.getBeanNamesForType(CurrentPermission.class);
         if (ArrayUtils.isEmpty(names))
             return Collections::emptyList;

@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package com.asialjim.microapplet.commons.security;
+package com.asialjim.microapplet.common.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
- * 角色类型
+ * JSON 工具，基于 Jackson
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/4/10, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/8/7, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Getter
-@AllArgsConstructor
-public enum RoleType {
-    User("User", "用户"),
-    Employee("Employee", "雇员");
-    private final String code;
-    private final String desc;
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JsonUtil extends JacksonUtil {
+    public static final JacksonUtil instance = new JsonUtil();
+
+    @Override
+    protected ObjectMapper objectMapper() {
+        return init(new JsonMapper());
+    }
 }
