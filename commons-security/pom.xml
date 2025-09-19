@@ -27,11 +27,11 @@
     <artifactId>commons-security</artifactId>
     <name>Commons Security</name>
     <description>权限系统</description>
+    <packaging>pom</packaging>
     <modules>
         <module>commons-security-core</module>
         <module>commons-security-web</module>
     </modules>
-    <packaging>pom</packaging>
 
 
 </project>

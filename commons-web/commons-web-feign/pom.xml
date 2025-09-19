@@ -28,10 +28,18 @@
     <name>Commons Web Feign</name>
 
     <dependencies>
+
+        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
             <groupId>com.asialjim.microapplet</groupId>
             <artifactId>commons-common</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <!--suppress VulnerableLibrariesLocal -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
         <!--suppress VulnerableLibrariesLocal -->
         <dependency>
@@ -43,6 +51,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
+
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>

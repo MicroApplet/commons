@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.asialjim.microapplet.web.mvc.exception;
+package com.asialjim.microapplet.web.mvc.advice;
 
 import com.asialjim.microapplet.common.cons.Headers;
 import com.asialjim.microapplet.common.context.IORes;
 import com.asialjim.microapplet.common.context.Res;
 import com.asialjim.microapplet.common.context.Result;
 import com.asialjim.microapplet.common.exception.RsEx;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -33,24 +34,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-/**
- * 基础错误增强
- *
- * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
- * @version 1.0
- * @since 2025/2/27, &nbsp;&nbsp; <em>version:1.0</em>
- */
 @Slf4j
 @RestControllerAdvice
-public class ControllerAdvice {
+public class GlobalExceptionAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -133,6 +125,7 @@ public class ControllerAdvice {
     }
 
 
+
     @ExceptionHandler(RsEx.class)
     public Result<?> handle(RsEx ex) {
         return ex.result();
@@ -164,13 +157,13 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(Exception.class)
-    public Result<?> handle(Exception ex) {
+    public Result<?> handle(Exception ex){
         String message = ex.getMessage();
         return Res.SysErr.resultErrs(Collections.singletonList(message));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public Result<?> handle(IllegalArgumentException ex) {
+    public Result<?> handle(IllegalArgumentException ex){
         return Res.ParameterIllegalEx.resultErrs(Collections.singletonList(ex.getMessage()));
     }
 }

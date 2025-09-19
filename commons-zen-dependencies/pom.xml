@@ -126,6 +126,13 @@
                 <artifactId>commons-web-tomcat</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.asialjim.microapplet</groupId>
+                <artifactId>commons-web-nacos</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.asialjim.microapplet</groupId>
                 <artifactId>commons-web-undertow</artifactId>
