@@ -23,7 +23,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * MAMS 会话信息

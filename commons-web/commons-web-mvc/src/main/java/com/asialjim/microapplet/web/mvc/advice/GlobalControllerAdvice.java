@@ -52,29 +52,6 @@ public class GlobalControllerAdvice {
         final StringJoiner logJ = new StringJoiner("\r\n");
         logJ.add(StringUtils.EMPTY);
 
-        final ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (Objects.nonNull(requestAttributes)) {
-            final HttpServletRequest request = requestAttributes.getRequest();
-
-            final String method = request.getMethod();
-            final String requestURI = request.getRequestURI();
-            logJ.add(">>请求行: [" + method + "] " + requestURI);
-
-            final StringJoiner headerJ = new StringJoiner("\r\n\t");
-            headerJ.add(StringUtils.EMPTY);
-            Enumeration<String> headerNames = request.getHeaderNames();
-            while (headerNames.hasMoreElements()) {
-                String name = headerNames.nextElement();
-                String value = request.getHeader(name);
-                headerJ.add(name + "=" + value);
-            }
-            logJ.add(">>请求头: " + headerJ);
-        }
-
-        final Object[] args = joinPoint.getArgs();
-        if (ArrayUtils.isNotEmpty(args))
-            logJ.add(">>参  数: " + Arrays.asList(args));
-
         final MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         final String typeName = signature.getDeclaringType().getSimpleName();
         final String methodName = signature.getMethod().getName();

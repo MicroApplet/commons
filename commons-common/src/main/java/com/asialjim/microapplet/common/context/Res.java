@@ -35,6 +35,7 @@ public enum Res implements ResCode {
     ParameterTypeEx(400,true,"PARAM:TYPE:EX","参数类型不匹配"),
     ParameterValidEx(400,true,"PARAM:VALID:EX","参数校验异常"),
 
+    UserAuthTokenMissing(401,true,"USER:TOKEN:MISSING","用户令牌缺失"),
     UserAuthFailure401Thr(401, true, "USER:AUTH:EX", "请登录"),
     UserAuthFailure401(401, "USER:AUTH:EX", "请登录"),
     UserAuthFailureThr(true, "USER:AUTH:EX", "请登录"),

@@ -18,7 +18,7 @@
     <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5p- [%-5t] %-22c{1} ${hostName} %X{HOST_IP} %X{X-Cloud-Session-Id} %X{X-Cloud-Trace-Id} \r\n\t%m %n
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5p- [%-5t] %-22c{1} %X{HOST_IP} %X{X-Cloud-Session-Id} %X{X-Cloud-Trace-Id} \r\n\t%m %n
             </pattern>
         </encoder>
     </appender>

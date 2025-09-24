@@ -36,6 +36,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,7 +55,7 @@ import static com.asialjim.microapplet.common.cons.Headers.*;
  * @since 2025/3/10, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice(basePackages = "com.asialjim")
 public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
     private static final String SKIP_PARSE_RES_TO_RESULT = "_skip_parse_res_to_result_";
     private static final Set<String> skipUris = new HashSet<>();
@@ -96,19 +97,17 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
 
         Object o = doBeforeBody(body, request, response);
 
-        // 特殊处理：排除返回类型为String且使用StringHttpMessageConverter的情况
-        if (returnType.getParameterType() == String.class &&
-                StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType)) {
-            if (MediaType.TEXT_PLAIN.equalsTypeAndSubtype(selectedContentType)) {
+        // 特殊处理：使用StringHttpMessageConverter的情况
+        if (StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType)) {
+            if (MediaType.TEXT_PLAIN.includes(selectedContentType)) {
                 o = JsonUtil.instance.toStr(o);
                 response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-            }
-
-            if (MediaType.APPLICATION_JSON.equalsTypeAndSubtype(selectedContentType)) {
+            } else if (MediaType.APPLICATION_JSON.equalsTypeAndSubtype(selectedContentType)) {
                 o = JsonUtil.instance.toStr(o);
-            }
-            if (MediaType.APPLICATION_XML.equalsTypeAndSubtype(selectedContentType)) {
+            } else if (MediaType.APPLICATION_XML.equalsTypeAndSubtype(selectedContentType)) {
                 o = XmlUtil.instance.toStr(o);
+            } else {
+                o = body;
             }
         }
 

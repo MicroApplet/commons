@@ -28,6 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.StringJoiner;
 
 /**
@@ -62,14 +63,38 @@ public class GlobalLogFilter implements Filter {
             String traceId = request.getHeader(Headers.TraceId);
             MDC.put(Headers.SessionId, sessionId);
             MDC.put(Headers.TraceId, traceId);
+            logRequestHeader(request);
             filterChain.doFilter(request, response);
-            Collection<String> responseHeaders = response.getHeaderNames();
-            final StringJoiner headerJ = new StringJoiner("\r\n\t");
-            headerJ.add(StringUtils.EMPTY);
-            responseHeaders.forEach(name -> headerJ.add(name + "=" + response.getHeader(name)));
-            log.info("\r\n<<响应头: {}", headerJ);
+            logResponseHeader(response);
         } finally {
             MDC.clear();
         }
+    }
+
+    private void logResponseHeader(HttpServletResponse response) {
+        Collection<String> responseHeaders = response.getHeaderNames();
+        final StringJoiner headerJ = new StringJoiner("\r\n\t");
+        headerJ.add(StringUtils.EMPTY);
+        responseHeaders.forEach(name -> headerJ.add(name + "=" + response.getHeader(name)));
+        log.info("\r\n<<响应头: {}", headerJ);
+    }
+
+    private void logRequestHeader(HttpServletRequest request) {
+        final StringJoiner logJ = new StringJoiner("\r\n");
+        final String method = request.getMethod();
+        final String requestURI = request.getRequestURI();
+        logJ.add(StringUtils.EMPTY);
+        logJ.add(">>请求行: [" + method + "] " + requestURI);
+
+        final StringJoiner headerJ = new StringJoiner("\r\n\t");
+        headerJ.add(StringUtils.EMPTY);
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String name = headerNames.nextElement();
+            String value = request.getHeader(name);
+            headerJ.add(name + "=" + value);
+        }
+        logJ.add(">>请求头: " + headerJ);
+        log.info(logJ.toString());
     }
 }
