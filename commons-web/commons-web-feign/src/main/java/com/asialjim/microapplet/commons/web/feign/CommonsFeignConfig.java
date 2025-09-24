@@ -25,6 +25,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,18 +54,34 @@ import static com.asialjim.microapplet.common.cons.Headers.*;
  * @since 2025/3/14, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Configuration
+@EnableFeignClients
 public class CommonsFeignConfig {
 
+    /**
+     * 伪记录器电平
+     *
+     * @return {@link Logger.Level}
+     */
     @Bean
     public Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL; // 开启详细日志
     }
 
+    /**
+     * 重试
+     *
+     * @return {@link Retryer}
+     */
     @Bean
     public Retryer retryer() {
         return new Retryer.Default(100, 1000, 3); // 重试策略
     }
 
+    /**
+     * 带有代理和跟踪id的请求拦截器
+     *
+     * @return {@link RequestInterceptor}
+     */
     @Bean
     public RequestInterceptor requestInterceptorWithAgentAndTraceId() {
         return template -> {
@@ -78,9 +95,9 @@ public class CommonsFeignConfig {
 
             if (requestAttributes instanceof ServletRequestAttributes attributes) {
                 HttpServletRequest request = attributes.getRequest();
-                String currentUserJson = request.getHeader(Headers.BASE_CURRENT_USER);
+                String currentUserJson = request.getHeader(Headers.CURRENT_SESSION);
                 if (StringUtils.isNotBlank(currentUserJson))
-                    template.header(Headers.BASE_CURRENT_USER, currentUserJson);
+                    template.header(Headers.CURRENT_SESSION, currentUserJson);
                 String token = request.getHeader(Headers.AUTH_PARAMETERS_HEADER);
                 if (StringUtils.isNotBlank(token))
                     template.header(Headers.AUTH_PARAMETERS_HEADER, token);
@@ -98,6 +115,12 @@ public class CommonsFeignConfig {
         };
     }
 
+    /**
+     * 假装响应拦截器
+     *
+     * @param messageConverters 消息转换器
+     * @return {@link SpringDecoder}
+     */
     @Bean
     public SpringDecoder feignResponseInterceptor(ObjectFactory<HttpMessageConverters> messageConverters) {
         return new SpringDecoder(messageConverters) {

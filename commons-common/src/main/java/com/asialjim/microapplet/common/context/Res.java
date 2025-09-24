@@ -38,6 +38,7 @@ public enum Res implements ResCode {
     UserAuthFailure401Thr(401, true, "USER:AUTH:EX", "请登录"),
     UserAuthFailure401(401, "USER:AUTH:EX", "请登录"),
     UserAuthFailureThr(true, "USER:AUTH:EX", "请登录"),
+    UsernameOfPasswordIllegal(true, "USER:AUTH:EX", "用户名不存在或者密码错误"),
 
     UserWithoutRole(400,true,"USER:ROLE:WITHOUT","用户没有以下角色"),
     UserRoleNeedAtLeast(400,true,"USER:ROLE:NEED-AT-LEAST","用户至少需要以下其中一个角色"),
@@ -52,14 +53,34 @@ public enum Res implements ResCode {
     private final String msg;
 
 
+    /**
+     * res
+     *
+     * @param status 状态
+     * @param code   代码
+     * @param msg    味精
+     */
     Res(int status, String code, String msg) {
         this(status, false, code, msg);
     }
 
+    /**
+     * res
+     *
+     * @param thr  用力推
+     * @param code 代码
+     * @param msg  味精
+     */
     Res(boolean thr, String code, String msg) {
         this(200, thr, code, msg);
     }
 
+    /**
+     * res
+     *
+     * @param code 代码
+     * @param msg  味精
+     */
     Res(String code, String msg) {
         this(200, false, code, msg);
     }

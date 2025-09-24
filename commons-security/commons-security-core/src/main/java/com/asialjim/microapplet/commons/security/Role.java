@@ -44,7 +44,7 @@ public enum Role {
     Root("root", Long.MAX_VALUE, "超级管理员"),
     Tourist("tourist", 1, "游客");
 
-    private final String code;
+    public final String code;
     private final long bit;
     private final String desc;
 

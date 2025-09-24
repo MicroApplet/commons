@@ -21,7 +21,9 @@ import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * MAMS 会话信息
@@ -67,6 +69,17 @@ public final class MamsSession implements Serializable {
     private long roleBit = 0;
 
     /**
+     * 添加角色
+     *
+     * @param roleBit 一些角色
+     */
+    public void addRole(long roleBit) {
+        if ((this.roleBit & roleBit) == roleBit)
+            return;
+        this.roleBit += roleBit;
+    }
+
+    /**
      * 登录渠道
      */
     private String chl;
@@ -85,9 +98,20 @@ public final class MamsSession implements Serializable {
      * 登录渠道用户编号
      */
     private String chlUserid;
+    private String chlUnionid;
 
     /**
      * 登录时间
      */
     private LocalDateTime loginTime;
+    private LocalDateTime expireAt;
+
+    /**
+     * 到期后
+     *
+     * @param duration 持续时间
+     */
+    public void expireAfter(Duration duration) {
+        this.expireAt = LocalDateTime.now().plusMinutes(duration.toMinutes());
+    }
 }

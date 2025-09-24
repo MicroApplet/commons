@@ -20,14 +20,17 @@ import com.asialjim.microapplet.common.cons.Headers;
 import com.asialjim.microapplet.common.context.IORes;
 import com.asialjim.microapplet.common.context.Res;
 import com.asialjim.microapplet.common.context.Result;
-import com.asialjim.microapplet.common.exception.RsEx;
+import com.asialjim.microapplet.common.valid.ErrorInfo;
+import com.asialjim.microapplet.common.valid.ResCodeValidationPayload;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -38,12 +41,26 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
+/**
+ * 全局错误增强
+ *
+ * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
+ * @version 1.0
+ * @since 2025/9/22, &nbsp;&nbsp; <em>version:1.0</em>
+ */
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionAdvice {
+    private final ResCodeValidationPayload resCodeValidationPayload;
 
+    /**
+     * 处理丢失servlet请求参数异常
+     *
+     * @param e e
+     * @return {@link Result<Void>}
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Result<Void> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
@@ -52,6 +69,12 @@ public class GlobalExceptionAdvice {
         return Res.ParameterEmptyEx.resultErrs(Collections.singletonList(parameterName));
     }
 
+    /**
+     * 处理方法参数类型不匹配异常
+     *
+     * @param e e
+     * @return {@link Result<Void>}
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public Result<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
@@ -60,6 +83,12 @@ public class GlobalExceptionAdvice {
         return Res.ParameterTypeEx.resultErrs(Collections.singletonList(name));
     }
 
+    /**
+     * 处理非法参数异常
+     *
+     * @param e e
+     * @return {@link Result<Void>}
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public Result<Void> handleIllegalArgumentException(IllegalArgumentException e) {
@@ -68,20 +97,60 @@ public class GlobalExceptionAdvice {
         return Res.ParameterIllegalEx.resultErrs(Collections.singletonList(message));
     }
 
+    /**
+     * 处理非法参数异常
+     *
+     * @param e e
+     * @return {@link Result<Void>}
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public Result<Void> handleIllegalArgumentException(BindException e) {
-        List<Object> errors = Optional.ofNullable(e)
+        List<ErrorInfo> errors = Optional.ofNullable(e)
                 .map(BindException::getBindingResult)
-                .map(Errors::getAllErrors)
-                .stream()
-                .flatMap(Collection::stream)
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.toList());
-        log.info("参数验证错误：{}", errors);
-        return Res.ParameterIllegalEx.resultErrs(errors);
+                .map(this.resCodeValidationPayload::fromBindResult)
+                .orElseGet(Collections::emptyList);
+
+        return binExceptionResult(errors);
     }
 
+    /**
+     * 处理方法参数无效异常
+     *
+     * @param e e
+     * @return {@link Result<Void>}
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Result<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return handleIllegalArgumentException(e);
+    }
+
+    /**
+     * 处理约束违反异常
+     *
+     * @param e e
+     * @return {@link Result<Void>}
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Result<Void> handleConstraintViolationException(ConstraintViolationException e) {
+        Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
+        List<ErrorInfo> errors = Optional.ofNullable(constraintViolations)
+                .stream()
+                .flatMap(Collection::stream)
+                .map(this.resCodeValidationPayload::fromConstraintViolation)
+                .toList();
+
+        return binExceptionResult(errors);
+    }
+
+    /**
+     * 处理超时异常
+     *
+     * @param e e
+     * @return {@link Result<Void>}
+     */
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler(TimeoutException.class)
     public Result<Void> handleTimeoutException(TimeoutException e) {
@@ -90,6 +159,12 @@ public class GlobalExceptionAdvice {
         return IORes.TimeoutErr.resultErrs(Collections.singletonList(message));
     }
 
+    /**
+     * 处理超时异常
+     *
+     * @param e e
+     * @return {@link Result<Void>}
+     */
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler(SocketTimeoutException.class)
     public Result<Void> handleTimeoutException(SocketTimeoutException e) {
@@ -98,6 +173,12 @@ public class GlobalExceptionAdvice {
         return IORes.SocketTimeoutErr.resultErrs(Collections.singletonList(message));
     }
 
+    /**
+     * 处理IO异常
+     *
+     * @param e e
+     * @return {@link Result<Void>}
+     */
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handleIOException(IOException e) {
@@ -105,9 +186,17 @@ public class GlobalExceptionAdvice {
         return IORes.IOErr.result();
     }
 
+    /**
+     * throwable
+     *
+     * @param e       e
+     * @param request 请求
+     * @return {@link Result<Void>}
+     */
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Result<Void> throwable(Throwable e, HttpServletRequest request) {
+        e.printStackTrace();
         String logLevel = request.getHeader(Headers.HTTPLogLevel);
         List<Object> errs = new ArrayList<>();
         errs.add(e.getMessage());
@@ -117,53 +206,20 @@ public class GlobalExceptionAdvice {
         }
 
         log.error("未明确类型错误：{} >>> {}", e.getMessage(), errs);
-        if (StringUtils.equalsIgnoreCase(logLevel, "debug")) {
+        if (StringUtils.equalsIgnoreCase(logLevel, "debug"))
             return Res.SysErr.resultErrs(errs);
-        }
 
         return Res.SysErr.result();
     }
 
-
-
-    @ExceptionHandler(RsEx.class)
-    public Result<?> handle(RsEx ex) {
-        return ex.result();
-    }
-
-    @ExceptionHandler(BindException.class)
-    public Result<?> handle(BindException ex) {
-        List<String> errs = Optional.ofNullable(ex)
-                .map(BindException::getBindingResult)
-                .map(Errors::getAllErrors)
-                .stream()
-                .flatMap(Collection::stream)
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .toList();
-
-        return Res.ParameterValidEx.resultErrs(errs);
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public Result<?> handle(MissingServletRequestParameterException ex) {
-        String parameterName = ex.getParameterName();
-        return Res.ParameterEmptyEx.resultErrs(Collections.singletonList(parameterName));
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public Result<?> handle(MethodArgumentTypeMismatchException ex) {
-        String parameterName = ex.getParameter().getParameterName();
-        return Res.ParameterTypeEx.resultErrs(Collections.singletonList(parameterName));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public Result<?> handle(Exception ex){
-        String message = ex.getMessage();
-        return Res.SysErr.resultErrs(Collections.singletonList(message));
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public Result<?> handle(IllegalArgumentException ex){
-        return Res.ParameterIllegalEx.resultErrs(Collections.singletonList(ex.getMessage()));
+    /**
+     * 异常结果
+     *
+     * @param errors 错误
+     * @return {@link Result<Void>}
+     */
+    private static Result<Void> binExceptionResult(List<ErrorInfo> errors) {
+        log.info("参数验证错误：{}", errors);
+        return Res.ParameterIllegalEx.resultErrs(errors);
     }
 }

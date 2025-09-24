@@ -18,6 +18,7 @@ package com.asialjim.microapplet.web.mvc.config;
 
 import com.asialjim.microapplet.common.cons.Headers;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.StringJoiner;
 
 /**
  * 全局链路追踪组件
@@ -38,6 +41,15 @@ import java.io.IOException;
 @Component
 public class GlobalLogFilter implements Filter {
 
+    /**
+     * 做的过滤器
+     *
+     * @param servletRequest  servlet请求
+     * @param servletResponse servlet响应
+     * @param filterChain     过滤器链
+     * @throws IOException      无效
+     * @throws ServletException 无效
+     */
     @Override
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,
@@ -46,11 +58,16 @@ public class GlobalLogFilter implements Filter {
         try {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
             HttpServletResponse response = (HttpServletResponse) servletResponse;
-            String sessionId = request.getHeader(Headers.CloudSessionId);
-            String traceId = request.getHeader(Headers.CloudTraceId);
-            MDC.put(Headers.CloudSessionId, sessionId);
-            MDC.put(Headers.CloudTraceId, traceId);
+            String sessionId = request.getHeader(Headers.SessionId);
+            String traceId = request.getHeader(Headers.TraceId);
+            MDC.put(Headers.SessionId, sessionId);
+            MDC.put(Headers.TraceId, traceId);
             filterChain.doFilter(request, response);
+            Collection<String> responseHeaders = response.getHeaderNames();
+            final StringJoiner headerJ = new StringJoiner("\r\n\t");
+            headerJ.add(StringUtils.EMPTY);
+            responseHeaders.forEach(name -> headerJ.add(name + "=" + response.getHeader(name)));
+            log.info("\r\n<<响应头: {}", headerJ);
         } finally {
             MDC.clear();
         }

@@ -18,6 +18,7 @@ package com.asialjim.microapplet.common.context;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,6 +49,9 @@ public final class Result<T> implements ResCode, Serializable {
     private Integer total;
 
     public Result<T> setErrs(List<?> errs) {
+        if (CollectionUtils.isEmpty(errs))
+            return this;
+
         this.errs = new ArrayList<>(errs);
         return this;
     }

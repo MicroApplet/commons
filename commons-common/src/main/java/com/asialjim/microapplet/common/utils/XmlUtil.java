@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package com.asialjim.microapplet.web.mvc.controller;
+package com.asialjim.microapplet.common.utils;
 
-import com.asialjim.microapplet.common.application.App;
-import com.asialjim.microapplet.web.mvc.annotation.RwIgnore;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 
 /**
- * 门面
+ * XML 工具，基于 Jackson
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  * @version 1.0
- * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
+ * @since 2025/8/7, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@RestController
-@RequestMapping("/index")
-public class IndexController  {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class XmlUtil extends JacksonUtil {
+    public static final JacksonUtil instance = new XmlUtil();
 
-    @RwIgnore
-    @GetMapping("/index")
-    public String index() {
-        return  App.ctx.getEnvironment().getProperty("spring.application.name") + " Index";
+    @Override
+    protected ObjectMapper objectMapper() {
+        return init(new XmlMapper());
     }
 }

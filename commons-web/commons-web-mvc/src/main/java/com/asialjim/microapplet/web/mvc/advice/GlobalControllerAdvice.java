@@ -18,6 +18,7 @@ package com.asialjim.microapplet.web.mvc.advice;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -34,6 +35,13 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 全局响应结果包装通知
+ *
+ * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
+ * @version 1.0
+ * @since 2025/9/24, &nbsp;&nbsp; <em>version:1.0</em>
+ */
 @Slf4j
 @Aspect
 @Component
@@ -42,6 +50,7 @@ public class GlobalControllerAdvice {
     @Around(value = "@within(org.springframework.web.bind.annotation.RestController) || @within(org.springframework.stereotype.Controller)")
     public Object advice(ProceedingJoinPoint joinPoint) throws Throwable {
         final StringJoiner logJ = new StringJoiner("\r\n");
+        logJ.add(StringUtils.EMPTY);
 
         final ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (Objects.nonNull(requestAttributes)) {
@@ -63,31 +72,32 @@ public class GlobalControllerAdvice {
         }
 
         final Object[] args = joinPoint.getArgs();
-        logJ.add(">>参  数: " + Arrays.toString(args));
+        if (ArrayUtils.isNotEmpty(args))
+            logJ.add(">>参  数: " + Arrays.asList(args));
 
         final MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         final String typeName = signature.getDeclaringType().getSimpleName();
         final String methodName = signature.getMethod().getName();
         final String handler = typeName + "." + methodName;
-        logJ.add(">>处理器: " + handler);
 
+        Object proceed = null;
         final StopWatch stopWatch = new StopWatch();
-        log.info(logJ.toString());
         try {
             stopWatch.start();
-            final Object proceed = joinPoint.proceed();
-            log.info("\r\n<<结  果: {}", proceed);
+            proceed = joinPoint.proceed();
             return proceed;
         } catch (Throwable throwable) {
             if (log.isDebugEnabled())
                 log.debug("\r\nXX处理器：{} 执行异常：{}", handler, throwable.getMessage(), throwable);
-            else
-                log.info("\r\nXX处理器：{} 执行异常：{}", handler, throwable.getMessage());
+            logJ.add("\r\nXX处理器：" + handler + " 执行异常：" + throwable.getMessage());
             throw throwable;
         } finally {
             stopWatch.stop();
             final long time = stopWatch.getTime(TimeUnit.MILLISECONDS);
-            log.info("\r\n处理器：{} 耗时：{} 毫秒", handler, time);
+            logJ.add("==处理器：" + handler + " 耗时：" + time + " 毫秒");
+            if (Objects.nonNull(proceed))
+                logJ.add("<<结  果: " + proceed);
+            log.info(logJ.toString());
         }
     }
 }

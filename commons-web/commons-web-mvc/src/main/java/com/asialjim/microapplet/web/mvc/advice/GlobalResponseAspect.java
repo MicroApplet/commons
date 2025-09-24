@@ -21,12 +21,17 @@ import com.asialjim.microapplet.common.context.Res;
 import com.asialjim.microapplet.common.context.ResCode;
 import com.asialjim.microapplet.common.context.Result;
 import com.asialjim.microapplet.common.utils.JsonUtil;
+import com.asialjim.microapplet.common.utils.XmlUtil;
 import com.asialjim.microapplet.web.mvc.annotation.RwIgnore;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.*;
+import org.springframework.http.converter.BufferedImageHttpMessageConverter;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.scheduling.annotation.Async;
@@ -67,18 +72,15 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
     }
 
     @Override
-    @SuppressWarnings("NullableProblems,RedundantIfStatement")
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(MethodParameter returnType,
+                            @SuppressWarnings("NullableProblems") Class<? extends HttpMessageConverter<?>> converterType) {
+
         Method method = returnType.getMethod();
         if (Objects.nonNull(method)) {
-            boolean annotatedByRsWrap = method.isAnnotationPresent(RwIgnore.class);
-            if (annotatedByRsWrap)
-                return false;
-            boolean annotatedByAsync = method.isAnnotationPresent(Async.class);
-            if (annotatedByAsync)
-                return false;
-
-            return true;
+            return !method.isAnnotationPresent(RwIgnore.class)                                      // 没有避免包装标记
+                    && !method.isAnnotationPresent(Async.class)                                     // 没有异步标记
+                    && !ByteArrayHttpMessageConverter.class.isAssignableFrom(converterType)         // 不是二进制响应结果
+                    && !BufferedImageHttpMessageConverter.class.isAssignableFrom(converterType);    // 不是图片
         }
         return true;
     }
@@ -93,9 +95,24 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
                                   ServerHttpResponse response) {
 
         Object o = doBeforeBody(body, request, response);
-        HttpHeaders headers = response.getHeaders();
 
-        log.info("\r\n<<响应头: {}\r\n<<响应体: {}", headers, o);
+        // 特殊处理：排除返回类型为String且使用StringHttpMessageConverter的情况
+        if (returnType.getParameterType() == String.class &&
+                StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType)) {
+            if (MediaType.TEXT_PLAIN.equalsTypeAndSubtype(selectedContentType)) {
+                o = JsonUtil.instance.toStr(o);
+                response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            }
+
+            if (MediaType.APPLICATION_JSON.equalsTypeAndSubtype(selectedContentType)) {
+                o = JsonUtil.instance.toStr(o);
+            }
+            if (MediaType.APPLICATION_XML.equalsTypeAndSubtype(selectedContentType)) {
+                o = XmlUtil.instance.toStr(o);
+            }
+        }
+
+        log.info("\r\n<<响应体: {}", o);
         return o;
     }
 

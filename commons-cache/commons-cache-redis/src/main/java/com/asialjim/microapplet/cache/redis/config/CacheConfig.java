@@ -61,12 +61,6 @@ public class CacheConfig implements CachingConfigurer {
         return new GenericJsonRedisSerializer(objectMapper, "@class");
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory,
-                                          GenericJackson2JsonRedisSerializer jsonSerializer) {
-        return cacheManager(connectionFactory, new CacheNameAndTTLHub(Collections.emptyList()), jsonSerializer);
-    }
 
     @Bean
     @ConditionalOnBean

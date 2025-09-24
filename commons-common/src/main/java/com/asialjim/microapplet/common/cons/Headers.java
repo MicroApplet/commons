@@ -20,15 +20,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * 请求头
+ *
+ * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
+ * @version 1.0
+ * @since 2025/9/23, &nbsp;&nbsp; <em>version:1.0</em>
+ */
 public interface Headers {
-    String CloudSessionId = "X-Cloud-Session-Id";
-    String CloudTraceId = "X-Cloud-Trace-Id";
+    String SessionId = "X-Session-Id";
+    String TraceId = "X-Trace-Id";
     String CloudAgent = "X-Cloud-Agent";
 
     String HTTPLogLevel = "X-App-Log-Level";
 
-
-    String BASE_CURRENT_USER = "X-App-Web-Base-Current-User";
+    String CURRENT_SESSION = "X-Current-Session";
     String AUTH_PARAMETERS_HEADER = "X-App-Auth-Parameters";
 
     String APPLICATION_JSON = "application/json";
@@ -46,9 +52,9 @@ public interface Headers {
     String APP_USER_NAME = "X-App-User-Name";
     String APP_USER_PASSWORD = "X-App-User-Password";
     String USER_TOKEN = "X-User-Token";
+    String TOKEN = "token";
 
     String TRACE_ID = "trace-id";
-    List<String> TRACE_HEADERS = Stream.of("traceid",TRACE_ID,"trace_id","request_id","REQUEST_ID").collect(Collectors.toList());
 
     String X_RES_THROWABLE = "X-Res-Throwable";
     String X_RES_CODE = "X-Res-Code";
@@ -61,11 +67,11 @@ public interface Headers {
     String X_RES_TOTAL = "X-Res-Total";
 
     List<String> headers = Stream.of(
-            CloudSessionId,
-            CloudTraceId,
+            SessionId,
+            TraceId,
             CloudAgent,
             HTTPLogLevel,
-            BASE_CURRENT_USER,
+            CURRENT_SESSION,
             AUTH_PARAMETERS_HEADER,
             APPLICATION_JSON,
             CONTENT_TYPE,
@@ -83,4 +89,6 @@ public interface Headers {
             TRACE_ID,
             X_RES_THROWABLE,
             X_RES_CODE, X_RES_MSG, X_RES_ERRS, X_RES_STATUS, X_RES_PAGE, X_RES_SIZE, X_RES_PAGES, X_RES_TOTAL).collect(Collectors.toList());
+
+    List<String> TRACE_HEADERS = Stream.of("traceid", TRACE_ID, "trace_id", "request_id", "REQUEST_ID").collect(Collectors.toList());
 }
