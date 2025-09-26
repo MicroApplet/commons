@@ -24,28 +24,21 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <timestamp key="start" datePattern="yyyy-MM-dd HH:mm:ss.SSS" timeZone="Asia/Shanghai"/>
-            <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5p- [%-5t] %-22c{1} %X{HOST_IP} %X{X-Cloud-Session-Id} %X{X-Cloud-Trace-Id} \r\n\t%m %n
-            </pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS, Asia/Shanghai} %X{x-session-id}:%X{x-trace-id} [%-5level] %logger{36} - %msg%n</pattern>
             <charset>utf8</charset>
         </encoder>
     </appender>
-
 
     <!-- 文件输出 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <timestamp key="start" datePattern="yyyy-MM-dd HH:mm:ss.SSS" timeZone="Asia/Shanghai"/>
-            <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5p- [%-5t] %-22c{1} %X{HOST_IP} %X{X-Cloud-Session-Id} %X{X-Cloud-Trace-Id} \r\n\t%m %n
-            </pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS, Asia/Shanghai} %X{x-session-id}:%X{x-trace-id} [%-5level] %logger{36} - %msg%n</pattern>
             <charset>utf8</charset>
         </encoder>
-        <!-- 3.1 临时文件路径，保证目录一定存在 -->
-        <file>./logs/startup.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 3.2 正式文件名，带应用名 -->
-            <fileNamePattern>./${APP_NAME}/logs/log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>./logs/${APP_NAME}/log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>

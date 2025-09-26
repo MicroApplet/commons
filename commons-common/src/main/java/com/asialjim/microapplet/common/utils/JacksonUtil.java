@@ -56,6 +56,16 @@ public abstract class JacksonUtil {
             .appendZoneId()
             .toFormatter();
 
+    public static JacksonUtil instance(ObjectMapper mapper){
+        return new JacksonUtil() {
+
+            @Override
+            protected ObjectMapper objectMapper() {
+                return mapper;
+            }
+        };
+    }
+
     public static ObjectMapper init(ObjectMapper mapper) {
         if (Objects.isNull(mapper))
             return null;
@@ -123,6 +133,7 @@ public abstract class JacksonUtil {
         try {
             return objectMapper().readValue(str, type);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

@@ -28,43 +28,43 @@ import java.util.stream.Stream;
  * @since 2025/9/23, &nbsp;&nbsp; <em>version:1.0</em>
  */
 public interface Headers {
-    String SessionId = "X-Session-Id";
-    String TraceId = "X-Trace-Id";
-    String CloudAgent = "X-Cloud-Agent";
+    String SessionId = "x-session-id";
+    String TraceId = "x-trace-id";
+    String CloudAgent = "x-cloud-agent";
 
-    String HTTPLogLevel = "X-App-Log-Level";
+    String HTTPLogLevel = "x-app-log-level";
 
-    String CURRENT_SESSION = "X-Current-Session";
-    String AUTH_PARAMETERS_HEADER = "X-App-Auth-Parameters";
+    String CURRENT_SESSION = "x-current-session";
+    String AUTH_PARAMETERS_HEADER = "x-app-auth-parameters";
 
     String APPLICATION_JSON = "application/json";
-    String CONTENT_TYPE = "Content-Type";
-    String CLIENT_TYPE = "Client-Type";
-    String CLOUD_CLIENT = "Cloud-Client";
+    String CONTENT_TYPE = "content-type";
+    String CLIENT_TYPE = "client-type";
+    String CLOUD_CLIENT = "cloud-client";
 
-    String AUTHORIZATION = "Authorization";
+    String AUTHORIZATION = "authorization";
 
-    String APP_ID = "X-App-ID";
-    String APP_CHL = "X-App-Chl";
-    String APP_CHL_APPID = "X-App-Chl-Appid";
-    String APP_CHL_ENV = "X-App-Chl-Env";
-    String APP_VERSION = "X-App-Version";
-    String APP_USER_NAME = "X-App-User-Name";
-    String APP_USER_PASSWORD = "X-App-User-Password";
-    String USER_TOKEN = "X-User-Token";
+    String APP_ID = "x-app-id";
+    String APP_CHL = "x-app-chl";
+    String APP_CHL_APPID = "x-app-chl-appid";
+    String APP_CHL_ENV = "x-app-chl-env";
+    String APP_VERSION = "x-app-version";
+    String APP_USER_NAME = "x-app-user-name";
+    String APP_USER_PASSWORD = "x-app-user-password";
+    String USER_TOKEN = "x-user-token";
     String TOKEN = "token";
 
     String TRACE_ID = "trace-id";
 
-    String X_RES_THROWABLE = "X-Res-Throwable";
-    String X_RES_CODE = "X-Res-Code";
-    String X_RES_MSG = "X-Res-Msg";
-    String X_RES_ERRS = "X-Res-Errs";
-    String X_RES_STATUS = "X-Res-Status";
-    String X_RES_PAGE = "X-Res-Page";
-    String X_RES_SIZE = "X-Res-Size";
-    String X_RES_PAGES = "X-Res-Pages";
-    String X_RES_TOTAL = "X-Res-Total";
+    String X_RES_THROWABLE = "x-res-throwable";
+    String X_RES_CODE = "x-res-code";
+    String X_RES_MSG = "x-res-msg";
+    String X_RES_ERRS = "x-res-errs";
+    String X_RES_STATUS = "x-res-status";
+    String X_RES_PAGE = "x-res-page";
+    String X_RES_SIZE = "x-res-size";
+    String X_RES_PAGES = "x-res-pages";
+    String X_RES_TOTAL = "x-res-total";
 
     List<String> headers = Stream.of(
             SessionId,
@@ -90,5 +90,5 @@ public interface Headers {
             X_RES_THROWABLE,
             X_RES_CODE, X_RES_MSG, X_RES_ERRS, X_RES_STATUS, X_RES_PAGE, X_RES_SIZE, X_RES_PAGES, X_RES_TOTAL).collect(Collectors.toList());
 
-    List<String> TRACE_HEADERS = Stream.of("traceid", TRACE_ID, "trace_id", "request_id", "REQUEST_ID").collect(Collectors.toList());
+    List<String> TRACE_HEADERS = Stream.of("traceid", TRACE_ID, "trace_id", "request_id").collect(Collectors.toList());
 }

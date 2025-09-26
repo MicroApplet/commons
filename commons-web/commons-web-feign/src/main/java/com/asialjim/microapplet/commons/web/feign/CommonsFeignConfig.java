@@ -20,6 +20,7 @@ import com.asialjim.microapplet.common.cons.Headers;
 import com.asialjim.microapplet.common.exception.RsEx;
 import com.asialjim.microapplet.common.utils.JsonUtil;
 import feign.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.MDC;
@@ -134,7 +135,11 @@ public class CommonsFeignConfig {
 
                 String code = header(headers, X_RES_CODE);
                 String msg = header(headers, X_RES_MSG);
-                List<Object> errs = JsonUtil.instance.toList(header(headers, X_RES_ERRS), Object.class);
+                String errorJson = header(headers, X_RES_ERRS);
+
+                List<Object> errs = null;
+                if (StringUtils.isNotBlank(errorJson))
+                    errs = JsonUtil.instance.toList(errorJson,Object.class);
 
                 if (status >= 400)
                     new RsEx().setStatus(status).setThr(thr).setCode(code).setMsg(msg).setErrs(errs).cast();
@@ -152,6 +157,8 @@ public class CommonsFeignConfig {
             private String header(Map<String, Collection<String>> headers, String key) {
                 Collection<String> strings = headers.get(key);
                 String value = StringUtils.EMPTY;
+                if (CollectionUtils.isEmpty(strings))
+                    return value;
                 for (String string : strings) {
                     if (StringUtils.isNotBlank(string)) {
                         value = string;

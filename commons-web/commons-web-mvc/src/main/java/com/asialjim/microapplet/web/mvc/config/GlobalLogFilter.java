@@ -20,6 +20,7 @@ import com.asialjim.microapplet.common.cons.Headers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.*;
@@ -29,6 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 /**
@@ -40,6 +42,7 @@ import java.util.StringJoiner;
  */
 @Slf4j
 @Component
+@Order(Integer.MIN_VALUE)
 public class GlobalLogFilter implements Filter {
 
     /**
@@ -59,7 +62,7 @@ public class GlobalLogFilter implements Filter {
         try {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
             HttpServletResponse response = (HttpServletResponse) servletResponse;
-            String sessionId = request.getHeader(Headers.SessionId);
+            String sessionId = Optional.ofNullable(request.getHeader(Headers.SessionId)).filter(StringUtils::isNotBlank).orElse("NO-SESSION");
             String traceId = request.getHeader(Headers.TraceId);
             MDC.put(Headers.SessionId, sessionId);
             MDC.put(Headers.TraceId, traceId);

@@ -79,6 +79,7 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
         Method method = returnType.getMethod();
         if (Objects.nonNull(method)) {
             return !method.isAnnotationPresent(RwIgnore.class)                                      // 没有避免包装标记
+                    && !ResponseEntity.class.isAssignableFrom(returnType.getParameterType())
                     && !method.isAnnotationPresent(Async.class)                                     // 没有异步标记
                     && !ByteArrayHttpMessageConverter.class.isAssignableFrom(converterType)         // 不是二进制响应结果
                     && !BufferedImageHttpMessageConverter.class.isAssignableFrom(converterType);    // 不是图片

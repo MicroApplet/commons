@@ -27,6 +27,7 @@ import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
@@ -52,18 +53,20 @@ import java.util.Collections;
 public class CacheConfig implements CachingConfigurer {
 
     @Bean
+    @Primary
     public ObjectMapper objectMapper() {
         return JacksonUtil.init(new JsonMapper());
     }
 
     @Bean
+    @Primary
     public GenericJackson2JsonRedisSerializer jsonSerializer(ObjectMapper objectMapper) {
         return new GenericJsonRedisSerializer(objectMapper, "@class");
     }
 
 
     @Bean
-    @ConditionalOnBean
+    @Primary
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory,
                                           CacheNameAndTTLHub cacheNameAndTTLHub,
                                           GenericJackson2JsonRedisSerializer jsonSerializer) {
@@ -78,7 +81,7 @@ public class CacheConfig implements CachingConfigurer {
     }
 
     @Bean
-    @ConditionalOnBean
+    @Primary
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory,
                                                        GenericJackson2JsonRedisSerializer jsonSerializer) {
 
