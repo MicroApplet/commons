@@ -47,6 +47,7 @@ public interface Headers {
     String APP_ID = "x-app-id";
     String APP_CHL = "x-app-chl";
     String APP_CHL_APPID = "x-app-chl-appid";
+    String APP_CHL_APP_TYPE = "x-app-chl-app-type";
     String APP_CHL_ENV = "x-app-chl-env";
     String APP_VERSION = "x-app-version";
     String APP_USER_NAME = "x-app-user-name";

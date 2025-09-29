@@ -17,6 +17,7 @@
 package com.asialjim.microapplet.common.exception;
 
 import com.asialjim.microapplet.common.context.ResCode;
+import com.asialjim.microapplet.common.context.Result;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -48,5 +49,17 @@ public class RsEx extends RuntimeException implements ResCode {
 
     public void cast(){
         throw this;
+    }
+
+    @Override
+    public Result<Void> result() {
+        return new Result<Void>()
+                .setStatus(getStatus())
+                .setPageable(false)
+                .setThr(isThr())
+                .setCode(getCode())
+                .setMsg(getMsg())
+                .setData(null)
+                .setErrs(errs);
     }
 }

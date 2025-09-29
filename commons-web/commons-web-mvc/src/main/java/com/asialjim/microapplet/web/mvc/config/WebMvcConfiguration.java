@@ -53,6 +53,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         this.handlerInterceptors = handlerInterceptors;
     }
 
+
     /**
      * 需要自行处理是否需要拦截
      *

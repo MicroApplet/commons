@@ -98,6 +98,8 @@ public final class MamsSession implements Serializable {
      */
     private String chlUserid;
     private String chlUnionid;
+    private String chlUserCode;
+    private String chlUserToken;
 
     /**
      * 登录时间

@@ -20,6 +20,7 @@ import com.asialjim.microapplet.common.cons.Headers;
 import com.asialjim.microapplet.common.context.IORes;
 import com.asialjim.microapplet.common.context.Res;
 import com.asialjim.microapplet.common.context.Result;
+import com.asialjim.microapplet.common.exception.RsEx;
 import com.asialjim.microapplet.common.valid.ErrorInfo;
 import com.asialjim.microapplet.common.valid.ResCodeValidationPayload;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,6 +68,15 @@ public class GlobalExceptionAdvice {
         String parameterName = e.getParameterName();
         log.info("关键参数：{} 缺失异常", parameterName);
         return Res.ParameterEmptyEx.resultErrs(Collections.singletonList(parameterName));
+    }
+
+    @ExceptionHandler(RsEx.class)
+    public Result<Void> handleRsEx(RsEx ex) {
+        if (log.isDebugEnabled())
+            log.debug("业务异常:{}", ex.getMessage(), ex);
+        else
+            log.info("业务异常:{}", ex.getMessage());
+        return ex.result();
     }
 
     /**
@@ -196,7 +206,6 @@ public class GlobalExceptionAdvice {
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Result<Void> throwable(Throwable e, HttpServletRequest request) {
-        e.printStackTrace();
         String logLevel = request.getHeader(Headers.HTTPLogLevel);
         List<Object> errs = new ArrayList<>();
         errs.add(e.getMessage());
