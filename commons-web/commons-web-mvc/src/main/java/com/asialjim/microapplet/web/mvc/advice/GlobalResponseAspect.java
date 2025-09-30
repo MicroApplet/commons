@@ -23,7 +23,6 @@ import com.asialjim.microapplet.common.context.Result;
 import com.asialjim.microapplet.common.utils.JsonUtil;
 import com.asialjim.microapplet.common.utils.XmlUtil;
 import com.asialjim.microapplet.web.mvc.annotation.RwIgnore;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
@@ -35,7 +34,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -43,6 +41,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static com.asialjim.microapplet.common.cons.Headers.*;
@@ -73,17 +73,33 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
     }
 
     @Override
+    @SuppressWarnings("RedundantIfStatement")
     public boolean supports(MethodParameter returnType,
                             @SuppressWarnings("NullableProblems") Class<? extends HttpMessageConverter<?>> converterType) {
 
         Method method = returnType.getMethod();
-        if (Objects.nonNull(method)) {
-            return !method.isAnnotationPresent(RwIgnore.class)                                      // 没有避免包装标记
-                    && !ResponseEntity.class.isAssignableFrom(returnType.getParameterType())
-                    && !method.isAnnotationPresent(Async.class)                                     // 没有异步标记
-                    && !ByteArrayHttpMessageConverter.class.isAssignableFrom(converterType)         // 不是二进制响应结果
-                    && !BufferedImageHttpMessageConverter.class.isAssignableFrom(converterType);    // 不是图片
-        }
+        if (Objects.isNull(method))
+            return false;
+
+        if (method.isAnnotationPresent(RwIgnore.class))
+            return false;
+
+        Class<?> parameterType = returnType.getParameterType();
+        if (ResponseEntity.class.isAssignableFrom(parameterType))
+            return false;
+
+        if (Result.class.isAssignableFrom(parameterType))
+            return false;
+
+        if (method.isAnnotationPresent(Async.class))
+            return false;
+
+        if (ByteArrayHttpMessageConverter.class.isAssignableFrom(converterType))
+            return false;
+
+        if (BufferedImageHttpMessageConverter.class.isAssignableFrom(converterType))
+            return false;
+
         return true;
     }
 
@@ -126,9 +142,6 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
         if (skip)
             return body;
 
-        if (body instanceof ResponseEntity)
-            return body;
-
         HttpHeaders requestHeaders = Optional.ofNullable(request).map(ServerHttpRequest::getHeaders).orElseGet(HttpHeaders::new);
         List<String> clientTypes = Optional.of(requestHeaders).map(item -> item.get(Headers.CLIENT_TYPE)).orElseGet(Collections::emptyList);
         // 云调用
@@ -137,10 +150,10 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
             if (body instanceof Result result) {
                 response.setStatusCode(HttpStatusCode.valueOf(result.getStatus()));
                 HttpHeaders headers = response.getHeaders();
-                headers.set(X_RES_THROWABLE, String.valueOf(result.isThr()));
-                headers.set(X_RES_CODE, result.getCode());
-                headers.set(X_RES_MSG, result.getMsg());
-                headers.set(X_RES_ERRS, JsonUtil.instance.toStr(result.getErrs()));
+                headers.set(X_RES_THROWABLE, URLEncoder.encode(String.valueOf(result.isThr()), StandardCharsets.UTF_8));
+                headers.set(X_RES_CODE, URLEncoder.encode(result.getCode(), StandardCharsets.UTF_8));
+                headers.set(X_RES_MSG, URLEncoder.encode(result.getMsg(), StandardCharsets.UTF_8));
+                headers.set(X_RES_ERRS, URLEncoder.encode(JsonUtil.instance.toStr(result.getErrs()), StandardCharsets.UTF_8));
                 headers.set(X_RES_STATUS, String.valueOf(result.getStatus()));
                 headers.set(X_RES_PAGE, String.valueOf(result.getPage()));
                 headers.set(X_RES_SIZE, String.valueOf(result.getSize()));

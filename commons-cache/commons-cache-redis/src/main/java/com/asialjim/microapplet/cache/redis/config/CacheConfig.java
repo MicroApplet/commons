@@ -19,7 +19,6 @@ package com.asialjim.microapplet.cache.redis.config;
 import com.asialjim.microapplet.common.cache.CacheNameAndTTLHub;
 import com.asialjim.microapplet.common.utils.JacksonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.Setter;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
@@ -35,7 +34,6 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import java.util.function.Consumer;
 
 
 /**
@@ -53,20 +51,15 @@ public class CacheConfig implements CachingConfigurer {
     @Bean
     @Primary
     public ObjectMapper objectMapper() {
-        return JacksonUtil.init(new JsonMapper());
+        return JacksonUtil.init(new ObjectMapper());
     }
 
     @Bean
     @Primary
     public GenericJackson2JsonRedisSerializer jsonSerializer() {
-
         GenericJackson2JsonRedisSerializer json = new GenericJackson2JsonRedisSerializer();
         json.configure(JacksonUtil::init);
         return json;
-       /*
-        ObjectMapper mapper = JacksonUtil.init(new ObjectMapper());
-        return new GenericJsonRedisSerializer(mapper, "@class");
-        */
     }
 
 
@@ -74,12 +67,10 @@ public class CacheConfig implements CachingConfigurer {
     @Primary
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory,
                                           CacheNameAndTTLHub cacheNameAndTTLHub,
-                                          RedisTemplate<String, Object> redisTemplate,
                                           GenericJackson2JsonRedisSerializer jsonSerializer) {
 
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer.UTF_8))
-//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisTemplate.getValueSerializer()));
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer));
 
         return new DynamicTTLRedisCacheManager(
@@ -92,17 +83,10 @@ public class CacheConfig implements CachingConfigurer {
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory,
                                                        GenericJackson2JsonRedisSerializer jsonSerializer) {
 
-       /*
-        GenericJackson2JsonRedisSerializer json = new GenericJackson2JsonRedisSerializer();
-        json.configure(JacksonUtil::init);
-        */
-
         RedisTemplate<String, Object> res = new RedisTemplate<>();
         res.setKeySerializer(StringRedisSerializer.UTF_8);
-//        res.setValueSerializer(json);
         res.setValueSerializer(jsonSerializer);
         res.setHashKeySerializer(jsonSerializer);
-//        res.setHashValueSerializer(json);
         res.setHashValueSerializer(jsonSerializer);
         res.setDefaultSerializer(jsonSerializer);
         res.setEnableDefaultSerializer(true);

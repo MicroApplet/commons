@@ -137,9 +137,9 @@ public class CommonsFeignConfig {
                 String msg = header(headers, X_RES_MSG);
                 String errorJson = header(headers, X_RES_ERRS);
 
-                List<Object> errs = null;
+                List<String> errs = null;
                 if (StringUtils.isNotBlank(errorJson))
-                    errs = JsonUtil.instance.toList(errorJson,Object.class);
+                    errs = JsonUtil.instance.toList(errorJson,String.class);
 
                 if (status >= 400)
                     new RsEx().setStatus(status).setThr(thr).setCode(code).setMsg(msg).setErrs(errs).cast();

@@ -32,9 +32,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XmlUtil extends JacksonUtil {
     public static final JacksonUtil instance = new XmlUtil();
+    private static final ObjectMapper mapper = init(new XmlMapper());
 
     @Override
     protected ObjectMapper objectMapper() {
-        return init(new XmlMapper());
+        return mapper;
     }
 }

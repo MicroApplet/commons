@@ -22,6 +22,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 分页参数
@@ -45,7 +46,11 @@ public class PageParameter implements Serializable {
         return new PageParameter(1,10);
     }
 
-    public static PageParameter pageOf(long page, long size) {
+    public static PageParameter pageOf(Long page, Long size) {
+        if (Objects.isNull(page))
+            page = 1L;
+        if (Objects.isNull(size))
+            size = 10L;
         return new PageParameter(page,size);
     }
 }

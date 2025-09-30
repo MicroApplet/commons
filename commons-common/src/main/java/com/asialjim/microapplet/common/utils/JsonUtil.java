@@ -17,7 +17,6 @@
 package com.asialjim.microapplet.common.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -32,8 +31,10 @@ import lombok.AllArgsConstructor;
 public final class JsonUtil extends JacksonUtil {
     public static final JacksonUtil instance = new JsonUtil();
 
+    private static final ObjectMapper mapper = init(new ObjectMapper());
+
     @Override
     protected ObjectMapper objectMapper() {
-        return init(new JsonMapper());
+        return mapper;
     }
 }

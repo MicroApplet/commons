@@ -21,15 +21,20 @@ import com.asialjim.microapplet.common.context.IORes;
 import com.asialjim.microapplet.common.context.Res;
 import com.asialjim.microapplet.common.context.Result;
 import com.asialjim.microapplet.common.exception.RsEx;
+import com.asialjim.microapplet.common.utils.JacksonUtil;
+import com.asialjim.microapplet.common.utils.JsonUtil;
 import com.asialjim.microapplet.common.valid.ErrorInfo;
 import com.asialjim.microapplet.common.valid.ResCodeValidationPayload;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -40,8 +45,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
+
+import static com.asialjim.microapplet.common.cons.Headers.*;
 
 /**
  * 全局错误增强
@@ -55,6 +64,18 @@ import java.util.concurrent.TimeoutException;
 @RequiredArgsConstructor
 public class GlobalExceptionAdvice {
     private final ResCodeValidationPayload resCodeValidationPayload;
+
+
+    private static JacksonUtil jacksonUtil() {
+        ObjectMapper json = Jackson2ObjectMapperBuilder.json().createXmlMapper(false).build();
+        return JacksonUtil.instance(json);
+    }
+
+    private static String urlEncoded(String body) {
+        if (StringUtils.isBlank(body))
+            return StringUtils.EMPTY;
+        return URLEncoder.encode(body, StandardCharsets.UTF_8);
+    }
 
     /**
      * 处理丢失servlet请求参数异常
@@ -71,11 +92,29 @@ public class GlobalExceptionAdvice {
     }
 
     @ExceptionHandler(RsEx.class)
-    public Result<Void> handleRsEx(RsEx ex) {
+    public Result<Void> handleRsEx(RsEx ex, HttpServletRequest request, HttpServletResponse response) {
         if (log.isDebugEnabled())
             log.debug("业务异常:{}", ex.getMessage(), ex);
         else
             log.info("业务异常:{}", ex.getMessage());
+
+        response.setStatus(ex.getStatus());
+
+        response.setHeader(X_RES_THROWABLE, urlEncoded(String.valueOf(ex.isThr())));
+        response.setHeader(X_RES_CODE, urlEncoded(ex.getCode()));
+        response.setHeader(X_RES_MSG, urlEncoded(ex.getMsg()));
+        response.setHeader(X_RES_ERRS, urlEncoded(jacksonUtil().toStr(ex.getErrs())));
+        response.setHeader(X_RES_STATUS, String.valueOf(ex.getStatus()));
+
+        response.setHeader(X_RES_PAGE, String.valueOf(1));
+        response.setHeader(X_RES_SIZE, String.valueOf(1));
+        response.setHeader(X_RES_PAGES, String.valueOf(1));
+        response.setHeader(X_RES_TOTAL, String.valueOf(1));
+
+        String clientType = request.getHeader(CLIENT_TYPE);
+        if (StringUtils.equals(clientType, CLOUD_CLIENT)) {
+            return null;
+        }
         return ex.result();
     }
 
@@ -207,7 +246,7 @@ public class GlobalExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Result<Void> throwable(Throwable e, HttpServletRequest request) {
         String logLevel = request.getHeader(Headers.HTTPLogLevel);
-        List<Object> errs = new ArrayList<>();
+        List<String> errs = new ArrayList<>();
         errs.add(e.getMessage());
         errs.add("\r\n");
         for (Throwable throwable : e.getSuppressed()) {
@@ -229,6 +268,7 @@ public class GlobalExceptionAdvice {
      */
     private static Result<Void> binExceptionResult(List<ErrorInfo> errors) {
         log.info("参数验证错误：{}", errors);
-        return Res.ParameterIllegalEx.resultErrs(errors);
+        List<String> list = errors.stream().map(JsonUtil.instance::toStr).toList();
+        return Res.ParameterIllegalEx.resultErrs(list);
     }
 }

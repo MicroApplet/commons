@@ -64,7 +64,7 @@ public class PermissionNeedAdvice {
     }
 
     private void any(String[] anyPermissions, List<String> userHadPermissions) {
-        List<Object> missPermissions = new ArrayList<>();
+        List<String> missPermissions = new ArrayList<>();
         for (String permission : anyPermissions) {
             boolean userHadPermission = userHadPermissions.contains(permission);
             if (userHadPermission)
@@ -76,7 +76,7 @@ public class PermissionNeedAdvice {
 
 
     private void all(String[] allPermissions, List<String> userHadPermissions) {
-        List<Object> missPermissions = new ArrayList<>();
+        List<String> missPermissions = new ArrayList<>();
         for (String permission : allPermissions) {
             // 用户有权限
             if (userHadPermissions.contains(permission))

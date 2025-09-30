@@ -16,11 +16,14 @@
 
 package com.asialjim.microapplet.web.mvc.config;
 
+import com.asialjim.microapplet.common.utils.JacksonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.Assert;
 
 @Configuration
 public class JacksonHttpMessageConfiguration {
@@ -28,6 +31,9 @@ public class JacksonHttpMessageConfiguration {
     @Bean
     @Primary
     public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
-        return new MappingJackson2HttpMessageConverter(Jackson2ObjectMapperBuilder.json().build());
+        ObjectMapper build = Jackson2ObjectMapperBuilder.json().build();
+        ObjectMapper mapper = JacksonUtil.init(build);
+        Assert.notNull(mapper,"mapper cannot be null");
+        return new MappingJackson2HttpMessageConverter(mapper);
     }
 }

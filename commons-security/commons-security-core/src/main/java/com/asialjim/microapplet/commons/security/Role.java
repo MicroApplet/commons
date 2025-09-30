@@ -39,7 +39,8 @@ public enum Role {
     BankCardUser("bank-card", 1 << 7, "银行卡用户"),
 
 
-    Employee("employee", 1L << 62, "员工"),
+    Employee("employee", 1L << 61, "员工"),
+    CMSUser("cms:user", 1L << 62, "后管用户"),
     System("system", 1L << 63, "系统管理员"),
     Root("root", Long.MAX_VALUE, "超级管理员"),
     Tourist("tourist", 1, "游客");

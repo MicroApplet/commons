@@ -82,40 +82,71 @@ public abstract class JacksonUtil {
     public static ObjectMapper init(ObjectMapper mapper) {
         if (Objects.isNull(mapper))
             return null;
+
+        // 配置序列化特性
+        configureSerializationFeatures(mapper);
+
+        // 配置反序列化特性
+        configureDeserializationFeatures(mapper);
+
+        // 配置日期时间处理
+        configureDateTimeHandling(mapper);
+
+        // 配置序列化包含规则
+        configureSerializationInclusion(mapper);
+
+        return mapper;
+    }
+
+    private static void configureSerializationFeatures(ObjectMapper mapper) {
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
+    private static void configureDeserializationFeatures(ObjectMapper mapper) {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
-        mapper.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
         mapper.disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
+        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        mapper.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
+    }
+
+    private static void configureDateTimeHandling(ObjectMapper mapper) {
+        // 设置传统日期格式
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-        JavaTimeModule timeModule = new JavaTimeModule();
-        // 配置 JavaTimeModule
+
+        // 配置JavaTime模块
         JavaTimeModule javaTimeModule = new JavaTimeModule();
 
-        // 配置 LocalDateTime 序列化
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        // 配置日期时间序列化/反序列化
+       /*
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
+        */
 
-        // 配置其他时间类型的序列化（根据你的需要添加）
-        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ISO_LOCAL_DATE));
-        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ISO_LOCAL_DATE));
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(("HH:mm:ss"));
 
-        javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ISO_LOCAL_TIME));
-        javaTimeModule.addDeserializer(LocalTime.class,new LocalTimeDeserializer(DateTimeFormatter.ISO_LOCAL_TIME));
 
-        mapper.activateDefaultTyping(
-                mapper.getPolymorphicTypeValidator(),
-                ObjectMapper.DefaultTyping.NON_FINAL,
-                JsonTypeInfo.As.PROPERTY
-        );
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
+        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
 
-        mapper.registerModule(timeModule);
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
+        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
+
+        javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
+        javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
+
+        mapper.registerModule(javaTimeModule);
+    }
+
+
+    private static void configureSerializationInclusion(ObjectMapper mapper) {
+        // 注意：setSerializationInclusion 会覆盖前一个设置
+        // 所以合并为一次设置，优先使用 NON_EMPTY
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-        return mapper;
     }
 
     protected abstract ObjectMapper objectMapper();

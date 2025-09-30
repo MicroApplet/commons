@@ -42,13 +42,13 @@ public final class Result<T> implements ResCode, Serializable {
     private String code;
     private String msg;
     private T data;
-    private List<Object> errs;
-    private Integer page;
-    private Integer size;
-    private Integer pages;
-    private Integer total;
+    private List<String> errs;
+    private Long page;
+    private Long size;
+    private Long pages;
+    private Long total;
 
-    public Result<T> setErrs(List<?> errs) {
+    public Result<T> setErrs(List<String> errs) {
         if (CollectionUtils.isEmpty(errs))
             return this;
 
@@ -56,7 +56,7 @@ public final class Result<T> implements ResCode, Serializable {
         return this;
     }
 
-    public List<Object> getErrs(){
+    public List<String> getErrs(){
         return Optional.ofNullable(errs).orElseGet(ArrayList::new);
     }
 

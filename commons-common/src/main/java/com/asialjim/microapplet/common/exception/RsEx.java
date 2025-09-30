@@ -39,7 +39,7 @@ public class RsEx extends RuntimeException implements ResCode {
     private boolean thr;
     private String code;
     private String msg;
-    private List<Object> errs;
+    private List<String> errs;
 
     @Override
     public String getMessage() {

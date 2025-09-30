@@ -19,7 +19,7 @@ package com.asialjim.microapplet.common.context;
 import com.asialjim.microapplet.common.exception.RsEx;
 
 import java.util.List;
-import jakarta.validation.Payload;
+
 
 /**
  * 通用响应代码
@@ -63,7 +63,7 @@ public interface ResCode {
      *
      * @return {@link Result<T>}
      */
-    default<T> Result<T> create(){
+    default <T> Result<T> create() {
         return result(null);
     }
 
@@ -73,16 +73,16 @@ public interface ResCode {
      * @param body 身体
      * @return {@link Result<T>}
      */
-    default<T> Result<T> create(T body){
-       return result(body);
-   }
+    default <T> Result<T> create(T body) {
+        return result(body);
+    }
 
     /**
      * 结果
      *
      * @return {@link Result<Void>}
      */
-    default Result<Void> result() {
+    default<T> Result<T> result() {
         return result(null);
     }
 
@@ -102,7 +102,7 @@ public interface ResCode {
      * @param errs 犯错误
      * @return {@link Result<T>}
      */
-    default <T> Result<T> resultErrs(List<?> errs){
+    default <T> Result<T> resultErrs(List<String> errs) {
         return result(null, errs);
     }
 
@@ -113,7 +113,7 @@ public interface ResCode {
      * @param errs 犯错误
      * @return {@link Result<T>}
      */
-    default <T> Result<T> result(T data, List<?> errs) {
+    default <T> Result<T> result(T data, List<String> errs) {
         return new Result<T>().setStatus(getStatus()).setPageable(false).setThr(isThr()).setCode(getCode()).setMsg(getMsg()).setData(data).setErrs(errs);
     }
 
@@ -128,6 +128,10 @@ public interface ResCode {
      * @return {@link Result<List<T>>}
      */
     default <T> Result<List<T>> page(int page, int size, int pages, int total, List<T> data) {
+        return page(page, size, pages, (long) total, data);
+    }
+
+    default <T> Result<List<T>> page(long page, long size, long pages, long total, List<T> data) {
         return new Result<List<T>>().setStatus(getStatus())
                 .setPageable(true)
                 .setThr(isThr())
@@ -155,15 +159,14 @@ public interface ResCode {
      * @param errs 犯错误
      * @return {@link RsEx}
      */
-    default RsEx ex(List<Object> errs) {
+    default RsEx ex(List<String> errs) {
         return new RsEx().setStatus(getStatus()).setThr(isThr()).setCode(getCode()).setMsg(getMsg()).setErrs(errs);
     }
 
     /**
      * 用力推
-     *
      */
-    default void thr(){
+    default void thr() {
         ex().cast();
     }
 
@@ -172,7 +175,7 @@ public interface ResCode {
      *
      * @param errs 犯错误
      */
-    default void thr(List<Object> errs){
+    default void thr(List<String> errs) {
         ex(errs).cast();
     }
 

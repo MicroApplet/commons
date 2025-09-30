@@ -16,7 +16,6 @@
 
 package com.asialjim.microapplet.commons.security;
 
-import com.asialjim.microapplet.common.context.Res;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -40,11 +39,17 @@ public class RoleNeedAdvice {
     @Resource
     private CurrentRoleBean currentRoleBean;
 
-    @Before(value = "(@within(classRoleNeed) || @annotation(methodRoleNeed) )", argNames = "classRoleNeed,methodRoleNeed")
-    public void before(RoleNeed classRoleNeed, RoleNeed methodRoleNeed) {
-        checkRole(classRoleNeed);
-        checkRole(methodRoleNeed);
+
+    @Before("@within(roleNeed)")
+    public void checkClassRole(RoleNeed roleNeed) {
+        checkRole(roleNeed);
     }
+
+    @Before("@annotation(roleNeed)")
+    public void checkMethodRole(RoleNeed roleNeed) {
+        checkRole(roleNeed);
+    }
+
 
     private void checkRole(RoleNeed roleNeed) {
         if (Objects.isNull(roleNeed)) return;
