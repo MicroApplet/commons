@@ -70,12 +70,12 @@ public final class MamsSession implements Serializable {
     /**
      * 添加角色
      *
-     * @param roleBit 一些角色
+     * @param roleBit 用户角色位图
      */
     public void addRole(long roleBit) {
         if ((this.roleBit & roleBit) == roleBit)
             return;
-        this.roleBit += roleBit;
+        this.roleBit |= roleBit; // 使用按位或添加角色
     }
 
     /**

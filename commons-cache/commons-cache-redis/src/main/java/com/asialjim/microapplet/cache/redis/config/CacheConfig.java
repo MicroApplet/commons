@@ -18,6 +18,7 @@ package com.asialjim.microapplet.cache.redis.config;
 
 import com.asialjim.microapplet.common.cache.CacheNameAndTTLHub;
 import com.asialjim.microapplet.common.utils.JacksonUtil;
+import com.asialjim.microapplet.common.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import org.springframework.cache.annotation.CachingConfigurer;
@@ -34,6 +35,9 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.util.function.Consumer;
+
+import static com.asialjim.microapplet.common.utils.JacksonUtil.*;
 
 
 /**
@@ -58,7 +62,7 @@ public class CacheConfig implements CachingConfigurer {
     @Primary
     public GenericJackson2JsonRedisSerializer jsonSerializer() {
         GenericJackson2JsonRedisSerializer json = new GenericJackson2JsonRedisSerializer();
-        json.configure(JacksonUtil::init);
+        json.configure(JsonUtil::init);
         return json;
     }
 

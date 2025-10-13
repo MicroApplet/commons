@@ -18,6 +18,8 @@ package com.asialjim.microapplet.common.security;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +32,8 @@ import java.util.*;
  * @version 1.0
  * @since 2025/9/24, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@Component
+@Configuration
+@ConditionalOnBean(MamsSessionAttribute.class)
 public class MamsSessionContextHolder {
     private static MamsSessionContextHolder instance;
     @Resource

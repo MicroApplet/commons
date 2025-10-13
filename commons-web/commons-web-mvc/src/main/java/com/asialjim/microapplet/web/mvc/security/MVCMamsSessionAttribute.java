@@ -29,6 +29,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Objects;
 
+/**
+ * 基于mvc的当前登录用户会话属性
+ *
+ * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
+ * @version 1.0
+ * @since 2025/10/13, &nbsp;&nbsp; <em>version:1.0</em>
+ */
 @Configuration
 public class MVCMamsSessionAttribute implements MamsSessionAttribute {
     @Override

@@ -22,8 +22,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-
 /**
  * 当前用户角色Bean
  *
@@ -38,15 +36,19 @@ public class CurrentRoleBean implements ApplicationContextAware {
     private ApplicationContext applicationContext;
 
 
-    public CurrentRoles currentRole(){
+    public CurrentRoles currentRole() {
         String[] names = this.applicationContext.getBeanNamesForType(CurrentRoles.class);
         if (ArrayUtils.isEmpty(names))
-            return () -> Collections.singletonList(Role.Tourist);
+            return Role.Tourist::getBit;
 
-        for (String name : names) {
-            return this.applicationContext.getBean(name, CurrentRoles.class);
-        }
-
-        return () -> Collections.singletonList(Role.Tourist);
+        return () -> {
+            long role = 0;
+            for (String name : names) {
+                CurrentRoles bean = applicationContext.getBean(name, CurrentRoles.class);
+                long l = bean.hasRole();
+                role |= l;
+            }
+            return role;
+        };
     }
 }

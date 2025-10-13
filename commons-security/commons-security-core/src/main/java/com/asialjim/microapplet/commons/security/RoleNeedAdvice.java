@@ -24,7 +24,6 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 角色拦截器
@@ -38,7 +37,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RoleNeedAdvice {
     @Resource
     private CurrentRoleBean currentRoleBean;
-
 
     @Before("@within(roleNeed)")
     public void checkClassRole(RoleNeed roleNeed) {
@@ -54,13 +52,9 @@ public class RoleNeedAdvice {
     private void checkRole(RoleNeed roleNeed) {
         if (Objects.isNull(roleNeed)) return;
         CurrentRoles currentRoles = this.currentRoleBean.currentRole();
-        List<Role> userHadRoles = currentRoles.hasRole();
-        if (CollectionUtils.isEmpty(userHadRoles))
+        long role = currentRoles.hasRole();
+        if (role == 0)
             AuthorityRes.NoRole.thr();
-
-        AtomicLong atomicLong = new AtomicLong(0);
-        userHadRoles.stream().map(Role::getBit).forEach(atomicLong::addAndGet);
-        long role = atomicLong.get();
 
         Role[] all = roleNeed.all();
         if (ArrayUtils.isNotEmpty(all))

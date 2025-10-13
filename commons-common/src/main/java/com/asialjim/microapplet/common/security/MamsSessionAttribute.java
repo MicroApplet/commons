@@ -36,6 +36,7 @@ public interface MamsSessionAttribute extends Ordered {
 
     @Slf4j
     @Configuration
+    @ConditionalOnMissingBean(MamsSessionAttribute.class)
     class NullMamsSessionAttribute implements MamsSessionAttribute{
 
         @Override

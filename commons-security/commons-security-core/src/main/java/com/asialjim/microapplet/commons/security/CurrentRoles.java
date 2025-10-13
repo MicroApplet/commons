@@ -29,9 +29,12 @@ public interface CurrentRoles {
 
     /**
      * 获取当前用户持有的角色
+     * <em>
+     * 注意： 此处返回的值表示一个角色的位图信息，以便于计算
+     * </em>
      *
      * @return {@link List<Role>}
      * @since 2025/3/11
      */
-    List<Role> hasRole();
+    long hasRole();
 }

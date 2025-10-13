@@ -253,7 +253,11 @@ public class GlobalExceptionAdvice {
             errs.add(throwable.getMessage());
         }
 
-        log.error("未明确类型错误：{} >>> {}", e.getMessage(), errs);
+        if (log.isDebugEnabled())
+            log.error("未明确类型错误：{} >>> {}", e.getMessage(), errs, e);
+        else
+            log.error("未明确类型错误：{} >>> {}", e.getMessage(), errs);
+        e.printStackTrace();
         if (StringUtils.equalsIgnoreCase(logLevel, "debug"))
             return Res.SysErr.resultErrs(errs);
 

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -98,12 +99,12 @@ public abstract class JacksonUtil {
         return mapper;
     }
 
-    private static void configureSerializationFeatures(ObjectMapper mapper) {
+    public static void configureSerializationFeatures(ObjectMapper mapper) {
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-    private static void configureDeserializationFeatures(ObjectMapper mapper) {
+    public static void configureDeserializationFeatures(ObjectMapper mapper) {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
         mapper.disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
@@ -111,7 +112,7 @@ public abstract class JacksonUtil {
         mapper.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
     }
 
-    private static void configureDateTimeHandling(ObjectMapper mapper) {
+    public static void configureDateTimeHandling(ObjectMapper mapper) {
         // 设置传统日期格式
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
@@ -119,11 +120,6 @@ public abstract class JacksonUtil {
         JavaTimeModule javaTimeModule = new JavaTimeModule();
 
         // 配置日期时间序列化/反序列化
-       /*
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
-        */
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -139,11 +135,11 @@ public abstract class JacksonUtil {
         javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
         javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
 
-        mapper.registerModule(javaTimeModule);
+        mapper.registerModules(javaTimeModule,new Jdk8Module());
     }
 
 
-    private static void configureSerializationInclusion(ObjectMapper mapper) {
+    public static void configureSerializationInclusion(ObjectMapper mapper) {
         // 注意：setSerializationInclusion 会覆盖前一个设置
         // 所以合并为一次设置，优先使用 NON_EMPTY
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
@@ -195,7 +191,6 @@ public abstract class JacksonUtil {
         try {
             return objectMapper().readValue(str, type);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
