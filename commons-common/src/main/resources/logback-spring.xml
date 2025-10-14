@@ -55,6 +55,6 @@
 
 
     <!-- Spring框架日志级别 -->
-    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.springframework" level="DEBUG"/>
     <logger name="org.hibernate" level="INFO"/>
 </configuration>
