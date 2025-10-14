@@ -58,7 +58,7 @@ public class GlobalRequestAspect implements RequestBodyAdvice {
                                 MethodParameter parameter,
                                 Type targetType,
                                 Class<? extends HttpMessageConverter<?>> converterType) {
-        log.info(">>请求体: {}", body);
+        log.info("\r\n>>请求体: \r\n\t{}", body);
         return body;
     }
 

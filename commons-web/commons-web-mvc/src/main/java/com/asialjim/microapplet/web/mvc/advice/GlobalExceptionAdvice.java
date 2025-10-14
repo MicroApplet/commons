@@ -34,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -233,6 +234,14 @@ public class GlobalExceptionAdvice {
     public Result<Void> handleIOException(IOException e) {
         log.info("IO 异常：{}", e.getMessage());
         return IORes.IOErr.result();
+    }
+
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e){
+        log.info("空请求体：{}", e.getMessage());
+        return Res.ParameterEmptyEx.resultErrs(Collections.singletonList("空请求体"));
     }
 
     /**

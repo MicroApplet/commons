@@ -48,13 +48,13 @@
     </appender>
 
     <!-- 日志级别设置 -->
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
 
 
     <!-- Spring框架日志级别 -->
-    <logger name="org.springframework" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
     <logger name="org.hibernate" level="INFO"/>
 </configuration>
