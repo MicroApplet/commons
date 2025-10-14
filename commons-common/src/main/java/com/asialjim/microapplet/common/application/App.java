@@ -22,6 +22,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
  * @since 2025/2/26, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Configuration
+@EnableAspectJAutoProxy(exposeProxy = true)
 public class App implements ApplicationContextAware {
     public static ApplicationContext ctx;
 
