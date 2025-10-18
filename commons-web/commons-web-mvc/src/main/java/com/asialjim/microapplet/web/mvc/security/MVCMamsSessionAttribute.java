@@ -43,18 +43,18 @@ public class MVCMamsSessionAttribute implements MamsSessionAttribute {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
         if (Objects.isNull(servletRequestAttributes))
-            return null;
+            return new MamsSession();
 
         HttpServletRequest request = servletRequestAttributes.getRequest();
         //noinspection ConstantValue
         if (Objects.isNull(request))
-            return null;
+            return new MamsSession();
 
         String sessionJson = request.getHeader(Headers.CURRENT_SESSION);
         if (StringUtils.isNotBlank(sessionJson))
             return JsonUtil.instance.toBean(sessionJson, MamsSession.class);
 
-        return null;
+        return new MamsSession();
     }
 
     @Override

@@ -29,6 +29,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Res implements ResCode {
+    _404(404,true,"PAGE:NOT:FOUND","暂无该资源"),
     SysErr(500,true,"SYS:BUSINESS","系统繁忙，请稍后再试"),
     ParameterIllegalEx(400,true,"PARAM:ILLEGAL:EX","非法参数异常"),
     ParameterEmptyEx(400,true,"PARAM:EMPTY:EX","关键参数为空"),

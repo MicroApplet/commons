@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -242,6 +243,13 @@ public class GlobalExceptionAdvice {
     public Result<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e){
         log.info("空请求体：{}", e.getMessage());
         return Res.ParameterEmptyEx.resultErrs(Collections.singletonList("空请求体"));
+    }
+
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public Result<Void> handleNoHandlerFoundException(NoHandlerFoundException e){
+        return Res._404.resultErrs(Collections.singletonList(e.getMessage()));
     }
 
     /**

@@ -29,27 +29,50 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum Role {
-    Authenticated("authenticated", 1 << 1, "登录用户"),
-    Phone("phone", 1 << 2, "手机号用户"),
-    WeChatUser("wechat", 1 << 3, "微信用户"),
-    WeChatMp("wechat:mp", (1 << 3) + (1 << 4), "微信公众号用户"),
-    WeChatApplet("wechat:applet", (1 << 3) + 1 << 5, "微信小程序用户"),
-    IdCardUser("id-card", 1 << 6, "实名证件用户"),
-    BankCardUser("bank-card", 1 << 7, "银行卡用户"),
+public enum Role implements RoleCode {
+    /**
+     * 登录用户
+     */
+    Authenticated(AUTHENTICATED_CODE, AUTHENTICATED_BIT, AUTHENTICATED_DESC),
+    /**
+     * 手机用户
+     */
+    Phone(PHONE_CODE, PHONE_BIT, PHONE_DESC),
+    /**
+     * 微信用户
+     */
+    WeChatUser(WECHAT_USER_CODE, WECHAT_USER_BIT, WECHAT_USER_DESC),
+    /**
+     * 证件用户
+     */
+    IdCardUser(ID_CARD_USER_CODE, ID_CARD_USER_BIT, ID_CARD_USER_DESC),
+    /**
+     * 银行卡用户
+     */
+    BankCardUser(BANK_CARD_USER_CODE, BANK_CARD_USER_BIT, BANK_CARD_USER_DESC),
 
-
-    Employee("employee", 1L << 61, "员工"),
-    CMSUser("cms:user", 1L << 62, "后管用户"),
-    System("system", 1L << 63, "系统管理员"),
-    Root("root", Long.MAX_VALUE - Authenticated.bit, "超级管理员"),
-    Tourist("tourist", 1, "游客");
+    /**
+     * 员工
+     */
+    Employee(EMPLOYEE_CODE, EMPLOYEE_BIT, EMPLOYEE_DESC),
+    /**
+     * 后管用户
+     */
+    CMSUser(CMS_CODE, CMS_BIT, CMS_DESC),
+    /**
+     * 系统管理员
+     */
+    System(SYSTEM_CODE, SYSTEM_BIT, SYSTEM_DESC),
+    /**
+     * 超管
+     */
+    Root(ROOT_CODE, ROOT_BIT, ROOT_DESC),
+    /**
+     * 游客
+     */
+    Tourist(TOURIST_CODE, TOURIST_BIT, TOURIST_DESC);
 
     public final String code;
     private final long bit;
     private final String desc;
-
-    public boolean is(long role) {
-        return (this.bit & role) == this.bit;
-    }
 }

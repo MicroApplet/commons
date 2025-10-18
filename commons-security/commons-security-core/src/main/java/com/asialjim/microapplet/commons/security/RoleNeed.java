@@ -35,11 +35,11 @@ public @interface RoleNeed {
     /**
      * 需要满足所有角色
      */
-    Role[] all() default {};
+    long[] all() default {};
 
     /**
      * 满足其中任何一个用户角色即可
      */
-    Role[] any() default {};
+    long[] any() default {};
 
 }

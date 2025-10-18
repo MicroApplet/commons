@@ -85,9 +85,9 @@ public class GlobalLogFilter implements Filter {
     private void logRequestHeader(HttpServletRequest request) {
         final StringJoiner logJ = new StringJoiner("\r\n");
         final String method = request.getMethod();
-        final String requestURI = request.getRequestURI();
+        final StringBuffer requestURL = request.getRequestURL();
         logJ.add(StringUtils.EMPTY);
-        logJ.add(">>请求行: [" + method + "] " + requestURI);
+        logJ.add(">>请求行: [" + method + "] " + requestURL);
 
         final StringJoiner headerJ = new StringJoiner("\r\n\t");
         headerJ.add(StringUtils.EMPTY);

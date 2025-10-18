@@ -116,15 +116,19 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
 
         // 特殊处理：使用StringHttpMessageConverter的情况
         if (StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType)) {
-            if (MediaType.TEXT_PLAIN.includes(selectedContentType)) {
-                o = JsonUtil.instance.toStr(o);
-                response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-            } else if (MediaType.APPLICATION_JSON.equalsTypeAndSubtype(selectedContentType)) {
-                o = JsonUtil.instance.toStr(o);
-            } else if (MediaType.APPLICATION_XML.equalsTypeAndSubtype(selectedContentType)) {
-                o = XmlUtil.instance.toStr(o);
-            } else {
+            if (o instanceof String) {
                 o = body;
+            } else {
+                if (MediaType.TEXT_PLAIN.includes(selectedContentType)) {
+                    o = JsonUtil.instance.toStr(o);
+                    response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+                } else if (MediaType.APPLICATION_JSON.equalsTypeAndSubtype(selectedContentType)) {
+                    o = JsonUtil.instance.toStr(o);
+                } else if (MediaType.APPLICATION_XML.equalsTypeAndSubtype(selectedContentType)) {
+                    o = XmlUtil.instance.toStr(o);
+                } else {
+                    o = body;
+                }
             }
         }
 

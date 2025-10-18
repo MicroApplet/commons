@@ -16,9 +16,10 @@
 
 package com.asialjim.microapplet.commons.security.web;
 
+import com.asialjim.microapplet.common.context.Res;
 import com.asialjim.microapplet.common.exception.UnLoginException;
-import com.asialjim.microapplet.commons.security.AuthorityRes;
-import com.asialjim.microapplet.commons.security.Role;
+import com.asialjim.microapplet.common.utils.JsonUtil;
+import com.asialjim.microapplet.commons.security.RoleCode;
 import com.asialjim.microapplet.commons.security.RoleNeed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,9 +33,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 安全拦截器
@@ -73,7 +72,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
             sessionSecurityManager.loginCheck(request);
             return true;
         } catch (UnLoginException e) {
-            String res = AuthorityRes.NoSignIn.create().toString();
+            String res = JsonUtil.instance.toStr(Res.UserAuthFailureThr.create());
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(res);
@@ -84,15 +83,11 @@ public class SecurityInterceptor implements HandlerInterceptor {
     private static boolean touristNeed(RoleNeed annotation) {
         if (Objects.isNull(annotation))
             return false;
-        Role[] any = annotation.any();
-
-        AtomicLong atomicLong = new AtomicLong(0);
-        Arrays.stream(any).map(Role::getBit).forEach(atomicLong::addAndGet);
-        long role = atomicLong.get();
-
-        // 游客就能访问，不需要登录
-        if (Role.Tourist.is(role))
-            return true;
+        long[] any = annotation.any();
+        for (long l : any) {
+            if (RoleCode.TOURIST_BIT == l)
+                return true;
+        }
         return false;
     }
 }

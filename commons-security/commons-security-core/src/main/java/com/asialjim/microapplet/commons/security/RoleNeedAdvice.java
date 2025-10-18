@@ -17,8 +17,6 @@
 package com.asialjim.microapplet.commons.security;
 
 import jakarta.annotation.Resource;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -56,36 +54,39 @@ public class RoleNeedAdvice {
         if (role == 0)
             AuthorityRes.NoRole.thr();
 
-        Role[] all = roleNeed.all();
-        if (ArrayUtils.isNotEmpty(all))
-            all(all, role);
-        Role[] any = roleNeed.any();
-        if (ArrayUtils.isNotEmpty(any))
-            any(any, role);
-    }
+        long[] all = roleNeed.all();
+        long[] any = roleNeed.any();
 
-    private void any(Role[] roles, long role) {
-        Set<Role> set = new HashSet<>();
-        for (Role role1 : roles) {
-            boolean hasRole = role1.is(role);
-            if (hasRole) return;
-            set.add(role1);
-        }
-
-        List<String> list = set.stream().map(Role::getDesc).toList();
-        AuthorityRes.NoRole.thr(new ArrayList<>(list));
+        all(all, role);
+        any(any, role);
     }
 
 
-    private void all(Role[] roles, long role) {
-        Set<Role> set = new HashSet<>();
-        for (Role role1 : roles) {
-            boolean hasRole = role1.is(role);
-            if (!hasRole) set.add(role1);
+    private void any(long[] roles, long role) {
+        final List<String> msg = new ArrayList<>();
+        msg.add("至少需要满足以下任一角色[代码]");
+        for (long l : roles) {
+            if (RoleCode.contains(role, l))
+                return;
+            msg.add(String.valueOf(l));
         }
-        if (CollectionUtils.isEmpty(set)) return;
 
-        List<String> list = set.stream().map(Role::getDesc).toList();
-        AuthorityRes.NoRole.thr(new ArrayList<>(list));
+        AuthorityRes.NoRole.thr(msg);
+    }
+
+
+    private void all(long[] roles, long role) {
+        final List<String> msg = new ArrayList<>();
+        msg.add("还需要满足以下角色[代码]");
+        boolean tag = false;
+        for (long l : roles) {
+            // 满足角色，下一个
+            if (RoleCode.contains(role, l))
+                continue;
+            msg.add(String.valueOf(l));
+            tag = true;
+        }
+        if (tag)
+            AuthorityRes.NoRole.thr(msg);
     }
 }
