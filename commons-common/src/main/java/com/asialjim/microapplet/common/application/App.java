@@ -158,6 +158,8 @@ public class App implements ApplicationContextAware {
 
     public static ApplicationContext start(String appName, String contextPath, Class<?> sourceClass, String[] args) {
         try {
+            // 设置JVM默认时区为东八区
+            TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
             SpringApplicationBuilder builder = new SpringApplicationBuilder();
             Properties properties = new Properties();
             if (StringUtils.isNotBlank(appName))

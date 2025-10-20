@@ -17,7 +17,6 @@
 package com.asialjim.microapplet.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -43,12 +42,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 
 /**
  * 基于jackson的工具
@@ -57,20 +54,10 @@ import java.util.Objects;
  * @version 1.0
  * @since 2025/8/7, &nbsp;&nbsp; <em>version:1.0</em>
  */
+@SuppressWarnings("unused")
 public abstract class JacksonUtil {
-    //protected static final DateTimeFormatter DATE_TIME_FORMATTER =  DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-   /*
-    protected static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd[ [HH][:mm][:ss]]")
-            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-            .appendZoneId()
-            .toFormatter();
-    */
-
-    public static JacksonUtil instance(ObjectMapper mapper){
+    public static JacksonUtil instance(ObjectMapper mapper) {
         return new JacksonUtil() {
 
             @Override
@@ -113,17 +100,21 @@ public abstract class JacksonUtil {
     }
 
     public static void configureDateTimeHandling(ObjectMapper mapper) {
+        TimeZone timeZone = TimeZone.getTimeZone("Asia/Shanghai");
         // 设置传统日期格式
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        mapper.setTimeZone(timeZone);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        simpleDateFormat.setTimeZone(timeZone);
+        mapper.setDateFormat(simpleDateFormat);
 
         // 配置JavaTime模块
         JavaTimeModule javaTimeModule = new JavaTimeModule();
 
         // 配置日期时间序列化/反序列化
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(("HH:mm:ss"));
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Shanghai"));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("Asia/Shanghai"));
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.of("Asia/Shanghai"));
 
 
         javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
@@ -135,7 +126,7 @@ public abstract class JacksonUtil {
         javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
         javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
 
-        mapper.registerModules(javaTimeModule,new Jdk8Module());
+        mapper.registerModules(javaTimeModule, new Jdk8Module());
     }
 
 
@@ -163,7 +154,7 @@ public abstract class JacksonUtil {
         }
     }
 
-    public final <T> T toBean(byte[] is, JavaType type){
+    public final <T> T toBean(byte[] is, JavaType type) {
         try {
             return objectMapper().readValue(is, type);
         } catch (IOException e) {
