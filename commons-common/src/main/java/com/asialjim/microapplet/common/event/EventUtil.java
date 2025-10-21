@@ -17,6 +17,7 @@
 package com.asialjim.microapplet.common.event;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.aop.support.AopUtils;
@@ -39,6 +40,7 @@ import java.util.concurrent.Executors;
  * @version 1.0
  * @since 2025/2/27, &nbsp;&nbsp; <em>version:1.0</em>
  */
+@Slf4j
 @Setter
 @Component
 @SuppressWarnings("rawtypes")
@@ -46,8 +48,11 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
     private static final Map<Type, Set<Listener>> listenerHub = new HashMap<>();
     private ApplicationContext applicationContext;
 
-    public static void add(Type type, Listener listener) {
+    private static void add(Type type, Listener listener) {
         if (Objects.isNull(type) || Objects.isNull(listener))
+            return;
+
+        if (!StringUtils.startsWith(type.toString(), "class"))
             return;
 
         Set<Listener> listeners = listenerHub.get(type);
@@ -55,6 +60,10 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
             listeners = new HashSet<>();
             listenerHub.put(type, listeners);
         }
+
+        if (listeners.contains(listener))
+            return;
+        log.info("事件总线注册事件：{} 监听器：{}",type,listener);
         listeners.add(listener);
     }
 
@@ -149,19 +158,17 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
         event.ifPresent(EventUtil::push);
     }
 
-    public static <E> E push(E event) {
+    public static <E> void push(E event) {
         if (Objects.isNull(event))
-            //noinspection ConstantValue
-            return event;
+            return;
         Class<?> aClass = event.getClass();
 
         Set<Listener> listeners = listenerHub.get(aClass);
         if (CollectionUtils.isEmpty(listeners))
-            return event;
+            return;
         for (Listener listener : listeners) {
             //noinspection unchecked
             listener.onEvent(event);
         }
-        return event;
     }
 }

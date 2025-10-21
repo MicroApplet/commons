@@ -16,6 +16,9 @@
 
 package com.asialjim.microapplet.common.event;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 监听器
  *
@@ -24,18 +27,31 @@ package com.asialjim.microapplet.common.event;
  * @since 2025/2/27, &nbsp;&nbsp; <em>version:1.0</em>
  */
 public interface Listener<E> {
+    Logger log = LoggerFactory.getLogger(Listener.class);
 
-    default void onEvent(E event){
+    default void onEvent(E event) {
         try {
+            log.info("监听事件开始：{}", event);
             doOnEvent(event);
+            log.info("监听事件结束：{}", event);
         } catch (Throwable e) {
-            whenException(event,e);
+            if (log.isDebugEnabled())
+                log.error("监听事件：{},异常:{}", event, e.getMessage(), e);
+            else
+                log.info("监听事件：{},异常:{}", event, e.getMessage());
+            whenException(event, e);
+        } finally {
+            finallyFunction(event);
         }
     }
 
     void doOnEvent(E event) throws Throwable;
 
-    default void whenException(E event, Throwable ex){
+    default void whenException(E event, Throwable ex) {
+        // do nothing here default
+    }
+
+    default void finallyFunction(E event) {
         // do nothing here default
     }
 }
