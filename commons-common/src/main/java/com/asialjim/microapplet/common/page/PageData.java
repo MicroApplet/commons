@@ -16,6 +16,7 @@
 
 package com.asialjim.microapplet.common.page;
 
+import com.sun.source.tree.NewArrayTree;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +26,11 @@ import lombok.experimental.Accessors;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 分页数据
@@ -78,6 +83,21 @@ public class PageData<T> implements Serializable {
         this.recordSize = this.size;
         this.total = this.size;
         this.hasNext = false;
+    }
+
+    public static <Q, R> PageData<R> of(PageData<Q> source, Function<Q, R> function) {
+        List<R> collect = Optional.ofNullable(source.getRecords())
+                .stream()
+                .flatMap(Collection::stream)
+                .map(function)
+                .toList();
+
+
+        return new PageData<>(collect)
+                .setPage(source.getPage())
+                .setSize(source.getSize())
+                .setPages(source.getPages())
+                .setTotal(source.getTotal());
     }
 
     @SuppressWarnings("unused")

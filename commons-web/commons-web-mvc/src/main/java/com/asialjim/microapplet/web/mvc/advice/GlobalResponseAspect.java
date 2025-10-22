@@ -20,6 +20,7 @@ import com.asialjim.microapplet.common.cons.Headers;
 import com.asialjim.microapplet.common.context.Res;
 import com.asialjim.microapplet.common.context.ResCode;
 import com.asialjim.microapplet.common.context.Result;
+import com.asialjim.microapplet.common.page.PageData;
 import com.asialjim.microapplet.common.utils.JsonUtil;
 import com.asialjim.microapplet.common.utils.XmlUtil;
 import com.asialjim.microapplet.web.mvc.annotation.RwIgnore;
@@ -148,6 +149,8 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
 
         HttpHeaders requestHeaders = Optional.ofNullable(request).map(ServerHttpRequest::getHeaders).orElseGet(HttpHeaders::new);
         List<String> clientTypes = Optional.of(requestHeaders).map(item -> item.get(Headers.CLIENT_TYPE)).orElseGet(Collections::emptyList);
+
+
         // 云调用
         if (clientTypes.contains(Headers.CLOUD_CLIENT)) {
             //noinspection rawtypes
@@ -166,6 +169,15 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
                 return result.getData();
             }
             return body;
+        }
+
+        if (body instanceof PageData<?> pageData){
+            Long page = pageData.getPage();
+            Long size = pageData.getSize();
+            Long pages = pageData.getPages();
+            Long total = pageData.getTotal();
+            Collection<?> records = pageData.getRecords();
+            body = Res.OK.page(page,size,pages,total,new ArrayList<>(records));
         }
 
         // 如果已经是 Result，则不再包装
