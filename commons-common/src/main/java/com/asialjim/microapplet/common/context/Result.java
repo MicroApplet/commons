@@ -36,16 +36,49 @@ import java.util.function.Function;
 @Data
 @Accessors(chain = true)
 public final class Result<T> implements ResCode, Serializable {
+    /**
+     * 网络状态码
+     */
     private int status;
+    /**
+     * 是否弹窗提示错误
+     */
     private boolean thr;
+    /**
+     * 是否是分页返回结果
+     */
     private boolean pageable;
+    /**
+     * 业务状态码
+     */
     private String code;
+    /**
+     * 错误提示信息
+     */
     private String msg;
+    /**
+     * 业务数据
+     */
     private T data;
+    /**
+     * 错误详情
+     */
     private List<String> errs;
+    /**
+     * 分页返回参数：当前页码
+     */
     private Long page;
+    /**
+     * 分页返回参数：每页记录数
+     */
     private Long size;
+    /**
+     * 分页返回参数：总页码数
+     */
     private Long pages;
+    /**
+     * 分页返回参数：总记录条数
+     */
     private Long total;
 
     public Result<T> setErrs(List<String> errs) {
