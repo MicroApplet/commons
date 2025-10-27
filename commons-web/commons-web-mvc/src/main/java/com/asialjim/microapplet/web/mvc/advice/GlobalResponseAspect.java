@@ -176,7 +176,7 @@ public class GlobalResponseAspect implements ResponseBodyAdvice<Object> {
             Long size = pageData.getSize();
             Long pages = pageData.getPages();
             Long total = pageData.getTotal();
-            Collection<?> records = pageData.getRecords();
+            Collection<?> records = pageData.getData();
             body = Res.OK.page(page,size,pages,total,new ArrayList<>(records));
         }
 

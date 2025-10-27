@@ -18,9 +18,13 @@ package com.asialjim.microapplet.commons.web.feign;
 
 import com.asialjim.microapplet.common.cons.Headers;
 import com.asialjim.microapplet.common.exception.RsEx;
+import com.asialjim.microapplet.common.page.PageData;
 import com.asialjim.microapplet.common.utils.JsonUtil;
+import com.fasterxml.jackson.databind.JavaType;
 import feign.*;
+import lombok.val;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.MDC;
@@ -37,7 +41,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +150,23 @@ public class CommonsFeignConfig {
                 if (status >= 400)
                     new RsEx().setStatus(status).setThr(thr).setCode(code).setMsg(msg).setErrs(errs).cast();
 
+
+                String typeName = type.getTypeName();
+                if (StringUtils.startsWith(typeName, PageData.class.getTypeName())) {
+                    String[] params = typeName.replace(PageData.class.getTypeName(), StringUtils.EMPTY).replace("<", StringUtils.EMPTY)
+                            .replace(">", StringUtils.EMPTY).split(",");
+                    Class<?>[] classes = new Class[params.length];
+                    for (int i = 0; i < params.length; i++) {
+                        try {
+                            classes[i] = Class.forName(params[i]);
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    JavaType javaType = JsonUtil.instance.constructParameterizedType(PageData.class, classes);
+                    return JsonUtil.instance.toBean(response.body().asInputStream(), javaType);
+                }
                 return super.decode(response, type);
             }
 

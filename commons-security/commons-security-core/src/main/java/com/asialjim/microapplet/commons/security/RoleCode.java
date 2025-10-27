@@ -16,6 +16,9 @@
 
 package com.asialjim.microapplet.commons.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Objects;
 
 /**
@@ -26,6 +29,7 @@ import java.util.Objects;
  * @since 2025/10/15, &nbsp;&nbsp; <em>version:1.0</em>
  */
 public interface RoleCode {
+    Logger log = LoggerFactory.getLogger(RoleCode.class);
     String TOURIST_CODE = "tourist";
     long TOURIST_BIT = 1L;
     String TOURIST_DESC = "游客";
@@ -99,7 +103,7 @@ public interface RoleCode {
 
         long sourceBit = source.getBit();
         long targetBit = target.getBit();
-        return (sourceBit & targetBit) == targetBit;
+        return contains(sourceBit, targetBit);
     }
 
     static boolean contains(RoleCode source, Long target) {
@@ -107,8 +111,7 @@ public interface RoleCode {
             return false;
 
         long sourceBit = source.getBit();
-        long targetBit = target;
-        return (sourceBit & targetBit) == targetBit;
+        return contains(sourceBit, target);
     }
 
 
@@ -118,15 +121,18 @@ public interface RoleCode {
 
         long sourceBit = source;
         long targetBit = target;
-        return (sourceBit & targetBit) == targetBit;
+        long s = (sourceBit & targetBit);
+        boolean y = s == targetBit;
+        if (sourceBit != 31)
+            log.info("位运算： {}  &  {} == {}  结果： {}", sourceBit, target, s, y);
+        return y;
     }
 
     static boolean contains(Long source, RoleCode target) {
         if (Objects.isNull(source) || Objects.isNull(target))
             return false;
 
-        long sourceBit = source;
         long targetBit = target.getBit();
-        return (sourceBit & targetBit) == targetBit;
+        return contains(source, targetBit);
     }
 }

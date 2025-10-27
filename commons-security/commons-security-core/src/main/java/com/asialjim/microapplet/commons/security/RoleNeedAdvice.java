@@ -17,6 +17,7 @@
 package com.asialjim.microapplet.commons.security;
 
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,7 @@ import java.util.*;
  * @version 1.0
  * @since 2025/8/29, &nbsp;&nbsp; <em>version:1.0</em>
  */
+@Slf4j
 @Aspect
 @Component
 public class RoleNeedAdvice {
@@ -51,6 +53,7 @@ public class RoleNeedAdvice {
         if (Objects.isNull(roleNeed)) return;
         CurrentRoles currentRoles = this.currentRoleBean.currentRole();
         long role = currentRoles.hasRole();
+        log.info("CheckRole: {}",role);
         if (role == 0)
             AuthorityRes.NoRole.thr();
 
@@ -66,6 +69,7 @@ public class RoleNeedAdvice {
         final List<String> msg = new ArrayList<>();
         msg.add("至少需要满足以下任一角色[代码]");
         for (long l : roles) {
+            log.info("Any Check: {} contains: {}",role,l);
             if (RoleCode.contains(role, l))
                 return;
             msg.add(String.valueOf(l));
@@ -80,6 +84,7 @@ public class RoleNeedAdvice {
         msg.add("还需要满足以下角色[代码]");
         boolean tag = false;
         for (long l : roles) {
+            log.info("All Check: {} contains: {}",role,l);
             // 满足角色，下一个
             if (RoleCode.contains(role, l))
                 continue;

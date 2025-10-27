@@ -66,6 +66,11 @@ public final class MamsSession implements Serializable {
      * 角色位图
      */
     private long roleBit = 0;
+    private String rolBitStr;
+
+    public String getRoleBitStr(){
+        return String.valueOf(this.roleBit);
+    }
 
     /**
      * 添加角色
