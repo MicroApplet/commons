@@ -34,6 +34,12 @@ public class SseEvent<T> {
         }
     }
 
+    public String payloadStr() {
+        if (payload == null) return "";
+        if (type == SseEventType.DONE) return "[DONE]";
+        return JsonUtil.instance.toStr(payload);
+    }
+
     public String toSseFrame() {
         return getEventLine() + "\n" + getDataLine() + "\n\n";
     }
