@@ -52,6 +52,11 @@
                 <artifactId>commons-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.asialjim.microapplet</groupId>
+                <artifactId>commons-sse</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.asialjim.microapplet</groupId>
