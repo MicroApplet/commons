@@ -23,6 +23,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -36,6 +37,7 @@ import java.util.Objects;
  */
 @Data
 public class ConfProperty implements Serializable {
+    @Serial
     private static final long serialVersionUID = -4020732656042712641L;
 
     /**

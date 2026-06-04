@@ -27,12 +27,6 @@
     <artifactId>commons-web-flux</artifactId>
     <name>Commons Web Flux</name>
 
-    <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
         <!--suppress VulnerableLibrariesLocal -->
         <dependency>

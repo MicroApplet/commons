@@ -27,6 +27,7 @@ import com.mybatisflex.annotation.Table;
 import com.mybatisflex.core.keygen.KeyGenerators;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -41,6 +42,7 @@ import java.util.Objects;
 @Data
 @Table("sys_conf_property")
 public class ConfPropertyPo implements Serializable {
+    @Serial
     private static final long serialVersionUID = -2446896856552366694L;
 
     @Id(keyType = KeyType.Generator, value = KeyGenerators.snowFlakeId)

@@ -18,8 +18,11 @@ package com.asialjim.microapplet.common.page;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 分页参数
@@ -29,8 +32,9 @@ import java.io.Serializable;
  * @since 2025/3/28, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Data
-@AllArgsConstructor
+@Accessors(chain = true)
 public class PageParameter implements Serializable {
+    @Serial
     private static final long serialVersionUID = -5786924401647566489L;
     public static final String pageName = "page";
     public static final String sizeName = "size";
@@ -42,7 +46,11 @@ public class PageParameter implements Serializable {
         return new PageParameter(1,10);
     }
 
-    public static PageParameter pageOf(long page, long size) {
+    public static PageParameter pageOf(Long page, Long size) {
+        if (Objects.isNull(page))
+            page = 1L;
+        if (Objects.isNull(size))
+            size = 10L;
         return new PageParameter(page,size);
     }
 }

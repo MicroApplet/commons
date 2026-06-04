@@ -31,26 +31,54 @@
         <module>commons-web-mvc</module>
         <module>commons-web-flux</module>
         <module>commons-web-feign</module>
-        <module>commons-web-knife4j</module>
         <module>commons-web-tomcat</module>
         <module>commons-web-undertow</module>
+        <module>commons-web-nacos</module>
     </modules>
 
-    <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- ////// spring 相关 ////// -->
             <dependency>
-                <groupId>com.asialjim.microapplet</groupId>
-                <artifactId>commons-triple-dependencies</artifactId>
-                <version>${project.version}</version>
-                <scope>import</scope>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
+                <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- ////// spring 相关 ////// -->
+
+            <!-- ////// alibaba 相关 ////// -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud.ai</groupId>
+                <artifactId>spring-ai-alibaba-bom</artifactId>
+                <version>${spring-alibaba-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- ////// alibaba 相关 ////// -->
         </dependencies>
     </dependencyManagement>
 

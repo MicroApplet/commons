@@ -61,10 +61,9 @@ public class ConfBeanPostProcessor implements BeanPostProcessor, EnvironmentAwar
         if (Objects.isNull(annotation))
             return bean;
 
-        if (!(bean instanceof Conf))
+        if (!(bean instanceof Conf<?> source))
             throw new IllegalStateException("TypedConfiguration:" + bean + " must implements: " + Conf.class.getName());
 
-        Conf<?> source = (Conf<?>) bean;
         Conf<?> defaultConf = source.deftConf();
         ConfType type = annotation.type();
         String business = annotation.business();

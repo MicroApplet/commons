@@ -88,7 +88,9 @@
         <maven.compiler.target>25</maven.compiler.target>
         <spring-boot.version>4.0.6</spring-boot.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
+        <spring-ai.version>1.1.7</spring-ai.version>
         <spring-cloud-alibaba.version>2025.1.0.0</spring-cloud-alibaba.version>
+        <spring-alibaba-ai.version>1.1.2.0</spring-alibaba-ai.version>
         <mybatis-flex.version>1.9.4</mybatis-flex.version>
         <mybatis-plus.version>3.5.10.1</mybatis-plus.version>
         <hikaricp.version>4.0.3</hikaricp.version>

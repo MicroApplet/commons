@@ -16,11 +16,10 @@
 
 package com.asialjim.microapplet.common.context;
 
-import com.asialjim.microapplet.common.exception.BusinessException;
-import com.asialjim.microapplet.common.exception.SystemException;
+import com.asialjim.microapplet.common.exception.RsEx;
 
-import java.util.Collections;
 import java.util.List;
+
 
 /**
  * 通用响应代码
@@ -30,103 +29,154 @@ import java.util.List;
  * @since 2025/2/24, &nbsp;&nbsp; <em>version:1.0</em>
  */
 public interface ResCode {
-    boolean isSuccess();
-
-    default int getStatus() {
-        return 200;
-    }
 
     /**
-     * 响应代码
+     * 获得地位
+     *
+     * @return int
+     */
+    int getStatus();
+
+    /**
+     * 是用力推
+     *
+     * @return boolean
+     */
+    boolean isThr();
+
+    /**
+     * 获取代码
+     *
+     * @return {@link String}
      */
     String getCode();
 
     /**
-     * 响应消息
+     * 得到味精
+     *
+     * @return {@link String}
      */
     String getMsg();
 
-    default String getTrace() {
-        return "";
-    }
-
+    /**
+     * 创建
+     *
+     * @return {@link Result<T>}
+     */
     default <T> Result<T> create() {
-        return create(null, Collections.emptyList());
+        return result(null);
     }
 
-    default <T> Result<T> create(T data) {
-        return create(data, Collections.emptyList());
+    /**
+     * 创建
+     *
+     * @param body 身体
+     * @return {@link Result<T>}
+     */
+    default <T> Result<T> create(T body) {
+        return result(body);
     }
 
-    default <T> Result<T> create(List<Object> errs) {
-        return create(null, errs);
+    /**
+     * 结果
+     *
+     * @return {@link Result<Void>}
+     */
+    default<T> Result<T> result() {
+        return result(null);
     }
 
-    default <T> Result<T> create(T data, List<Object> errs) {
-        return create(getMsg(), data, errs);
+    /**
+     * 结果
+     *
+     * @param data 数据
+     * @return {@link Result<T>}
+     */
+    default <T> Result<T> result(T data) {
+        return result(data, null);
     }
 
-    default <T> Result<T> create(String msg, T data, List<Object> errs) {
-        return create(getCode(), msg, data, errs);
+    /**
+     * 结果犯错误
+     *
+     * @param errs 犯错误
+     * @return {@link Result<T>}
+     */
+    default <T> Result<T> resultErrs(List<String> errs) {
+        return result(null, errs);
     }
 
-    default <T> Result<T> create(String code, String msg, T data, List<Object> errs) {
-        return create(isSuccess(), code, msg, data, errs);
+    /**
+     * 结果
+     *
+     * @param data 数据
+     * @param errs 犯错误
+     * @return {@link Result<T>}
+     */
+    default <T> Result<T> result(T data, List<String> errs) {
+        return new Result<T>().setStatus(getStatus()).setPageable(false).setThr(isThr()).setCode(getCode()).setMsg(getMsg()).setData(data).setErrs(errs);
     }
 
-    default <T> Result<T> create(boolean success, String code, String msg, T data, List<Object> errs) {
-        return new Result<T>().setStatus(getStatus()).setSuccess(success).setCode(code).setMsg(msg).setData(data).setErrs(errs);
+    /**
+     * 页面
+     *
+     * @param page  页面
+     * @param size  大小
+     * @param pages 页面
+     * @param total 总计
+     * @param data  数据
+     * @return {@link Result<List<T>>}
+     */
+    default <T> Result<List<T>> page(int page, int size, int pages, int total, List<T> data) {
+        return page(page, size, pages, (long) total, data);
     }
 
-    default <T> Result<T> create(boolean success, int status, String code, String msg, T data, List<Object> errs) {
-        return new Result<T>().setStatus(status).setSuccess(success).setCode(code).setMsg(msg).setData(data).setErrs(errs);
+    default <T> Result<List<T>> page(long page, long size, long pages, long total, List<T> data) {
+        return new Result<List<T>>().setStatus(getStatus())
+                .setPageable(true)
+                .setThr(isThr())
+                .setCode(getCode())
+                .setMsg(getMsg())
+                .setData(data)
+                .setPage(page)
+                .setSize(size)
+                .setPages(pages)
+                .setTotal(total);
     }
 
-    default BusinessException bizException() {
-        return new BusinessException(getStatus(), getCode(), getMsg());
+    /**
+     * 交货
+     *
+     * @return {@link RsEx}
+     */
+    default RsEx ex() {
+        return ex(null);
     }
 
-    default SystemException sysException() {
-        return new SystemException(getStatus(), getCode(), getMsg(), getTrace());
+    /**
+     * 交货
+     *
+     * @param errs 犯错误
+     * @return {@link RsEx}
+     */
+    default RsEx ex(List<String> errs) {
+        return new RsEx().setStatus(getStatus()).setThr(isThr()).setCode(getCode()).setMsg(getMsg()).setErrs(errs);
     }
 
-    default SystemException sysException(String trace) {
-        return new SystemException(getStatus(), getCode(), getMsg(), trace);
+    /**
+     * 用力推
+     */
+    default void thr() {
+        ex().cast();
     }
 
-    default void throwBiz() {
-        throw bizException();
+    /**
+     * 用力推
+     *
+     * @param errs 犯错误
+     */
+    default void thr(List<String> errs) {
+        ex(errs).cast();
     }
 
-    default void throwSys() {
-        throw sysException();
-    }
-
-    default void throwSys(String trace) {
-        throw sysException(trace);
-    }
-
-    static <T> Result<T> of(String code, String msg) {
-        return new Result<T>().setStatus(200).setSuccess(true).setCode(code).setMsg(msg);
-    }
-
-    static <T> Result<T> of(boolean success, String code, String msg) {
-        return new Result<T>().setStatus(200).setSuccess(success).setCode(code).setMsg(msg);
-    }
-
-    static <T> Result<T> of(int status, String code, String msg) {
-        return new Result<T>().setStatus(status).setSuccess(status >= 200 && status < 400).setCode(code).setMsg(msg);
-    }
-
-    static <T> Result<T> of(boolean success, int status, String code, String msg) {
-        return new Result<T>().setStatus(status).setSuccess(success).setCode(code).setMsg(msg);
-    }
-
-    static <T> Result<T> of(boolean success, int status, String code, String msg, T data) {
-        return new Result<T>().setStatus(status).setSuccess(success).setCode(code).setMsg(msg).setData(data);
-    }
-
-    static <T> Result<T> of(boolean success, int status, String code, String msg, T data, List<Object> errs) {
-        return new Result<T>().setStatus(status).setSuccess(success).setCode(code).setMsg(msg).setData(data).setErrs(errs);
-    }
 }

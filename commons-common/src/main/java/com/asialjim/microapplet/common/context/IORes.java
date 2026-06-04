@@ -29,22 +29,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum IORes implements ResCode {
-    IOErr("-11", "IO异常"),
-    TimeoutErr("-12", "任务超时异常"),
-    SocketTimeoutErr("-13","网络超时"),
-    OK("0","Ok"){
-        @Override
-        public boolean isSuccess() {
-            return true;
-        }
-    };
+    IOErr(500,true,"-11", "IO异常"),
+    TimeoutErr(500,true,"-12", "任务超时异常"),
+    SocketTimeoutErr(500,true,"-13","网络超时"),
+    OK(200,false,"0","Ok");
 
+    private final int status;
+    private final boolean thr;
     private final String code;
     private final String msg;
-
-
-    @Override
-    public boolean isSuccess() {
-        return false;
-    }
 }

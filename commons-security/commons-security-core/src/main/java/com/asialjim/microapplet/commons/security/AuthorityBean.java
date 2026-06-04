@@ -16,8 +16,6 @@
 
 package com.asialjim.microapplet.commons.security;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,19 +30,4 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class AuthorityBean {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public RoleService unSupportRoleService() {
-        return userid -> {
-            throw new UnsupportedOperationException("不支持查询用户角色");
-        };
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public PermissionService unSupportPermissionService() {
-        return userid -> {
-            throw new UnsupportedOperationException("不支持查询用户权限列表");
-        };
-    }
 }

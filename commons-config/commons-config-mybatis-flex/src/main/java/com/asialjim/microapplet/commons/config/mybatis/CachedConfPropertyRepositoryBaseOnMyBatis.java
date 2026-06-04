@@ -19,10 +19,10 @@ package com.asialjim.microapplet.commons.config.mybatis;
 import com.asialjim.microapplet.commons.config.core.*;
 import com.asialjim.microapplet.commons.config.mybatis.po.ConfPropertyPo;
 import com.asialjim.microapplet.commons.config.mybatis.service.ConfPropertyMapperService;
+import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;

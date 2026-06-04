@@ -30,7 +30,7 @@ public interface Permission {
      *
      * @since 2025/3/11
      */
-    long getCode();
+    String getCode();
 
     /**
      * 权限描述

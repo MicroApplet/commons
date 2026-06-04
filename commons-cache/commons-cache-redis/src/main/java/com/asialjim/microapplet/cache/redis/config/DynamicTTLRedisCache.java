@@ -16,6 +16,7 @@
 
 package com.asialjim.microapplet.cache.redis.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.support.NullValue;
 import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -33,6 +34,7 @@ import java.util.Objects;
  * @version 1.0
  * @since 2025/2/28, &nbsp;&nbsp; <em>version:1.0</em>
  */
+@Slf4j
 public class DynamicTTLRedisCache extends RedisCache {
     private static final byte[] BINARY_NULL_VALUE = RedisSerializer.java().serialize(NullValue.INSTANCE);
 
@@ -65,8 +67,10 @@ public class DynamicTTLRedisCache extends RedisCache {
                 ? BINARY_NULL_VALUE
                 : ByteUtils.getBytes(this.configuration.getValueSerializationPair().write(value));
 
+        if (log.isDebugEnabled())
+            log.debug("添加缓存，Key: {}, Value: {}, 过期时间: {}", key, value, ttl);
         // 缓存时间不为空
-        if  (Objects.nonNull(ttl) && !Duration.ZERO.equals(ttl))
+        if (Objects.nonNull(ttl) && !Duration.ZERO.equals(ttl))
             // 自定义写入逻辑
             //noinspection DataFlowIssue
             getNativeCache().put(name, keyBytes, valueBytes, ttl);

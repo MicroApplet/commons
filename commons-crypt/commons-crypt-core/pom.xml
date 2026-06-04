@@ -27,32 +27,8 @@
     <artifactId>commons-crypt-core</artifactId>
     <name>Commons Crypt Core</name>
 
-    <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.asialjim.microapplet</groupId>
-                <artifactId>commons-triple-dependencies</artifactId>
-                <version>${project.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- BouncyCastle 国密支持 -->
         <!--suppress VulnerableLibrariesLocal -->

@@ -16,15 +16,17 @@
 
 package com.asialjim.microapplet.common.page;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * 分页数据
@@ -34,47 +36,56 @@ import java.util.Objects;
  * @since 2025/3/28, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Accessors(chain = true)
 public class PageData<T> implements Serializable {
+    @Serial
     private static final long serialVersionUID = 5125243427769117213L;
 
-    /** 当前页码*/
+    /**
+     * 当前页码
+     */
     private Long page;
-    /** 总页码*/
+    /**
+     * 总页码
+     */
     private Long pages;
-    /** 页宽度*/
+    /**
+     * 页宽度
+     */
     private Long size;
-    /** 当前页记录条数*/
-    private Long recordSize;
-    /** 总记录条数*/
+    /**
+     * 总记录条数
+     */
     private Long total;
-    /** 是否有下一页*/
-    private Boolean hasNext;
-    /** 当前页记录*/
-    private Collection<T> records;
 
-    @SuppressWarnings("unused")
+    /**
+     * 当前页记录
+     */
+    private Collection<T> data;
+
     public PageData(Collection<T> records) {
-        this.records = records;
+        this.data = records;
         this.page = 1L;
         this.pages = 1L;
         this.size = Objects.nonNull(records) ? records.size() : 0L;
-        this.recordSize = this.size;
         this.total = this.size;
-        this.hasNext = false;
     }
 
-    @SuppressWarnings("unused")
-    public Boolean getHasNext() {
-        return this.getPage() < this.getPages();
-    }
+    public static <Q, R> PageData<R> of(PageData<Q> source, Function<Q, R> function) {
+        List<R> collect = Optional.ofNullable(source)
+                .map(PageData::getData)
+                .stream()
+                .flatMap(Collection::stream)
+                .map(function)
+                .toList();
 
-    @SuppressWarnings("unused")
-    public Long getRecordSize() {
-        return Objects.nonNull(records) ? records.size() : 0L;
+
+        return new PageData<>(collect)
+                .setPage(Optional.ofNullable(source).map(PageData::getPage).orElse(1L))
+                .setSize(Optional.ofNullable(source).map(PageData::getSize).orElse(1L))
+                .setPages(Optional.ofNullable(source).map(PageData::getPages).orElse(1L))
+                .setTotal(Optional.ofNullable(source).map(PageData::getTotal).orElse(1L));
     }
 
     public Long getPages() {

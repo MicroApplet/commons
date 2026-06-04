@@ -26,24 +26,20 @@
     <artifactId>commons-mybatis-plus</artifactId>
     <name>Commons MyBatis Plus</name>
 
-    <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-extension</artifactId>
-            <scope>provide</scope>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.asialjim.microapplet</groupId>
             <artifactId>commons-common</artifactId>
-            <version>${project.version}</version>
+            <version>3.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
+
     </dependencies>
 
 

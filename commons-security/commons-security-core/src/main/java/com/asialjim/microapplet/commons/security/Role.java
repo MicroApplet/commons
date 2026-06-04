@@ -16,7 +16,9 @@
 
 package com.asialjim.microapplet.commons.security;
 
-import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * 角色
@@ -25,15 +27,52 @@ import java.util.List;
  * @version 1.0
  * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-public interface Role {
+@Getter
+@AllArgsConstructor
+public enum Role implements RoleCode {
+    /**
+     * 登录用户
+     */
+    Authenticated(AUTHENTICATED_CODE, AUTHENTICATED_BIT, AUTHENTICATED_DESC),
+    /**
+     * 手机用户
+     */
+    Phone(PHONE_CODE, PHONE_BIT, PHONE_DESC),
+    /**
+     * 微信用户
+     */
+    WeChatUser(WECHAT_USER_CODE, WECHAT_USER_BIT, WECHAT_USER_DESC),
+    /**
+     * 证件用户
+     */
+    IdCardUser(ID_CARD_USER_CODE, ID_CARD_USER_BIT, ID_CARD_USER_DESC),
+    /**
+     * 银行卡用户
+     */
+    BankCardUser(BANK_CARD_USER_CODE, BANK_CARD_USER_BIT, BANK_CARD_USER_DESC),
 
     /**
-     * 角色编号: 建议使用位运算，可快速判定用户是否具有某种角色
+     * 员工
      */
-    long getCode();
-
+    Employee(EMPLOYEE_CODE, EMPLOYEE_BIT, EMPLOYEE_DESC),
     /**
-     * 角色描述信息
+     * 后管用户
      */
-    String getDesc();
+    CMSUser(CMS_CODE, CMS_BIT, CMS_DESC),
+    /**
+     * 系统管理员
+     */
+    System(SYSTEM_CODE, SYSTEM_BIT, SYSTEM_DESC),
+    /**
+     * 超管
+     */
+    Root(ROOT_CODE, ROOT_BIT, ROOT_DESC),
+    /**
+     * 游客
+     */
+    Tourist(TOURIST_CODE, TOURIST_BIT, TOURIST_DESC);
+
+    public final String code;
+    private final long bit;
+    private final String desc;
 }

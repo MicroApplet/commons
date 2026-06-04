@@ -1,0 +1,74 @@
+/*
+ * Copyright 2014-2025 <a href="mailto:asialjim@qq.com">Asial Jim</a>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.asialjim.microapplet.web.mvc.advice;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.stereotype.Component;
+
+import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 全局响应结果包装通知
+ *
+ * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
+ * @version 1.0
+ * @since 2025/9/24, &nbsp;&nbsp; <em>version:1.0</em>
+ */
+@Slf4j
+@Aspect
+@Component
+public class GlobalControllerAdvice {
+
+    @Around(value = "@within(org.springframework.web.bind.annotation.RestController) || @within(org.springframework.stereotype.Controller)")
+    public Object advice(ProceedingJoinPoint joinPoint) throws Throwable {
+        final StringJoiner logJ = new StringJoiner("\r\n");
+        logJ.add(StringUtils.EMPTY);
+
+        final MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        final String typeName = signature.getDeclaringType().getSimpleName();
+        final String methodName = signature.getMethod().getName();
+        final String handler = typeName + "." + methodName;
+
+        Object proceed = null;
+        final StopWatch stopWatch = new StopWatch();
+        try {
+            stopWatch.start();
+            proceed = joinPoint.proceed();
+            return proceed;
+        } catch (Throwable throwable) {
+            if (log.isDebugEnabled())
+                log.debug("\r\nXX处理器：{} 执行异常：{}", handler, throwable.getMessage(), throwable);
+            logJ.add("\r\nXX处理器：" + handler + " 执行异常：" + throwable.getMessage());
+            throw throwable;
+        } finally {
+            stopWatch.stop();
+            final long time = stopWatch.getTime(TimeUnit.MILLISECONDS);
+            logJ.add("==处理器：" + handler + " 耗时：" + time + " 毫秒");
+            if (Objects.nonNull(proceed))
+                logJ.add("<<结  果: " + proceed);
+            log.info(logJ.toString());
+        }
+    }
+}

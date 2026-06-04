@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * 证件类型
@@ -29,23 +30,24 @@ import java.util.Arrays;
  * @version 1.0
  * @since 2025/4/10, &nbsp;&nbsp; <em>version:1.0</em>
  */
+@Getter
 @AllArgsConstructor
 @SuppressWarnings("LombokGetterMayBeUsed")
 public enum IdCardType {
-    ResidentIdentityCard("01", "ResidentIdentityCard", "居民身份证"),
-    HouseholdRegister("02", "HouseholdRegister", "户口簿"),
-    DriverLicense("03", "DriverLicense", "驾驶证"),
-    SocialSecurityCard("04", "SocialSecurityCard", "社会保障卡"),
-    MilitaryID("05", "MilitaryID", "军官证"),
-    PoliceOfficerID("06", "PoliceOfficerID", "警官证"),
-    OfficerID("07", "OfficerID", "公务员证"),
-    HongKongMacaoPass("08", "HongKongMacaoPass", "港澳通行证"),
-    TaiwanPass("09", "TaiwanPass", "台湾通行证"),
-    BorderPass("10", "BorderPass", "边境通行证"),
-    SeamanBook("11", "SeamanBook", "海员证"),
-    LawyerLicense("12", "LawyerLicense", "律师执业证"),
-    ForResCard("13","ForResCard","外国人居住证"),
-    Passport("99", "Passport", "护照");
+    ResidentIdentityCard("01", "ResidentIdentityCard", "居民身份证",6,4),
+    HouseholdRegister("02", "HouseholdRegister", "户口簿",6,4),
+    DriverLicense("03", "DriverLicense", "驾驶证",6,4),
+    SocialSecurityCard("04", "SocialSecurityCard", "社会保障卡",6,4),
+    MilitaryID("05", "MilitaryID", "军官证",1,1),
+    PoliceOfficerID("06", "PoliceOfficerID", "警官证",1,1),
+    OfficerID("07", "OfficerID", "公务员证",1,1),
+    HongKongMacaoPass("08", "HongKongMacaoPass", "港澳通行证",3,3),
+    TaiwanPass("09", "TaiwanPass", "台湾通行证",3,3),
+    BorderPass("10", "BorderPass", "边境通行证",3,3),
+    SeamanBook("11", "SeamanBook", "海员证",3,3),
+    LawyerLicense("12", "LawyerLicense", "律师执业证",3,3),
+    ForResCard("13","ForResCard","外国人居住证",3,3),
+    Passport("99", "Passport", "护照",6,4);
 
     /**
      * 证件类型代码
@@ -60,20 +62,20 @@ public enum IdCardType {
      * 证件类型中文名
      */
     private final String cnName;
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getEnName() {
-        return enName;
-    }
-
-    public String getCnName() {
-        return cnName;
-    }
+    /**
+     * 脱敏保留证件号左边多少位
+     */
+    private final int sensitiveLeft;
+    /**
+     * 脱敏保留证件号右边多少位
+     */
+    private final int sensitiveRight;
 
     public static IdCardType codeOf(String code) {
-        return Arrays.stream(values()).filter(item -> StringUtils.equals(code, item.getCode())).findFirst().orElse(null);
+        return codeOfOpt(code).orElse(null);
+    }
+
+    public static Optional<IdCardType> codeOfOpt(String code){
+        return Arrays.stream(values()).filter(item -> StringUtils.equals(code, item.getCode())).findFirst();
     }
 }

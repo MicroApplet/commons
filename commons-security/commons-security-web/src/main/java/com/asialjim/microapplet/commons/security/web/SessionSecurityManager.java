@@ -16,10 +16,9 @@
 
 package com.asialjim.microapplet.commons.security.web;
 
-import com.asialjim.microapplet.common.exception.UnLoginException;
 import com.asialjim.microapplet.commons.security.SecurityManager;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 会话安全管理器
@@ -44,5 +43,5 @@ public interface SessionSecurityManager extends SecurityManager {
     /**
      * 登录检查
      */
-    void doLoginCheck(HttpServletRequest request) throws UnLoginException;
+    void doLoginCheck(HttpServletRequest request) ;
 }

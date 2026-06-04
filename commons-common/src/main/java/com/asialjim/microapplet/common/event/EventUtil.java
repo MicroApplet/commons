@@ -1,26 +1,27 @@
 /*
- * Copyright 2014-2025 <a href="mailto:asialjim@qq.com">Asial Jim</a>
+ *    Copyright 2014-2025 <a href="mailto:asialjim@qq.com">Asial Jim</a>
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *        http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  */
 
 package com.asialjim.microapplet.common.event;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -39,27 +40,36 @@ import java.util.concurrent.Executors;
  * @version 1.0
  * @since 2025/2/27, &nbsp;&nbsp; <em>version:1.0</em>
  */
+@Slf4j
 @Setter
 @Component
-@SuppressWarnings("rawtypes")
-public class EventUtil implements ApplicationContextAware, InitializingBean {
-    private static final Map<Type, Set<Listener>> listenerHub = new HashMap<>();
+public class EventUtil implements ApplicationContextAware, CommandLineRunner {
+    private static final Map<Type, Set<Listener<?>>> listenerHub = new HashMap<>();
     private ApplicationContext applicationContext;
 
-    public static void add(Type type, Listener listener) {
+    private static void add(Type type, Listener<?> listener) {
         if (Objects.isNull(type) || Objects.isNull(listener))
             return;
 
-        Set<Listener> listeners = listenerHub.get(type);
+        if (!StringUtils.startsWith(type.toString(), "class"))
+            return;
+
+        Set<Listener<?>> listeners = listenerHub.get(type);
         if (Objects.isNull(listeners)) {
             listeners = new HashSet<>();
             listenerHub.put(type, listeners);
         }
+
+        if (listeners.contains(listener))
+            return;
+        if (log.isDebugEnabled())
+            log.info("事件总线注册事件：{} 监听器：{}", type, listener);
         listeners.add(listener);
     }
 
+
     @Override
-    public void afterPropertiesSet() {
+    public void run(String... args) throws Exception {
         Executor executor;
         String[] executorNames = applicationContext.getBeanNamesForType(Executor.class);
         if (ArrayUtils.isEmpty(executorNames)) {
@@ -70,7 +80,7 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
 
         String[] names = applicationContext.getBeanNamesForType(Listener.class);
         for (String name : names) {
-            Listener bean = applicationContext.getBean(name, Listener.class);
+            Listener<?> bean = applicationContext.getBean(name, Listener.class);
             putListener(bean, executor);
         }
     }
@@ -92,13 +102,12 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
         }
     }
 
-    public static void putListener(Listener bean, Executor executor) {
-        if (bean instanceof BaseAsyncListener) {
-            BaseAsyncListener baseAsyncListener = (BaseAsyncListener) bean;
+    public static void putListener(Listener<?> bean, Executor executor) {
+        if (bean instanceof BaseAsyncListener<?> baseAsyncListener) {
             baseAsyncListener.setExecutor(executor);
         }
 
-        Class beanClass = bean.getClass();
+        Class<?> beanClass = bean.getClass();
         if (AopUtils.isAopProxy(bean)) {
             beanClass = AopUtils.getTargetClass(bean);
         }
@@ -110,22 +119,20 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
         }
     }
 
-    private static void addType(Listener bean, Type type) {
+    private static void addType(Listener<?> bean, Type type) {
         if (Objects.isNull(type))
             return;
 
-        if (!(type instanceof ParameterizedType))
+        if (!(type instanceof ParameterizedType parameterizedType))
             return;
 
-        ParameterizedType parameterizedType = (ParameterizedType) type;
         Type rawType = parameterizedType.getRawType();
         if (!candidateType(rawType))
             return;
 
         // 获取接口的泛型参数
         Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-        //noinspection RedundantLengthCheck
-        if (Objects.isNull(actualTypeArguments) || actualTypeArguments.length == 0)
+        if (ArrayUtils.isEmpty(actualTypeArguments))
             return;
 
         for (Type actualTypeArgument : actualTypeArguments) {
@@ -147,24 +154,16 @@ public class EventUtil implements ApplicationContextAware, InitializingBean {
         }
     }
 
-    @SuppressWarnings("unused")
-    public static <E> void push(Optional<E> event) {
-        event.ifPresent(EventUtil::push);
-    }
-
-    public static <E> E push(E event) {
+    public static <E> void push(E event) {
         if (Objects.isNull(event))
-            //noinspection ConstantValue
-            return event;
-        Class<?> aClass = event.getClass();
+            return;
 
-        Set<Listener> listeners = listenerHub.get(aClass);
+        Set<Listener<?>> listeners = listenerHub.get(event.getClass());
         if (CollectionUtils.isEmpty(listeners))
-            return event;
-        for (Listener listener : listeners) {
+            return;
+        for (Listener<?> listener : listeners) {
             //noinspection unchecked
-            listener.onEvent(event);
+            ((Listener<E>) listener).onEvent(event);
         }
-        return event;
     }
 }

@@ -26,12 +26,6 @@
     <artifactId>commons-config-mybatis-flex</artifactId>
     <name>Commons Config MyBatis Plus</name>
 
-    <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
         <!--suppress VulnerableLibrariesLocal -->
         <dependency>
@@ -39,6 +33,7 @@
             <artifactId>commons-config-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.mybatis-flex</groupId>
             <artifactId>mybatis-flex-core</artifactId>

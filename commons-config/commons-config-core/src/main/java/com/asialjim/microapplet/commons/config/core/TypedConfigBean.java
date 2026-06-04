@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Comparator;
 import java.util.TreeSet;
 
 /**
@@ -35,16 +36,16 @@ import java.util.TreeSet;
 public class TypedConfigBean {
     @Bean
     @ConditionalOnMissingBean
-    public ConfPropertyRepository confPropertyRepository(){
-        return new ConfPropertyRepository(){
+    public ConfPropertyRepository confPropertyRepository() {
+        return new ConfPropertyRepository() {
             @Override
             public TreeSet<ConfProperty> query(ConfType type, String business, String code, Env env) {
-                throw new UnsupportedOperationException("通用配置信息仓库：ConfPropertyRepository 未配置");
+                return new TreeSet<>(Comparator.comparingInt(ConfProperty::getVersion));
             }
 
             @Override
             public void put(ConfProperty confProperty) {
-                throw new UnsupportedOperationException("通用配置信息仓库：ConfPropertyRepository 未配置");
+                // do nothing here
             }
         };
     }
