@@ -36,7 +36,12 @@ public enum SystemResCode implements ResCode {
     private final String msg;
 
     @Override
-    public boolean isSuccess() {
+    public int getStatus() {
+        return 400;
+    }
+
+    @Override
+    public boolean isThr() {
         return false;
     }
 }

@@ -17,8 +17,6 @@
 package com.asialjim.microapplet.commons.security;
 
 
-import com.asialjim.microapplet.common.security.MamsSession;
-
 /**
  * 安全管理器:
  *

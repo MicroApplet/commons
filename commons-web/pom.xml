@@ -32,7 +32,6 @@
         <module>commons-web-flux</module>
         <module>commons-web-feign</module>
         <module>commons-web-tomcat</module>
-        <module>commons-web-undertow</module>
         <module>commons-web-nacos</module>
     </modules>
 

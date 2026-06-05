@@ -41,9 +41,9 @@ public class BusinessException extends RuntimeException implements ResCode {
     public String getMessage() {
         return this.msg;
     }
-
     @Override
-    public boolean isSuccess() {
+    public boolean isThr() {
         return false;
     }
+
 }

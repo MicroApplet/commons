@@ -28,13 +28,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.cloud.openfeign.support.FeignHttpMessageConverters;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -123,12 +125,11 @@ public class CommonsFeignConfig {
     /**
      * 假装响应拦截器
      *
-     * @param messageConverters 消息转换器
      * @return {@link SpringDecoder}
      */
     @Bean
-    public SpringDecoder feignResponseInterceptor(ObjectFactory<HttpMessageConverters> messageConverters) {
-        return new SpringDecoder(messageConverters) {
+    public SpringDecoder feignResponseInterceptor(ObjectProvider<FeignHttpMessageConverters> converters) {
+        return new SpringDecoder(converters) {
 
             @Override
             public Object decode(Response response, Type type) throws IOException, FeignException {

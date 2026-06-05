@@ -42,7 +42,7 @@ public class SystemException extends RuntimeException implements ResCode {
     }
 
     @Override
-    public boolean isSuccess() {
+    public boolean isThr() {
         return false;
     }
 

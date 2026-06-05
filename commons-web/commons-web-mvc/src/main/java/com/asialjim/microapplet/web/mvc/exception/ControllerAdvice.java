@@ -35,13 +35,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 基础错误增强
@@ -52,6 +51,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @RestControllerAdvice
+@SuppressWarnings("NullableProblems")
 public class ControllerAdvice {
 
     @ExceptionHandler(BusinessException.class)
@@ -77,7 +77,7 @@ public class ControllerAdvice {
     public Result<Void> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         String parameterName = e.getParameterName();
         log.info("关键参数：{} 缺失异常", parameterName);
-        return Res.KeyParameterEmptyErr.create(Collections.singletonList(parameterName));
+        return Res.ParameterEmptyEx.ex(Collections.singletonList(parameterName)).result();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -85,7 +85,7 @@ public class ControllerAdvice {
     public Result<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         String name = e.getName();
         log.info("关键参数：{} 类型异常", name);
-        return Res.KeyParameterTypeErr.create(Collections.singletonList(name));
+        return Res.ParameterTypeEx.ex(Collections.singletonList(name)).result();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -93,21 +93,20 @@ public class ControllerAdvice {
     public Result<Void> handleIllegalArgumentException(IllegalArgumentException e) {
         String message = e.getMessage();
         log.info("关键参数：{} 非法", message);
-        return Res.KeyParameterIllegal.create(Collections.singletonList(message));
+        return Res.ParameterIllegalEx.ex(Collections.singletonList(message)).result();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public Result<Void> handleIllegalArgumentException(BindException e) {
-        List<Object> errors = Optional.ofNullable(e)
+        List<String> errors = Optional.ofNullable(e)
                 .map(BindException::getBindingResult)
                 .map(Errors::getAllErrors)
-                .map(Collection::stream)
-                .orElseGet(Stream::empty)
+                .stream().flatMap(Collection::stream)
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
         log.info("参数验证错误：{}", errors);
-        return Res.KeyParameterIllegal.create(errors);
+        return Res.ParameterIllegalEx.ex(errors).result();
     }
 
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
@@ -115,7 +114,7 @@ public class ControllerAdvice {
     public Result<Void> handleTimeoutException(TimeoutException e) {
         String message = e.getMessage();
         log.info("系统超时：{}", message);
-        return IORes.TimeoutErr.create(Collections.singletonList(message));
+        return IORes.TimeoutErr.ex(Collections.singletonList(message)).result();
     }
 
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
@@ -123,7 +122,7 @@ public class ControllerAdvice {
     public Result<Void> handleTimeoutException(SocketTimeoutException e) {
         String message = e.getMessage();
         log.info("三方系统网络超时：{}", message);
-        return IORes.SocketTimeoutErr.create(Collections.singletonList(message));
+        return IORes.SocketTimeoutErr.ex(Collections.singletonList(message)).result();
     }
 
     @ExceptionHandler(IOException.class)
@@ -137,7 +136,7 @@ public class ControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
     public Result<Void> throwable(Throwable e, HttpServletRequest request) {
         String logLevel = request.getHeader(HttpHeaderCons.HTTPLogLevel);
-        List<Object> errs = new ArrayList<>();
+        List<String> errs = new ArrayList<>();
         errs.add(e.getMessage());
         errs.add("\r\n");
         for (Throwable throwable : e.getSuppressed()) {
@@ -145,10 +144,11 @@ public class ControllerAdvice {
         }
 
         log.error("未明确类型错误：{} >>> {}",e.getMessage(), errs);
+        //noinspection deprecation
         if (StringUtils.equalsIgnoreCase(logLevel, "debug")) {
-            return Res.SysBusy.create(errs);
+            return Res.SysErr.resultErrs((errs));
         }
 
-        return Res.SysBusy.create();
+        return Res.SysErr.create();
     }
 }

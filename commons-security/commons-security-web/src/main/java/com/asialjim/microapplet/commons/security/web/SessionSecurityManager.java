@@ -16,8 +16,6 @@
 
 package com.asialjim.microapplet.commons.security.web;
 
-import com.asialjim.microapplet.commons.security.SecurityManager;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -27,7 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * @version 1.0
  * @since 2025/3/11, &nbsp;&nbsp; <em>version:1.0</em>
  */
-public interface SessionSecurityManager extends SecurityManager {
+public interface SessionSecurityManager {
 
     default boolean skip(HttpServletRequest request) {
         return false;
