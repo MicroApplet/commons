@@ -16,19 +16,11 @@
 
 package com.asialjim.microapplet.web.mvc.config;
 
-import com.asialjim.microapplet.common.utils.JacksonUtil;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.util.Assert;
-
-import java.util.Map;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 
 /**
  * 基于 jackson 的 HTTP 消息配置
@@ -43,27 +35,15 @@ public class JacksonHttpMessageConfiguration {
 
     @Bean
     @Primary
-    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+    public JacksonJsonHttpMessageConverter mappingJackson2HttpMessageConverter() {
 
         return mapperData();
         //return mapperDefault();
     }
 
-    private MappingJackson2HttpMessageConverter mapperData() {
-        Map<Class<?>, JsonSerializer<?>> serializers = JacksonUtil.serializers();
-        Map<Class<?>, JsonDeserializer<?>> deserializers = JacksonUtil.deserializers();
-
-        ObjectMapper mapper = Jackson2ObjectMapperBuilder.json()
-                .serializersByType(serializers)
-                .deserializersByType(deserializers)
-                .build();
-        return new MappingJackson2HttpMessageConverter(mapper);
+    private JacksonJsonHttpMessageConverter mapperData() {
+        // todo
+        return new JacksonJsonHttpMessageConverter();
     }
 
-    private MappingJackson2HttpMessageConverter mapperDefault() {
-        ObjectMapper build = Jackson2ObjectMapperBuilder.json().build();
-        ObjectMapper mapper = JacksonUtil.init(build);
-        Assert.notNull(mapper, "mapper cannot be null");
-        return new MappingJackson2HttpMessageConverter(mapper);
-    }
 }

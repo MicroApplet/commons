@@ -20,14 +20,12 @@ import com.asialjim.microapplet.common.cons.Headers;
 import com.asialjim.microapplet.common.exception.RsEx;
 import com.asialjim.microapplet.common.page.PageData;
 import com.asialjim.microapplet.common.utils.JsonUtil;
-import com.fasterxml.jackson.databind.JavaType;
 import feign.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.support.FeignHttpMessageConverters;
@@ -36,7 +34,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -49,6 +46,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
+import tools.jackson.databind.JavaType;
 
 import static com.asialjim.microapplet.common.cons.Headers.*;
 
@@ -163,8 +161,7 @@ public class CommonsFeignConfig {
                         }
                     }
 
-                    JavaType javaType = JsonUtil.instance.constructParameterizedType(PageData.class, classes);
-                    return JsonUtil.instance.toBean(response.body().asInputStream(), javaType);
+                    return JsonUtil.instance.toBeanParameterizedType(response.body().asInputStream(), PageData.class, classes);
                     /*
                     InputStream inputStream = response.body().asInputStream();
                     byte[] byteArray = IOUtils.toByteArray(inputStream);

@@ -16,11 +16,8 @@
 
 package com.asialjim.microapplet.common.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+
+import tools.jackson.dataformat.xml.XmlMapper;
 
 /**
  * XML 工具，基于 Jackson
@@ -29,13 +26,10 @@ import lombok.AllArgsConstructor;
  * @version 1.0
  * @since 2025/8/7, &nbsp;&nbsp; <em>version:1.0</em>
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class XmlUtil extends JacksonUtil {
-    public static final JacksonUtil instance = new XmlUtil();
-    private static final ObjectMapper mapper = init(new XmlMapper());
+public final class XmlUtil extends JacksonUtil<XmlMapper,XmlMapper.Builder> {
+    public static final JacksonUtil<XmlMapper,XmlMapper.Builder> instance = new XmlUtil();
 
-    @Override
-    public ObjectMapper objectMapper() {
-        return mapper;
+    private XmlUtil() {
+        super(XmlMapper.builder());
     }
 }

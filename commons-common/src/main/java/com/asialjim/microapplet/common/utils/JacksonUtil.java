@@ -16,22 +16,22 @@
 
 package com.asialjim.microapplet.common.utils;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
+import org.apache.commons.lang3.Strings;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.*;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.cfg.MapperBuilder;
+import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer;
+import tools.jackson.databind.ext.javatime.deser.LocalDateTimeDeserializer;
+import tools.jackson.databind.ext.javatime.deser.LocalTimeDeserializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
+import tools.jackson.databind.ext.javatime.ser.LocalTimeSerializer;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -50,25 +50,31 @@ import java.util.*;
  * @since 2025/8/7, &nbsp;&nbsp; <em>version:1.0</em>
  */
 @SuppressWarnings("unused")
-public abstract class JacksonUtil {
+public abstract class JacksonUtil<M extends ObjectMapper, B extends MapperBuilder<M, B>> {
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Shanghai"));
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("Asia/Shanghai"));
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.of("Asia/Shanghai"));
+    protected final MapperBuilder<M, B> builder;
+    protected final M mapper;
+
+    public JacksonUtil(MapperBuilder<M, B> builder) {
+        this.builder = builder;
+        this.mapper = builder.build();
+    }
 
 
-    public static JacksonUtil instance(ObjectMapper mapper) {
-        return new JacksonUtil() {
+    public M objectMapper() {
+        return this.mapper;
+    }
 
-            @Override
-            public ObjectMapper objectMapper() {
-                return mapper;
-            }
+    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> JacksonUtil<M, B> instance(MapperBuilder<M, B> builder) {
+        return new JacksonUtil<>(builder) {
         };
     }
 
-    public static ObjectMapper init(ObjectMapper mapper) {
-        if (Objects.isNull(mapper))
-            return null;
+    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> MapperBuilder<M, B> init(MapperBuilder<M, B> mapper) {
+        if (Objects.isNull(mapper)) //noinspection unchecked
+            return (MapperBuilder<M, B>) JsonMapper.builder();
 
         // 配置序列化特性
         configureSerializationFeatures(mapper);
@@ -81,73 +87,59 @@ public abstract class JacksonUtil {
 
         // 配置序列化包含规则
         configureSerializationInclusion(mapper);
-
         return mapper;
     }
 
-    public static void configureSerializationFeatures(ObjectMapper mapper) {
+    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> void configureSerializationFeatures(MapperBuilder<M, B> mapper) {
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-    public static void configureDeserializationFeatures(ObjectMapper mapper) {
+    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> void configureDeserializationFeatures(MapperBuilder<M, B> mapper) {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
-        mapper.disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
+        mapper.disable(DateTimeFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
         mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-        mapper.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature());
+        mapper.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION);
     }
 
-    public static void configureDateTimeHandling(ObjectMapper mapper) {
+    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> void configureDateTimeHandling(MapperBuilder<M, B> mapper) {
         TimeZone timeZone = TimeZone.getTimeZone("Asia/Shanghai");
         // 设置传统日期格式
-        mapper.setTimeZone(timeZone);
+        mapper.defaultTimeZone(timeZone);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         simpleDateFormat.setTimeZone(timeZone);
-        mapper.setDateFormat(simpleDateFormat);
+        mapper.defaultDateFormat(simpleDateFormat);
 
-        Module[] modules = getModules();
-        mapper.registerModules(modules);
+
+        JacksonModule[] modules = getModules();
+        mapper.addModules(modules);
     }
 
-    public static Module[] getModules() {
-        return new Module[]{javaTimeModule(), new Jdk8Module()};
+    public static JacksonModule[] getModules() {
+        return new JacksonModule[]{javaTimeModule()};
     }
 
-    public static JavaTimeModule javaTimeModule() {
-        // 配置JavaTime模块
-        final JavaTimeModule javaTimeModule = new JavaTimeModule();
+    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> JacksonModule javaTimeModule() {
 
-        serializers().forEach((k, v) -> javaTimeModule.addSerializer((Class) k, v));
-        deserializers().forEach((k, v) -> javaTimeModule.addDeserializer((Class) k, v));
+        // 创建自定义模块
+        SimpleModule module = new SimpleModule("CustomJavaTimeModule");
+        module.addSerializer(new LocalDateTimeSerializer(dateTimeFormatter));
+        module.addSerializer(new LocalDateSerializer(dateFormatter));
+        module.addSerializer(new LocalTimeSerializer(timeFormatter));
 
-        return javaTimeModule;
+        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
+        module.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
+        module.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
+        return module;
     }
 
-
-    public static Map<Class<?>, JsonSerializer<?>> serializers() {
-        Map<Class<?>, JsonSerializer<?>> map = new HashMap<>();
-        map.put(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
-        map.put(LocalDate.class, new LocalDateSerializer(dateFormatter));
-        map.put(LocalTime.class, new LocalTimeSerializer(timeFormatter));
-        return map;
-    }
-
-    public static Map<Class<?>, JsonDeserializer<?>> deserializers() {
-        Map<Class<?>, JsonDeserializer<?>> map = new HashMap<>();
-        map.put(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
-        map.put(LocalDate.class, new LocalDateDeserializer(dateFormatter));
-        map.put(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
-        return map;
-    }
-
-    public static void configureSerializationInclusion(ObjectMapper mapper) {
+    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> void configureSerializationInclusion(MapperBuilder<M, B> mapper) {
         // 注意：setSerializationInclusion 会覆盖前一个设置
         // 所以合并为一次设置，优先使用 NON_EMPTY
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        //mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     }
 
-    public abstract ObjectMapper objectMapper();
 
     public final JavaType constructType(Type type) {
         return objectMapper().getTypeFactory().constructType(type);
@@ -158,67 +150,63 @@ public abstract class JacksonUtil {
     }
 
     public final String toStr(Object bean) {
-        try {
-            return objectMapper().writeValueAsString(bean);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return objectMapper().writeValueAsString(bean);
     }
 
     public final <T> T toBean(byte[] is, JavaType type) {
-        try {
-            return objectMapper().readValue(is, type);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return objectMapper().readValue(is, type);
+    }
+
+    public final <T> T toBeanParameterizedType(byte[] is, Class<T> rawType, Class<?>... args) {
+        JavaType type = constructParameterizedType(rawType, args);
+        return objectMapper().readValue(is, type);
     }
 
     public final <T> T toBean(InputStream is, JavaType type) {
-        try {
-            return objectMapper().readValue(is, type);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return objectMapper().readValue(is, type);
+    }
+
+    public final <T> T toBeanParameterizedType(InputStream is, Class<T> rawType, Class<?>... args) {
+        JavaType type = constructParameterizedType(rawType, args);
+        return objectMapper().readValue(is, type);
     }
 
     public final <T> T toBean(InputStream is, Class<T> type) {
-        try {
-            return objectMapper().readValue(is, type);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return objectMapper().readValue(is, type);
     }
 
     public final <T> T toBean(String str, Class<T> type) {
-        try {
-            return objectMapper().readValue(str, type);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        if (Strings.CI.startsWith(str, "\"") && Strings.CI.endsWith(str, "\""))
+            str = objectMapper().readValue(str, String.class);
+        return objectMapper().readValue(str, type);
     }
 
     public final <T> T toBean(String str, TypeReference<T> type) {
-        try {
-            return objectMapper().readValue(str, type);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        if (Strings.CI.startsWith(str, "\"") && Strings.CI.endsWith(str, "\""))
+            str = objectMapper().readValue(str, String.class);
+
+        return objectMapper().readValue(str, type);
     }
 
     public final <T> T toBean(String str, JavaType javaType) {
-        try {
-            return objectMapper().readValue(str, javaType);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        if (Strings.CI.startsWith(str, "\"") && Strings.CI.endsWith(str, "\""))
+            str = objectMapper().readValue(str, String.class);
+
+        return objectMapper().readValue(str, javaType);
     }
 
     public final <T> Map<String, T> toMap(String str, Class<T> valueType) {
+        if (Strings.CI.startsWith(str, "\"") && Strings.CI.endsWith(str, "\""))
+            str = objectMapper().readValue(str, String.class);
+
         JavaType javaType = constructParameterizedType(Map.class, String.class, valueType);
         return toBean(str, javaType);
     }
 
     public final <T> List<T> toList(String str, Class<T> listType) {
+        if (Strings.CI.startsWith(str, "\"") && Strings.CI.endsWith(str, "\""))
+            str = objectMapper().readValue(str, String.class);
+
         JavaType javaType = constructParameterizedType(List.class, listType);
         return toBean(str, javaType);
     }
