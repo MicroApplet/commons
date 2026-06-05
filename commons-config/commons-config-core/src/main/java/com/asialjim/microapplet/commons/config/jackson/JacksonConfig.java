@@ -16,8 +16,6 @@
 
 package com.asialjim.microapplet.commons.config.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,10 +30,8 @@ import jakarta.annotation.Resource;
  */
 @Configuration
 public class JacksonConfig implements InitializingBean {
-    @Resource private ObjectMapper objectMapper;
 
     @Override
     public void afterPropertiesSet() {
-        objectMapper.registerModule(new JavaTimeModule());
     }
 }

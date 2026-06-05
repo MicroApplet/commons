@@ -16,10 +16,9 @@
 
 package com.asialjim.microapplet.commons.config.core;
 
+import com.asialjim.microapplet.common.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -106,33 +105,12 @@ public class ConfProperty implements Serializable {
         if (StringUtils.isBlank(value))
             return null;
 
-        return jsonToBean(value, typeClass);
+        return JsonUtil.instance.toBean(value,typeClass);
     }
 
-    private static final JsonMapper JSON_MAPPER = new JsonMapper();
-
-    static {
-        JSON_MAPPER.registerModules(new JavaTimeModule());
-    }
-
-    private static String toJson(Object bean) {
-        try {
-            return JSON_MAPPER.writeValueAsString(bean);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static <T> T jsonToBean(String json, Class<T> beanClass) {
-        try {
-            return JSON_MAPPER.readValue(json, beanClass);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static String value(Conf<?> conf) {
-        return toJson(conf);
+        return JsonUtil.instance.toStr(conf);
     }
 
     public boolean contentAndEnvEquals(ConfProperty that) {
