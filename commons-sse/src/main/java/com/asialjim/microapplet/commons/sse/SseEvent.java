@@ -3,9 +3,11 @@ package com.asialjim.microapplet.commons.sse;
 import com.asialjim.microapplet.common.utils.JsonUtil;
 import com.asialjim.microapplet.commons.sse.payload.*;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Data
 public class SseEvent<T> {
@@ -18,6 +20,10 @@ public class SseEvent<T> {
     public SseEvent(SseEventType type, T payload) {
         this.type = type;
         this.payload = payload;
+    }
+
+    public String eventName(){
+        return Optional.ofNullable(this.type).map(Enum::name).orElse(StringUtils.EMPTY);
     }
 
     public String getEventLine() {
