@@ -25,7 +25,6 @@ import com.asialjim.microapplet.common.utils.JacksonUtil;
 import com.asialjim.microapplet.common.utils.JsonUtil;
 import com.asialjim.microapplet.common.valid.ErrorInfo;
 import com.asialjim.microapplet.common.valid.ResCodeValidationPayload;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
@@ -35,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -66,12 +64,6 @@ import static com.asialjim.microapplet.common.cons.Headers.*;
 @RequiredArgsConstructor
 public class GlobalExceptionAdvice {
     private final ResCodeValidationPayload resCodeValidationPayload;
-
-
-    private static JacksonUtil jacksonUtil() {
-        ObjectMapper json = Jackson2ObjectMapperBuilder.json().createXmlMapper(false).build();
-        return JacksonUtil.instance(json);
-    }
 
     private static String urlEncoded(String body) {
         if (StringUtils.isBlank(body))
@@ -105,7 +97,7 @@ public class GlobalExceptionAdvice {
         response.setHeader(X_RES_THROWABLE, urlEncoded(String.valueOf(ex.isThr())));
         response.setHeader(X_RES_CODE, urlEncoded(ex.getCode()));
         response.setHeader(X_RES_MSG, urlEncoded(ex.getMsg()));
-        response.setHeader(X_RES_ERRS, urlEncoded(jacksonUtil().toStr(ex.getErrs())));
+        response.setHeader(X_RES_ERRS, urlEncoded(JsonUtil.instance.toStr(ex.getErrs())));
         response.setHeader(X_RES_STATUS, String.valueOf(ex.getStatus()));
 
         response.setHeader(X_RES_PAGE, String.valueOf(1));

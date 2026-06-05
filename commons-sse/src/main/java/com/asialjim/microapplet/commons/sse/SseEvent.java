@@ -40,6 +40,12 @@ public class SseEvent<T> {
         return JsonUtil.instance.toStr(payload);
     }
 
+    public String contentType(){
+        if (payload == null) return "text/plain";
+        if (type == SseEventType.DONE) return "text/plain";
+        return "application/json";
+    }
+
     public String toSseFrame() {
         return getEventLine() + "\n" + getDataLine() + "\n\n";
     }
