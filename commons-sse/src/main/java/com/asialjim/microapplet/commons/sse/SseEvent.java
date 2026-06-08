@@ -23,7 +23,7 @@ public class SseEvent<T> {
     }
 
     public String eventName(){
-        return Optional.ofNullable(this.type).map(Enum::name).orElse(StringUtils.EMPTY);
+        return Optional.ofNullable(this.type).map(SseEventType::getEventName).orElse(StringUtils.EMPTY);
     }
 
     public String getEventLine() {
