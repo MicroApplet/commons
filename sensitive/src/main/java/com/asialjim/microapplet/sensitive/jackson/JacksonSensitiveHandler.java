@@ -1,0 +1,60 @@
+/*
+ * Copyright 2014-2025 <a href="mailto:asialjim@qq.com">Asial Jim</a>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.asialjim.microapplet.sensitive.jackson;
+
+import com.asialjim.microapplet.sensitive.SensitiveType;
+import com.asialjim.microapplet.sensitive.annotation.Sensitive;
+import com.asialjim.microapplet.sensitive.handler.SensitiveHandler;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
+
+/**
+ * Jackson 专用敏感数据处理工具
+ */
+public class JacksonSensitiveHandler {
+
+    /**
+     * 对敏感数据进行脱敏
+     */
+    public static String mask(Sensitive sensitive, String source) {
+        if (Objects.isNull(sensitive) || StringUtils.isBlank(source))
+            return source;
+
+        SensitiveType type = sensitive.value();
+        int prefix = sensitive.prefix();
+        int suffix = sensitive.suffix();
+        String regex = sensitive.regex();
+        boolean match = sensitive.match();
+
+        try {
+            return SensitiveHandler.mask(type, source, prefix, suffix, regex, match, s -> SensitiveHandler.maskWithIndex(s, prefix, suffix));
+        } catch (Exception e) {
+            return source;
+        }
+    }
+
+    /**
+     * 校验敏感数据是否匹配注解指定的正则规则
+     */
+    public static boolean match(String source, Sensitive sensitive) {
+        if (Objects.isNull(sensitive) || StringUtils.isBlank(source))
+            return true;
+        SensitiveType type = sensitive.value();
+        return SensitiveType.Customer.equals(type) || SensitiveHandler.patternOf(type.getRegex()).matcher(source).matches();
+    }
+}

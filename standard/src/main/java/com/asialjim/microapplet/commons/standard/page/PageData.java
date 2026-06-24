@@ -1,0 +1,101 @@
+/*
+ * Copyright 2014-2025 <a href="mailto:asialjim@qq.com">Asial Jim</a>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.asialjim.microapplet.commons.standard.page;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+
+/**
+ * 分页数据
+ *
+ * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
+ * @version 1.0
+ * @since 2025/3/28, &nbsp;&nbsp; <em>version:1.0</em>
+ */
+@Data
+@NoArgsConstructor
+@Accessors(chain = true)
+public class PageData<T> implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 5125243427769117213L;
+
+    /**
+     * 当前页码
+     */
+    private Long page;
+    /**
+     * 总页码
+     */
+    private Long pages;
+    /**
+     * 页宽度
+     */
+    private Long size;
+    /**
+     * 总记录条数
+     */
+    private Long total;
+
+    /**
+     * 当前页记录
+     */
+    private Collection<T> data;
+
+    public PageData(Collection<T> records) {
+        this.data = records;
+        this.page = 1L;
+        this.pages = 1L;
+        this.size = Objects.nonNull(records) ? records.size() : 0L;
+        this.total = this.size;
+    }
+
+    public static <Q, R> PageData<R> of(PageData<Q> source, Function<Q, R> function) {
+        List<R> collect = Optional.ofNullable(source)
+                .map(PageData::getData)
+                .stream()
+                .flatMap(Collection::stream)
+                .map(function)
+                .toList();
+
+
+        return new PageData<>(collect)
+                .setPage(Optional.ofNullable(source).map(PageData::getPage).orElse(1L))
+                .setSize(Optional.ofNullable(source).map(PageData::getSize).orElse(1L))
+                .setPages(Optional.ofNullable(source).map(PageData::getPages).orElse(1L))
+                .setTotal(Optional.ofNullable(source).map(PageData::getTotal).orElse(1L));
+    }
+
+    public Long getPages() {
+        if (Objects.nonNull(this.pages))
+            return this.pages;
+        Long total = this.getTotal();
+        Long size = this.getSize();
+        if (Objects.isNull(total) || Objects.isNull(size) || size == 0L)
+            return 0L;
+
+        return (total / size) + (total % size > 0 ? 1 : 0);
+    }
+}

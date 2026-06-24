@@ -17,26 +17,33 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.0</version>
+        <relativePath/>
+    </parent>
 
-    <groupId>com.asialjim.microapplet</groupId>
+
+    <groupId>com.asialjim.microapplet.commons</groupId>
     <artifactId>commons</artifactId>
     <version>3.0.0-SNAPSHOT</version>
     <name>Commons</name>
 
-    <description>Commons Of Micro Bank</description>
+    <description>Commons</description>
     <url>https://gitee.com/micro-bank/commons</url>
 
     <modules>
-        <module>commons-common</module>
-        <module>commons-cache</module>
-        <module>commons-config</module>
-        <module>commons-crypt</module>
-        <module>commons-web</module>
-        <module>commons-zen-dependencies</module>
-        <module>commons-triple-dependencies</module>
-        <module>commons-security</module>
-        <module>commons-mybatis</module>
-        <module>commons-sse</module>
+        <module>bom</module>
+        <module>parent</module>
+        <module>standard</module>
+        <module>cache</module>
+        <module>session</module>
+        <module>security</module>
+        <module>web</module>
+        <module>spring</module>
+        <module>sensitive</module>
+        <module>ai</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -83,22 +90,25 @@
     </scm>
 
     <properties>
-        <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <spring-boot.version>4.0.6</spring-boot.version>
-        <spring-cloud.version>2025.1.1</spring-cloud.version>
-        <spring-ai.version>1.1.7</spring-ai.version>
-        <spring-cloud-alibaba.version>2025.1.0.0</spring-cloud-alibaba.version>
-        <spring-alibaba-ai.version>1.1.2.0</spring-alibaba-ai.version>
-        <mybatis-flex.version>1.9.4</mybatis-flex.version>
-        <mybatis-plus.version>3.5.10.1</mybatis-plus.version>
-        <hikaricp.version>4.0.3</hikaricp.version>
-        <redisson.version>3.18.0</redisson.version>
-        <knife4j.version>4.5.0</knife4j.version>
-        <mapstruct.version>1.6.3</mapstruct.version>
-        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <java.version>25</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.22.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <profiles>
         <profile>
@@ -122,65 +132,99 @@
                 <!--suppress XmlUnresolvedReference -->
                 <com.asialjim.microapplet>${asialjimVersion}</com.asialjim.microapplet>
             </properties>
+
+
+            <build>
+               <plugins>
+
+                   <!-- 版本发布核心插件 -->
+                   <plugin>
+                       <groupId>org.apache.maven.plugins</groupId>
+                       <artifactId>maven-release-plugin</artifactId>
+                       <configuration>
+                           <autoVersionSubmodules>true</autoVersionSubmodules>
+                           <tagNameFormat>v@{project.version}</tagNameFormat>
+                           <releaseProfiles>release</releaseProfiles>
+                           <!-- 允许插件传递命令行参数 -->
+                           <!--suppress MavenModelInspection, MybatisXMapperXmlInspection, UnresolvedMavenProperty -->
+                           <arguments>-DasialjimVersion=${asialjimVersion}</arguments>
+                           <!-- 正式版本号 -->
+                           <!--suppress MavenModelInspection, MybatisXMapperXmlInspection, UnresolvedMavenProperty -->
+                           <releaseVersion>${releaseVersion}</releaseVersion>
+                           <!-- 下一个开发版本号 -->
+                           <!--suppress MavenModelInspection, MybatisXMapperXmlInspection, UnresolvedMavenProperty -->
+                           <developmentVersion>${developmentVersion}</developmentVersion>
+                           <goals>deploy</goals>
+                           <!-- 强制更新所有依赖版本 -->
+                           <preparationGoals>
+                               clean
+                               versions:use-releases
+                               verify
+                           </preparationGoals>
+                       </configuration>
+                   </plugin>
+
+                   <!-- 版本号管理增强插件 -->
+                   <plugin>
+                       <groupId>org.codehaus.mojo</groupId>
+                       <artifactId>versions-maven-plugin</artifactId>
+                       <configuration>
+                           <generateBackupPoms>false</generateBackupPoms>
+                           <processProperties>true</processProperties>
+                           <processDependencyManagement>true</processDependencyManagement>
+                           <processDependencies>true</processDependencies>
+                           <processParent>true</processParent>
+                           <processAllModules>true</processAllModules>
+                           <allowSnapshots>false</allowSnapshots> <!-- 发布阶段禁止SNAPSHOT -->
+                       </configuration>
+                       <executions>
+                           <!-- 强制更新父版本和子模块 -->
+                           <execution>
+                               <id>pre-release-update</id>
+                               <phase>validate</phase>
+                               <goals>
+
+                                   <goal>update-child-modules</goal>
+                               </goals>
+                           </execution>
+                           <!-- 发布后更新到下一个SNAPSHOT版本 -->
+                           <execution>
+                               <id>post-release-update</id>
+                               <!--suppress MybatisXMapperXmlInspection, MybatisPlusMapperXmlInspection, MavenModelInspection -->
+                               <phase>post-release</phase>
+                               <goals>
+
+                                   <goal>update-child-modules</goal>
+                               </goals>
+                           </execution>
+                       </executions>
+                   </plugin>
+
+
+
+                   <!-- 签名 -->
+                    <plugin>
+                       <groupId>org.apache.maven.plugins</groupId>
+                       <artifactId>maven-gpg-plugin</artifactId>
+                       <version>3.2.7</version>
+                       <executions>
+                           <execution>
+                               <id>sign-artifacts</id>
+                               <phase>verify</phase>
+                               <goals>
+                                   <goal>sign</goal>
+                               </goals>
+                           </execution>
+                       </executions>
+                   </plugin>
+
+
+
+               </plugins>
+            </build>
         </profile>
     </profiles>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.mybatis-flex</groupId>
-                <artifactId>mybatis-flex-dependencies</artifactId>
-                <version>${mybatis-flex.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-bom</artifactId>
-                <version>${mybatis-plus.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>tools.jackson</groupId>
-                <artifactId>jackson-bom</artifactId>
-                <version>3.1.4</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>4.5.0</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.20.0</version>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -190,6 +234,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -211,76 +256,10 @@
             </plugin>
 
 
-            <!-- 版本发布核心插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
-                    <releaseProfiles>release</releaseProfiles>
-                    <!-- 允许插件传递命令行参数 -->
-                    <!--suppress MavenModelInspection, MybatisXMapperXmlInspection, UnresolvedMavenProperty -->
-                    <arguments>-DasialjimVersion=${asialjimVersion}</arguments>
-                    <!-- 正式版本号 -->
-                    <!--suppress MavenModelInspection, MybatisXMapperXmlInspection, UnresolvedMavenProperty -->
-                    <releaseVersion>${releaseVersion}</releaseVersion>
-                    <!-- 下一个开发版本号 -->
-                    <!--suppress MavenModelInspection, MybatisXMapperXmlInspection, UnresolvedMavenProperty -->
-                    <developmentVersion>${developmentVersion}</developmentVersion>
-                    <goals>deploy</goals>
-                    <!-- 强制更新所有依赖版本 -->
-                    <preparationGoals>
-                        clean
-                        versions:use-releases
-                        verify
-                    </preparationGoals>
-                </configuration>
-            </plugin>
-
-            <!-- 版本号管理增强插件 -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.16.2</version>
-                <configuration>
-                    <generateBackupPoms>false</generateBackupPoms>
-                    <processProperties>true</processProperties>
-                    <processDependencyManagement>true</processDependencyManagement>
-                    <processDependencies>true</processDependencies>
-                    <processParent>true</processParent>
-                    <processAllModules>true</processAllModules>
-                    <allowSnapshots>false</allowSnapshots> <!-- 发布阶段禁止SNAPSHOT -->
-                </configuration>
-                <executions>
-                    <!-- 强制更新父版本和子模块 -->
-                    <execution>
-                        <id>pre-release-update</id>
-                        <phase>validate</phase>
-                        <goals>
-
-                            <goal>update-child-modules</goal>
-                        </goals>
-                    </execution>
-                    <!-- 发布后更新到下一个SNAPSHOT版本 -->
-                    <execution>
-                        <id>post-release-update</id>
-                        <!--suppress MybatisXMapperXmlInspection, MybatisPlusMapperXmlInspection, MavenModelInspection -->
-                        <phase>post-release</phase>
-                        <goals>
-
-                            <goal>update-child-modules</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- 用于执行单元测试的核心插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
                 <configuration>
                     <!-- 执行 mvn package 时跳过单元测试 -->
                     <skip>true</skip>
@@ -291,7 +270,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -305,7 +283,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -314,7 +291,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.3</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -332,28 +308,10 @@
                 </configuration>
             </plugin>
 
-
-            <!-- 签名 -->
-            <!-- <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.2.7</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin> -->
-
                     <!-- 编译工具 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.12.1</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -374,9 +332,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.1.1</version>
             </plugin>
         </plugins>
     </build>
+
 
 </project>
