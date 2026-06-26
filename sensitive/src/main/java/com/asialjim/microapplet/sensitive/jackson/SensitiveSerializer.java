@@ -19,7 +19,7 @@ package com.asialjim.microapplet.sensitive.jackson;
 import com.asialjim.microapplet.sensitive.annotation.Sensitive;
 import com.asialjim.microapplet.sensitive.encrypt.EncryptionContextBean;
 import com.asialjim.microapplet.sensitive.encrypt.EncryptionResult;
-import com.asialjim.microapplet.sensitive.handler.SensitiveHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
@@ -28,12 +28,14 @@ import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ValueSerializer;
 import tools.jackson.databind.ser.std.StdSerializer;
 
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 /**
  * 敏感数据序列化器
  * <p>序列化时对 {@link Sensitive} 字段执行：脱敏 → 加密 → 合并为 {@code _mask|...|脱敏文本} 格式。</p>
  */
+@Slf4j
 public class SensitiveSerializer extends StdSerializer<String> {
     private final Sensitive sensitive;
 
@@ -65,11 +67,32 @@ public class SensitiveSerializer extends StdSerializer<String> {
 
     @Override
     public ValueSerializer<?> createContextual(SerializationContext serializationContext, BeanProperty beanProperty) {
+        if (log.isDebugEnabled())
+            log.info("SensitiveSerializer.createContextual called for property: {}", beanProperty != null ? beanProperty.getName() : "null");
         if (Objects.isNull(beanProperty))
             return this;
         Sensitive annotation = beanProperty.getAnnotation(Sensitive.class);
+        if (log.isDebugEnabled())
+            log.info("Annotation from beanProperty: {}", annotation);
+        if (Objects.isNull(annotation))
+            annotation = getFieldAnnotation(beanProperty);
+        if (log.isDebugEnabled())
+            log.info("Annotation from field: {}", annotation);
         if (Objects.isNull(annotation))
             return this;
         return new SensitiveSerializer(annotation);
+    }
+
+    private static Sensitive getFieldAnnotation(BeanProperty beanProperty) {
+        if (Objects.isNull(beanProperty.getMember()))
+            return null;
+        Class<?> clazz = beanProperty.getMember().getDeclaringClass();
+        String name = beanProperty.getName();
+        try {
+            Field field = clazz.getDeclaredField(name);
+            return field.getAnnotation(Sensitive.class);
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
     }
 }

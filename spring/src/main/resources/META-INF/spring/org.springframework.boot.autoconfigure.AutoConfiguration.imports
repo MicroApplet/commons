@@ -16,3 +16,4 @@
 
 
 com.asialjim.microapplet.spring.SpringCommonScan
+com.asialjim.microapplet.spring.session.SessionConfig

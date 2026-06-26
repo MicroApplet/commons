@@ -17,7 +17,24 @@
 package com.asialjim.microapplet.sensitive.handler;
 
 import com.asialjim.microapplet.sensitive.SensitiveType;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
+import java.util.function.Function;
+
+@Component
 public class ChineseNameSensitiveHandler extends SensitiveHandler {
-    @Override public SensitiveType type() { return SensitiveType.ChineseName; }
+    @Override
+    public SensitiveType type() {
+        return SensitiveType.ChineseName;
+    }
+
+    public Function<String, String> function() {
+        return s -> {
+            SensitiveType type = type();
+            int prefix = type.getPrefix();
+            int suffix = StringUtils.length(s) <= 2 ? 0 : type.getSuffix();
+            return maskWithIndex(s, prefix, suffix);
+        };
+    }
 }

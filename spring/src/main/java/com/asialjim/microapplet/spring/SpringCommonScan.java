@@ -18,6 +18,7 @@ package com.asialjim.microapplet.spring;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
@@ -27,6 +28,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
  */
 @EnableAsync
 @Configuration
-@ComponentScan({"com.asialjim.microapplet.commons", "com.asialjim.microapplet.spring"})
+@ComponentScan(excludeFilters = @ComponentScan.Filter(
+    type = FilterType.ASSIGNABLE_TYPE,
+    classes = com.asialjim.microapplet.spring.session.SessionConfig.class))
 public class SpringCommonScan {
 }

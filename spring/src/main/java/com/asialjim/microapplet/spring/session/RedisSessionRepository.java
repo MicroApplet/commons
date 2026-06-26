@@ -23,9 +23,7 @@ import com.asialjim.microapplet.session.SessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
@@ -38,8 +36,6 @@ import java.util.Objects;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Component(SessionRepository.bean)
-@ConditionalOnClass(StringRedisTemplate.class)
 public class RedisSessionRepository implements SessionRepository {
     private final StringRedisTemplate stringRedisTemplate;
 

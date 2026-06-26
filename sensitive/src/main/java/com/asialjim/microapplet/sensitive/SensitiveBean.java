@@ -16,12 +16,15 @@
 
 package com.asialjim.microapplet.sensitive;
 
+import com.asialjim.microapplet.sensitive.encrypt.ConfigSecretKeyRepository;
+import com.asialjim.microapplet.sensitive.encrypt.EncryptionContextBean;
 import com.asialjim.microapplet.sensitive.encrypt.SensitiveEncryptProperties;
+import com.asialjim.microapplet.sensitive.handler.SensitiveHandler;
 import com.asialjim.microapplet.sensitive.mybatis.SensitiveInterceptor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * 敏感数据处理自动配置
@@ -29,14 +32,12 @@ import org.springframework.context.annotation.Configuration;
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  */
 @Configuration
-@EnableConfigurationProperties(SensitiveEncryptProperties.class)
-@ComponentScan(basePackages = {
-        "com.asialjim.microapplet.sensitive",
-        "com.asialjim.microapplet.sensitive.encrypt",
-        "com.asialjim.microapplet.sensitive.handler",
-        "com.asialjim.microapplet.sensitive.jackson",
-        "com.asialjim.microapplet.sensitive.mybatis"
+@Import({
+        EncryptionContextBean.class,
+        ConfigSecretKeyRepository.class,
+        SensitiveEncryptProperties.class
 })
+@ComponentScan(basePackageClasses = SensitiveHandler.class)
 public class SensitiveBean {
 
     @Bean

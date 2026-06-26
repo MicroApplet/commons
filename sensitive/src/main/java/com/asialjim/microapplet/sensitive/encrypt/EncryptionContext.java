@@ -16,6 +16,8 @@
 
 package com.asialjim.microapplet.sensitive.encrypt;
 
+import org.springframework.stereotype.Component;
+
 import javax.crypto.SecretKey;
 
 /**

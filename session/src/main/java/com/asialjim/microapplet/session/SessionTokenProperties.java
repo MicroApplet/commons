@@ -20,6 +20,7 @@ import com.asialjim.microapplet.commons.standard.utils.SessionTokenUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * 会话令牌密钥配置。
@@ -32,6 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * }</pre>
  */
 @Data
+@Configuration
 @ConfigurationProperties(prefix = "microapplet.token")
 public class SessionTokenProperties {
 

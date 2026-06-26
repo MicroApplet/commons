@@ -19,6 +19,7 @@ package com.asialjim.microapplet.sensitive.annotation;
 import com.asialjim.microapplet.sensitive.SensitiveType;
 import com.asialjim.microapplet.sensitive.jackson.SensitiveDeserializer;
 import com.asialjim.microapplet.sensitive.jackson.SensitiveSerializer;
+import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonSerialize;
 
@@ -31,6 +32,7 @@ import java.lang.annotation.Target;
  * 标注字段为敏感数据
  * <p>被标注的字段在网络传输（Jackson 序列化）、日志输出、数据库存储时自动加密/脱敏。</p>
  */
+@JacksonAnnotationsInside
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @JsonSerialize(using = SensitiveSerializer.class)

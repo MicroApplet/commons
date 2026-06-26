@@ -16,6 +16,8 @@
 
 package com.asialjim.microapplet.session;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 
 /**
@@ -65,5 +67,42 @@ public interface SessionRepository {
      */
     static String key(String token) {
         return SessionCache.sessionByToken + KEY_SEPARATOR + token;
+    }
+
+    @Configuration
+    @ConditionalOnMissingBean(SessionRepository.class)
+    class UnSupport implements SessionRepository{
+
+        @Override
+        public Session findByToken(String token) {
+            throw new IllegalStateException("未实现上下文");
+        }
+
+        @Override
+        public void save(Session session) {
+            throw new IllegalStateException("未实现上下文");
+
+        }
+
+        @Override
+        public void delete(String token) {
+            throw new IllegalStateException("未实现上下文");
+
+        }
+
+        @Override
+        public Mono<Session> findByTokenMono(String token) {
+            throw new IllegalStateException("未实现上下文");
+        }
+
+        @Override
+        public Mono<Void> saveMono(Session session) {
+            throw new IllegalStateException("未实现上下文");
+        }
+
+        @Override
+        public Mono<Void> deleteMono(String token) {
+            throw new IllegalStateException("未实现上下文");
+        }
     }
 }

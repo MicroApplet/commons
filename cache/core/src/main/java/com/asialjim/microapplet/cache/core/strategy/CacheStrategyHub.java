@@ -72,7 +72,7 @@ public class CacheStrategyHub {
     }
 
 
-    private class CacheStrategyWrapper implements CacheStrategy{
+    private static class CacheStrategyWrapper implements CacheStrategy{
         private final String name;
         private final CacheStrategy local;
         private final Supplier<Optional< CacheStrategy>> remote;

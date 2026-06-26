@@ -17,7 +17,41 @@
 package com.asialjim.microapplet.sensitive.handler;
 
 import com.asialjim.microapplet.sensitive.SensitiveType;
+import org.springframework.stereotype.Component;
 
+import java.util.function.Function;
+
+@Component
 public class EMailSensitiveHandler extends SensitiveHandler {
     @Override public SensitiveType type() { return SensitiveType.EMail; }
+
+
+    public Function<String, String> function() {
+
+        return s -> {
+            int index = s.indexOf('@');
+            String substring = s.substring(0, index);
+            String domain = s.substring(index);
+            int length = substring.length();
+
+            int prefix ;
+            int suffix;
+            if (length <= 1) {
+                return "*" + domain;
+            }
+            if (length > 8){
+                prefix = 3;
+                suffix = 3;
+            } else if (length > 5){
+                prefix = 2;
+                suffix = 2;
+            }
+            else {
+                prefix = 1;
+                suffix = 0;
+            }
+
+            return maskWithIndex(substring, prefix, suffix) + domain;
+        };
+    }
 }

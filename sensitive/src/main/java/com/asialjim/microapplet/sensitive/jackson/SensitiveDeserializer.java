@@ -24,6 +24,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.*;
 
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 /**
@@ -64,7 +65,22 @@ public class SensitiveDeserializer extends ValueDeserializer<String> {
             return this;
         Sensitive annotation = beanProperty.getAnnotation(Sensitive.class);
         if (Objects.isNull(annotation))
+            annotation = getFieldAnnotation(beanProperty);
+        if (Objects.isNull(annotation))
             return this;
         return new SensitiveDeserializer(annotation);
+    }
+
+    private static Sensitive getFieldAnnotation(BeanProperty beanProperty) {
+        if (Objects.isNull(beanProperty.getMember()))
+            return null;
+        Class<?> clazz = beanProperty.getMember().getDeclaringClass();
+        String name = beanProperty.getName();
+        try {
+            Field field = clazz.getDeclaredField(name);
+            return field.getAnnotation(Sensitive.class);
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
     }
 }

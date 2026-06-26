@@ -39,6 +39,13 @@ public class SensitiveMessageConverter extends MessageConverter {
             Byte.class, Short.class, Integer.class, Long.class,
             Float.class, Double.class, Void.class
     );
+    private static volatile boolean initialized = false;
+
+    public SensitiveMessageConverter() {
+        if (!initialized) {
+            initialized = true;
+        }
+    }
 
     @Override
     public String convert(ILoggingEvent event) {

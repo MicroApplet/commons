@@ -19,6 +19,7 @@ package com.asialjim.microapplet.sensitive.logback;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.Configurator;
+import ch.qos.logback.classic.spi.ConfiguratorRank;
 import ch.qos.logback.core.spi.ContextAwareBase;
 
 /**
@@ -35,15 +36,15 @@ import ch.qos.logback.core.spi.ContextAwareBase;
  *
  * @see SensitiveMessageConverter
  */
+@ConfiguratorRank(ConfiguratorRank.CUSTOM_TOP_PRIORITY)
 public class SensitiveLogbackConfigurator extends ContextAwareBase implements Configurator {
 
     @Override
     public ExecutionStatus configure(LoggerContext lc) {
         addInfo("注册敏感数据日志脱敏转换器");
-        PatternLayout.DEFAULT_CONVERTER_SUPPLIER_MAP.put(
-                "msg",
-                SensitiveMessageConverter::new
-        );
+        PatternLayout.DEFAULT_CONVERTER_SUPPLIER_MAP.put("msg", SensitiveMessageConverter::new);
+        PatternLayout.DEFAULT_CONVERTER_MAP.put("msg", SensitiveMessageConverter.class.getName());
+        PatternLayout.defaultConverterMap.put("msg", SensitiveMessageConverter.class.getName());
         return ExecutionStatus.NEUTRAL;
     }
 }

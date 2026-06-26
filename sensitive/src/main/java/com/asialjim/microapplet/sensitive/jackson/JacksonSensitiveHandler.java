@@ -36,13 +36,26 @@ public class JacksonSensitiveHandler {
             return source;
 
         SensitiveType type = sensitive.value();
-        int prefix = sensitive.prefix();
-        int suffix = sensitive.suffix();
-        String regex = sensitive.regex();
-        boolean match = sensitive.match();
+        SensitiveHandler handler = SensitiveHandler.holder.handlerOf(type);
+
+        int prefix;
+        int suffix;
+        String regex;
+        boolean match;
+        if (SensitiveType.Customer.equals(type)) {
+            prefix = sensitive.prefix();
+            suffix = sensitive.suffix();
+            regex = sensitive.regex();
+            match = sensitive.match();
+        } else {
+            prefix = type.getPrefix();
+            suffix = type.getSuffix();
+            regex = type.getRegex();
+            match = true;
+        }
 
         try {
-            return SensitiveHandler.mask(type, source, prefix, suffix, regex, match, s -> SensitiveHandler.maskWithIndex(s, prefix, suffix));
+            return SensitiveHandler.mask(type, source, prefix, suffix, regex, match, handler.function());
         } catch (Exception e) {
             return source;
         }

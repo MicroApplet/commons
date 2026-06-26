@@ -16,16 +16,20 @@
 
 package com.asialjim.microapplet.sensitive.mybatis;
 
+import com.asialjim.microapplet.sensitive.SensitiveType;
 import com.asialjim.microapplet.sensitive.annotation.Sensitive;
 import com.asialjim.microapplet.sensitive.encrypt.EncryptionContextBean;
 import com.asialjim.microapplet.sensitive.encrypt.EncryptionResult;
+import com.asialjim.microapplet.sensitive.jackson.JacksonSensitiveHandler;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.plugin.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
 
@@ -42,7 +46,7 @@ import java.util.*;
  */
 @Intercepts({
         @Signature(type = ResultSetHandler.class, method = "handleResultSets", args = {Statement.class}),
-        @Signature(type = ParameterHandler.class, method = "setParameters", args = {})
+        @Signature(type = ParameterHandler.class, method = "setParameters", args = {PreparedStatement.class})
 })
 public class SensitiveInterceptor implements Interceptor {
     private static final Logger log = LoggerFactory.getLogger(SensitiveInterceptor.class);
@@ -112,10 +116,10 @@ public class SensitiveInterceptor implements Interceptor {
     private void encryptParameter(Object param) {
         // 处理集合参数
         if (param instanceof Map<?, ?> map) {
-            for (Object value : map.values()) {
-                if (Objects.nonNull(value))
-                    encryptFields(value);
-            }
+            map.forEach((k,v) -> {
+                if (Objects.nonNull(v))
+                    encryptFields(v);
+            });
             return;
         }
         encryptFields(param);
@@ -126,6 +130,14 @@ public class SensitiveInterceptor implements Interceptor {
         // 跳过基本类型和包装类
         if (clazz.getName().startsWith("java."))
             return;
+
+        // 处理数组
+        if (obj.getClass().isArray()) {
+            for (Object item : (Object[]) obj) {
+                encryptParameter(item);
+            }
+            return;
+        }
 
         for (Field field : getAllFields(clazz)) {
             Sensitive annotation = field.getAnnotation(Sensitive.class);
@@ -142,9 +154,12 @@ public class SensitiveInterceptor implements Interceptor {
                 // 已加密则跳过
                 if (value.startsWith("_mask"))
                     continue;
-
                 EncryptionResult encrypted = EncryptionContextBean.instance.encrypt(value);
-                field.set(obj, encrypted.toFormattedString());
+                String mask = JacksonSensitiveHandler.mask(annotation, value);
+                // 合并: _mask|GM|nonce|encrypt|mac|脱敏文本
+                String target = encrypted.withMask(mask);
+
+                field.set(obj, target);
             } catch (Exception e) {
                 log.warn("敏感字段加密失败: {}.{}", clazz.getSimpleName(), field.getName(), e);
             }

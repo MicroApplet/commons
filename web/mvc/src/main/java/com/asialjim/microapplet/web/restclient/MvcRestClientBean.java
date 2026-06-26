@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.asialjim.microapplet.sensitive.handler;
+package com.asialjim.microapplet.web.restclient;
 
-import com.asialjim.microapplet.sensitive.SensitiveType;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-@Component
-public class CustomerSensitiveHandler extends SensitiveHandler {
-    @Override public SensitiveType type() { return SensitiveType.Customer; }
+@Configuration
+@ComponentScan
+public class MvcRestClientBean {
 }

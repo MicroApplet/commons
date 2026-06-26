@@ -17,7 +17,6 @@
 package com.asialjim.microapplet.sensitive.handler;
 
 import com.asialjim.microapplet.sensitive.SensitiveType;
-import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -36,8 +35,7 @@ public abstract class SensitiveHandler {
     private static final Map<String, Pattern> PATTERN_MAP = new ConcurrentHashMap<>();
     public static final Holder holder = new Holder();
 
-    @PostConstruct
-    public void init() {
+    public SensitiveHandler() {
         holder.register(this);
     }
 

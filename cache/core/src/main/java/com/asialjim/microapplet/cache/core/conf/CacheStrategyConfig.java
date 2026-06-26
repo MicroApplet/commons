@@ -24,7 +24,7 @@ import com.asialjim.microapplet.cache.core.strategy.CacheStrategy;
 import com.asialjim.microapplet.cache.core.strategy.CacheStrategyCollection;
 import com.asialjim.microapplet.cache.core.strategy.CacheStrategyHub;
 import com.asialjim.microapplet.cache.core.strategy.CacheStrategyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -41,31 +41,18 @@ import java.util.concurrent.ConcurrentHashMap;
 @Configuration
 @EnableCaching
 public class CacheStrategyConfig {
-    private L1Manager l1Manager;
-    private L2Manager l2Manager;
-
-    @Autowired(required = false)
-    public void setL1Manager(L1Manager l1Manager) {
-        this.l1Manager = l1Manager;
-    }
-
-    @Autowired(required = false)
-    public void setL2Manager(L2Manager l2Manager) {
-        this.l2Manager = l2Manager;
-    }
-
 
     @Bean
     @Order
     @ConditionalOnMissingBean(CacheStrategyRepository.class)
-    public CacheStrategyRepository emptyRepository(){
-        return name -> Optional.empty();
+    public CacheStrategyRepository emptyRepository() {
+        return _ -> Optional.empty();
     }
 
     @Bean
     @Primary
     public CacheStrategyHub cacheStrategyHub(List<CacheStrategyCollection> collections,
-                                             CacheStrategyRepository repository){
+                                             CacheStrategyRepository repository) {
         final Set<String> names = new HashSet<>();
         final Set<CacheStrategy> strategies = new HashSet<>();
 
@@ -86,12 +73,16 @@ public class CacheStrategyConfig {
             }
         }
 
-        return new CacheStrategyHub(strategies,repository);
+        return new CacheStrategyHub(strategies, repository);
     }
+
 
     @Bean
     @Primary
-    public CacheManager multiLevelCacheManager(CacheStrategyHub cacheStrategyHub){
+    public CacheManager multiLevelCacheManager(CacheStrategyHub cacheStrategyHub,
+                                               @Nullable L1Manager l1Manager,
+                                               @Nullable L2Manager l2Manager) {
+
         return new MultiLevelCacheManager(
                 new ConcurrentHashMap<>(),
                 cacheStrategyHub,

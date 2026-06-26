@@ -17,7 +17,9 @@
 package com.asialjim.microapplet.sensitive.handler;
 
 import com.asialjim.microapplet.sensitive.SensitiveType;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ChineseTellPhoneSensitiveHandler extends SensitiveHandler {
     @Override public SensitiveType type() { return SensitiveType.ChineseTellPhone; }
 }

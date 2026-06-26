@@ -18,6 +18,8 @@ package com.asialjim.microapplet.sensitive.encrypt;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
@@ -40,6 +42,7 @@ import java.util.List;
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  */
 @Data
+@Configuration
 @ConfigurationProperties(prefix = "sensitive.encrypt")
 public class SensitiveEncryptProperties implements AlgorithmModeConfig {
     /** 当前使用的算法模式 */
@@ -50,5 +53,10 @@ public class SensitiveEncryptProperties implements AlgorithmModeConfig {
     @Override
     public AlgorithmMode getCurrentMode() {
         return AlgorithmMode.fromCode(mode);
+    }
+
+    @Bean
+    public EncryptionContext encryptionContext(){
+        return new EncryptionContext(getCurrentMode());
     }
 }

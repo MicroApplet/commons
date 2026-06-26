@@ -19,6 +19,7 @@ package com.asialjim.microapplet.cache.redis.config;
 import com.asialjim.microapplet.cache.core.manager.L2Manager;
 import com.asialjim.microapplet.cache.core.strategy.CacheStrategyHub;
 import com.asialjim.microapplet.cache.redis.manager.RedisCacheManagerWithCacheStrategy;
+import com.asialjim.microapplet.commons.standard.utils.JacksonUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -28,8 +29,14 @@ import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializ
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+
 @Configuration
 public class RedisCacheConf {
+
+    @Bean
+    public  GenericJacksonJsonRedisSerializer genericJacksonJsonRedisSerializer(){
+        return GenericJacksonJsonRedisSerializer.builder().customize(JacksonUtil::init).build();
+    }
 
     @Bean
     public L2Manager level2Manager(RedisConnectionFactory connectionFactory,

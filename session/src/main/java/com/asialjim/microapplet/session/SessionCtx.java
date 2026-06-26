@@ -41,6 +41,7 @@ public interface SessionCtx extends Ordered {
     String userSessionAttribute = SessionCtx.class.getName();
 
     Session currentSession();
+    SessionRepository sessionRepository();
 
     default Mono<Session> currentSessionMono() {
         return Mono.fromCallable(this::currentSession);
@@ -71,6 +72,8 @@ public interface SessionCtx extends Ordered {
         return Mono.fromCallable(this::currentLoginSession);
     }
 
+    void save(Session userSession);
+
     @Slf4j
     @Configuration
     @ConditionalOnMissingBean(SessionCtx.class)
@@ -82,7 +85,17 @@ public interface SessionCtx extends Ordered {
         }
 
         @Override
+        public SessionRepository sessionRepository() {
+            throw new IllegalStateException("未实现上下文");
+        }
+
+        @Override
         public Session auth(Set<String> tokens) {
+            throw new IllegalStateException("未实现上下文");
+        }
+
+        @Override
+        public void save(Session userSession) {
             throw new IllegalStateException("未实现上下文");
         }
 

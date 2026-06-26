@@ -14,4 +14,5 @@
 # limitations under the License.
 #
 
-com.asialjim.microapplet.web.mvc.config.WebMvcConfiguration
+com.asialjim.microapplet.web.mvc.MvcBeans
+com.asialjim.microapplet.web.restclient.MvcRestClientBean

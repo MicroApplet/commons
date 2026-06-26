@@ -16,7 +16,6 @@
 
 package com.asialjim.microapplet.session;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +24,7 @@ import java.util.List;
 
 @Configuration
 @ComponentScan
-@EnableConfigurationProperties(SessionTokenProperties.class)
-public class SessionConfig {
+public class SessionBeans {
 
     @Bean(initMethod = "init")
     public Sessions sessions(List<SessionCtx> sessions){

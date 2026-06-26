@@ -21,9 +21,10 @@ import com.asialjim.microapplet.session.Session;
 import com.asialjim.microapplet.session.SessionCtx;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -38,15 +39,16 @@ import java.util.Set;
  *
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  */
-@ConditionalOnBean(SessionRepository.class)
 @Component
+@AllArgsConstructor
 public class MvcSessionCtx implements SessionCtx {
     private static final String SESSION_ATTR = MvcSessionCtx.class.getName() + ".SESSION";
 
     private final SessionRepository sessionRepository;
 
-    public MvcSessionCtx(SessionRepository sessionRepository) {
-        this.sessionRepository = sessionRepository;
+    @Override
+    public SessionRepository sessionRepository() {
+        return this.sessionRepository;
     }
 
     @Override
@@ -71,6 +73,7 @@ public class MvcSessionCtx implements SessionCtx {
         return session;
     }
 
+
     @Override
     public Session auth(Set<String> tokens) {
         if (Objects.isNull(tokens) || tokens.isEmpty())
@@ -86,6 +89,11 @@ public class MvcSessionCtx implements SessionCtx {
                 return session;
         }
         return null;
+    }
+
+    @Override
+    public void save(Session session) {
+        this.sessionRepository.save(session);
     }
 
     @Override
