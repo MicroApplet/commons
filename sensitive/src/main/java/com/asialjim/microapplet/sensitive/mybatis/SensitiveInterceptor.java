@@ -21,9 +21,15 @@ import com.asialjim.microapplet.sensitive.annotation.Sensitive;
 import com.asialjim.microapplet.sensitive.encrypt.EncryptionContextBean;
 import com.asialjim.microapplet.sensitive.encrypt.EncryptionResult;
 import com.asialjim.microapplet.sensitive.jackson.JacksonSensitiveHandler;
+import org.apache.ibatis.cache.CacheKey;
+import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +51,12 @@ import java.util.*;
  * @author <a href="mailto:asialjim@hotmail.com">Asial Jim</a>
  */
 @Intercepts({
-        @Signature(type = ResultSetHandler.class, method = "handleResultSets", args = {Statement.class}),
-        @Signature(type = ParameterHandler.class, method = "setParameters", args = {PreparedStatement.class})
+        @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
+        @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
+        @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class})
+//        @Signature(type = ResultSetHandler.class, method = "handleResultSets", args = {Statement.class}),
+//        @Signature(type = ResultSetHandler.class, method = "handleResultSets", args = {Statement.class}),
+//        @Signature(type = ParameterHandler.class, method = "setParameters", args = {PreparedStatement.class})
 })
 public class SensitiveInterceptor implements Interceptor {
     private static final Logger log = LoggerFactory.getLogger(SensitiveInterceptor.class);
@@ -54,6 +64,7 @@ public class SensitiveInterceptor implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         Object target = invocation.getTarget();
+        System.out.println("参数对象: " + target);
 
         if (target instanceof ResultSetHandler) {
             Object result = invocation.proceed();
@@ -89,6 +100,7 @@ public class SensitiveInterceptor implements Interceptor {
     }
 
     private void decryptFields(Object obj) {
+        System.out.println("解密对象"+obj);
         Class<?> clazz = obj.getClass();
         for (Field field : getAllFields(clazz)) {
             Sensitive annotation = field.getAnnotation(Sensitive.class);
@@ -114,15 +126,48 @@ public class SensitiveInterceptor implements Interceptor {
     // ========== 加密（写） ==========
 
     private void encryptParameter(Object param) {
-        // 处理集合参数
-        if (param instanceof Map<?, ?> map) {
-            map.forEach((k,v) -> {
-                if (Objects.nonNull(v))
-                    encryptFields(v);
-            });
+        if (Objects.isNull(param))
+            return;
+        // 处理数组
+        if (param.getClass().isArray()) {
+            for (Object item : (Object[]) param) {
+                encryptParameter(item);
+            }
             return;
         }
-        encryptFields(param);
+        switch (param) {
+            // 处理 Map
+            case Map<?, ?> map -> {
+
+                for (Object value : map.values()) {
+                    encryptParameter(value); // 递归
+                }
+                return;
+            }
+
+            // 处理 Collection
+            case Collection<?> collection -> {
+                for (Object item : collection) {
+                    encryptParameter(item);
+                }
+                return;
+            }
+            default -> {
+                encryptFields(param);
+                return;
+            }
+        }
+
+//        // 处理集合参数
+//        if (param instanceof Map<?, ?> map) {
+//            map.forEach((k,v) -> {
+//                if (Objects.nonNull(v))
+//                    encryptFields(v);
+//            });
+//            return;
+//        }
+//        encryptFields(param);
+//
     }
 
     private void encryptFields(Object obj) {
