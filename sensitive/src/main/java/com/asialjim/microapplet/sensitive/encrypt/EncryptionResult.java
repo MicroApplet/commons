@@ -39,7 +39,10 @@ public record EncryptionResult(
     }
 
     public static boolean isEncryptionMaskData(String source) {
-        return StringUtils.startsWith(source, "_mask") && StringUtils.split(source, "\\|").length == 6;
+        if (StringUtils.isBlank(source))
+            return false;
+
+        return "_mask".startsWith(source) && StringUtils.split(source, "\\|").length == 6;
     }
 
     public static EncryptionResult fromFormattedString(String formattedString) {
@@ -62,6 +65,7 @@ public record EncryptionResult(
     }
 
     @Override
+    @SuppressWarnings("NullableProblems")
     public String toString() {
         return "EncryptionResult => " + toFormattedString();
     }

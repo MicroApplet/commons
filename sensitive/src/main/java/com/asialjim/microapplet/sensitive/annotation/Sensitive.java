@@ -39,6 +39,8 @@ import java.lang.annotation.Target;
 @JsonDeserialize(using = SensitiveDeserializer.class)
 public @interface Sensitive {
 
+    String PREFIX = "_mask|";
+
     SensitiveType value();
 
     /** 保留前几位 */

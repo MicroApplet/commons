@@ -20,8 +20,6 @@ import com.asialjim.microapplet.sensitive.encrypt.ConfigSecretKeyRepository;
 import com.asialjim.microapplet.sensitive.encrypt.EncryptionContextBean;
 import com.asialjim.microapplet.sensitive.encrypt.SensitiveEncryptProperties;
 import com.asialjim.microapplet.sensitive.handler.SensitiveHandler;
-import com.asialjim.microapplet.sensitive.mybatis.SensitiveInterceptor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -37,11 +35,6 @@ import org.springframework.context.annotation.Import;
         ConfigSecretKeyRepository.class,
         SensitiveEncryptProperties.class
 })
-@ComponentScan(basePackageClasses = SensitiveHandler.class)
+@ComponentScan(basePackageClasses = {SensitiveHandler.class})
 public class SensitiveBean {
-
-    @Bean
-    public SensitiveInterceptor sensitiveInterceptor() {
-        return new SensitiveInterceptor();
-    }
 }

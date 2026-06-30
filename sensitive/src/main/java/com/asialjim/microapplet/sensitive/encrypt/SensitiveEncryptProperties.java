@@ -16,6 +16,7 @@
 
 package com.asialjim.microapplet.sensitive.encrypt;
 
+import com.asialjim.microapplet.sensitive.mybatis.enc.BlindIndexGranularity;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +50,11 @@ public class SensitiveEncryptProperties implements AlgorithmModeConfig {
     private String mode = "GM";
     /** 各算法模式的密钥配置 */
     private List<SensitiveEncryptKeyProperty> keys;
+
+    /** 盲索引切分粒度，默认二元组, 用于模糊查询分词 */
+    private BlindIndexGranularity blindIndexGranularity = BlindIndexGranularity.BIGRAM;
+    /** 盲索引 token 长度（base64url 字符数）,用户模糊查询分词，默认 8 */
+    private int tokenLength = 8;
 
     @Override
     public AlgorithmMode getCurrentMode() {

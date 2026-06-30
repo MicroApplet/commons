@@ -15,3 +15,4 @@
 #
 
 com.asialjim.microapplet.sensitive.SensitiveBean
+com.asialjim.microapplet.sensitive.mybatis.SensitiveAutoConfiguration
