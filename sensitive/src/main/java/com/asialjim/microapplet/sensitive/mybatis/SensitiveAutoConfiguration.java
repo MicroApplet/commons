@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.jspecify.annotations.NonNull;
 import org.mybatis.spring.mapper.MapperFactoryBean;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,7 +33,7 @@ import java.lang.reflect.Proxy;
 public class SensitiveAutoConfiguration implements BeanPostProcessor {
 
     @Bean
-    public BeanPostProcessor sensitiveStoreBeanPostProcessor(StoreCipher storeCipher) {
+    public BeanPostProcessor sensitiveStoreBeanPostProcessor(ObjectProvider<StoreCipher> storeCipherObjectProvider) {
         return new BeanPostProcessor() {
 
             @Override
@@ -53,12 +54,10 @@ public class SensitiveAutoConfiguration implements BeanPostProcessor {
                 return new MapperFactoryBean(type) {
                     @Override
                     public Object getObject() {
-                        return Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, new SensitiveMapperProxy(object, storeCipher));
+                        return Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, new SensitiveMapperProxy(object, storeCipherObjectProvider::getObject));
                     }
                 };
             }
         };
     }
-
-
 }

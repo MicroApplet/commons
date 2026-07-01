@@ -20,11 +20,13 @@ import com.asialjim.microapplet.sensitive.annotation.Sensitive;
 import com.asialjim.microapplet.sensitive.mybatis.enc.StoreCipher;
 import com.asialjim.microapplet.sensitive.mybatis.enc.StoreEncrypt;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.ObjectProvider;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class SensitiveMapperProxy implements InvocationHandler {
     private final Object target;           // 原生 MapperProxy
@@ -35,6 +37,13 @@ public class SensitiveMapperProxy implements InvocationHandler {
         this.target = target;
         this.storeCipher = storeCipher;
         this.sensitiveBeanCopyUtils = new SensitiveBeanCopyUtils(storeCipher);
+    }
+
+    public SensitiveMapperProxy(Object target, Supplier<StoreCipher> storeCipherObjectProvider){
+        this.target = target;
+        this.storeCipher = storeCipherObjectProvider.get();
+        this.sensitiveBeanCopyUtils = new SensitiveBeanCopyUtils(storeCipher);
+
     }
 
     @Override
