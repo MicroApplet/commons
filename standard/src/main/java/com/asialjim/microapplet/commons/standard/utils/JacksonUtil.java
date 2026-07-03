@@ -215,6 +215,11 @@ public abstract class JacksonUtil<M extends ObjectMapper, B extends MapperBuilde
         return toBean(str, javaType);
     }
 
+    public final <T> Map<String, T> toMap(byte[] str, Class<T> valueType) {
+        JavaType javaType = constructParameterizedType(Map.class, String.class, valueType);
+        return toBean(str, javaType);
+    }
+
     public final <T> List<T> toList(String str, Class<T> listType) {
         if (Strings.CI.startsWith(str, "\"") && Strings.CI.endsWith(str, "\""))
             str = objectMapper().readValue(str, String.class);

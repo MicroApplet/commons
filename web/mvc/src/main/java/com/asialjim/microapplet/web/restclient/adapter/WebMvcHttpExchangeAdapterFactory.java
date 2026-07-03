@@ -19,6 +19,7 @@ package com.asialjim.microapplet.web.restclient.adapter;
 import com.asialjim.microapplet.web.client.adapter.RestClientHttpExchangeAdapterFactory;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
@@ -29,6 +30,7 @@ public class WebMvcHttpExchangeAdapterFactory
         extends RestClientHttpExchangeAdapterFactory {
 
     @Resource
+    @LoadBalanced
     @Qualifier("loadBalancedRestClientBuilder")
     private RestClient.Builder loadBalancedRestClientBuilder;
 

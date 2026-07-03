@@ -22,10 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public sealed interface PlatformAppType permits SupportPlatformAppType, PlatformAppTypeValue {
     List<PlatformAppType> all = new ArrayList<>();
-    Map<String, PlatformAppType> map = new HashMap<>();
+    Map<String, PlatformAppType> map = new ConcurrentHashMap<>();
 
     static List<PlatformAppType> all() {
         if (CollectionUtils.isEmpty(all)) {

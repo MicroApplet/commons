@@ -76,6 +76,9 @@ public class LoadBalancedHttpRequestInterceptor implements ClientHttpRequestInte
         HttpHeaders headers = response.getHeaders();
         byte[] resBuffer = response.buffer();
 
+        System.out.println("Header: ");
+        System.out.println(headers);
+
         String success = headerStr(headers, RES_SUCCESS);
         // 远程调用业务成功
         if (Boolean.parseBoolean(success)) {

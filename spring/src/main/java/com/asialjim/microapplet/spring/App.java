@@ -116,6 +116,9 @@ public class App implements ApplicationContextAware {
     public static void voidStart(Class<?> appClass, String[] args) {
         start(appClass, args);
     }
+    public static void voidStart(Class<?> appClass) {
+        start(appClass, new String[0]);
+    }
 
     public static void voidStart(String appName, Class<?> sourceClass, String[] args) {
         start(appName, sourceClass, args);

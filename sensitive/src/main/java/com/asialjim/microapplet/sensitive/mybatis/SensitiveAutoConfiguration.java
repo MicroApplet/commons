@@ -17,47 +17,18 @@
 package com.asialjim.microapplet.sensitive.mybatis;
 
 import com.asialjim.microapplet.sensitive.mybatis.enc.StoreCipher;
-import lombok.SneakyThrows;
-import org.jspecify.annotations.NonNull;
-import org.mybatis.spring.mapper.MapperFactoryBean;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-import java.lang.reflect.Proxy;
-
-@ComponentScan
-@org.springframework.context.annotation.Configuration
+@Configuration
+@ConditionalOnClass(name = "org.mybatis.spring.mapper.MapperFactoryBean")
 public class SensitiveAutoConfiguration implements BeanPostProcessor {
 
     @Bean
-    public BeanPostProcessor sensitiveStoreBeanPostProcessor(ObjectProvider<StoreCipher> storeCipherObjectProvider) {
-        return new BeanPostProcessor() {
-
-            @Override
-            @SneakyThrows
-            public @NonNull Object postProcessAfterInitialization(
-                    @SuppressWarnings("NullableProblems") Object bean,
-                    @SuppressWarnings("NullableProblems") String beanName) throws BeansException {
-
-                //noinspection rawtypes
-                if (!(bean instanceof MapperFactoryBean factoryBean))
-                    return bean;
-
-                //noinspection rawtypes
-                Class type = factoryBean.getMapperInterface();
-                Object object = factoryBean.getObject();
-
-                //noinspection rawtypes,unchecked
-                return new MapperFactoryBean(type) {
-                    @Override
-                    public Object getObject() {
-                        return Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, new SensitiveMapperProxy(object, storeCipherObjectProvider::getObject));
-                    }
-                };
-            }
-        };
+    public MyBatisSensitiveStoreBeanPostProcessor sensitiveStoreBeanPostProcessor(ObjectProvider<StoreCipher> storeCipherObjectProvider) {
+        return new MyBatisSensitiveStoreBeanPostProcessor(storeCipherObjectProvider);
     }
 }

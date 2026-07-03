@@ -74,6 +74,8 @@ public interface SessionCtx extends Ordered {
 
     void save(Session userSession);
 
+    void login(Session session);
+
     @Slf4j
     @Configuration
     @ConditionalOnMissingBean(SessionCtx.class)
@@ -96,6 +98,11 @@ public interface SessionCtx extends Ordered {
 
         @Override
         public void save(Session userSession) {
+            throw new IllegalStateException("未实现上下文");
+        }
+
+        @Override
+        public void login(Session session) {
             throw new IllegalStateException("未实现上下文");
         }
 

@@ -36,4 +36,8 @@ public class LoginReqVo implements Serializable {
 
     private String code;
     private String anonymousCode;
+
+    private String username;
+    private String password;
+    private String token;
 }

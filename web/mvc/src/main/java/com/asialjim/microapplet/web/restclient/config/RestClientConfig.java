@@ -46,18 +46,19 @@ public class RestClientConfig {
     public RestClient.Builder loadBalancedRestClientBuilder() {
         LoadBalancedHttpRequestInterceptor interceptor = new LoadBalancedHttpRequestInterceptor();
         return RestClient.builder()
-                .configureMessageConverters(builder ->
-                        builder.configureMessageConvertersList(list -> {
-                            for (int i = 0; i < list.size(); i++) {
-                                HttpMessageConverter<?> converter = list.get(i);
-                                if (converter instanceof AbstractJacksonHttpMessageConverter<?> jacksonConverter) {
-                                    if (jacksonConverter instanceof JacksonJsonHttpMessageConverter)
-                                        list.set(i, jacksonJsonHttpMessageConverter);
-                                    if (jacksonConverter instanceof JacksonXmlHttpMessageConverter)
-                                        list.set(i, jacksonXmlHttpMessageConverter);
-                                }
-                            }
-                        }))
+//                .configureMessageConverters(builder ->
+//                        builder.configureMessageConvertersList(list -> {
+//                            for (int i = 0; i < list.size(); i++) {
+//                                HttpMessageConverter<?> converter = list.get(i);
+//                                if (converter instanceof AbstractJacksonHttpMessageConverter<?> jacksonConverter) {
+//                                    if (jacksonConverter instanceof JacksonJsonHttpMessageConverter)
+//                                        list.set(i, jacksonJsonHttpMessageConverter);
+//                                    if (jacksonConverter instanceof JacksonXmlHttpMessageConverter)
+//                                        list.set(i, jacksonXmlHttpMessageConverter);
+//                                }
+//                            }
+//                        }))
+
                 .requestInterceptor(interceptor);
     }
 

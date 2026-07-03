@@ -19,6 +19,7 @@ package com.asialjim.microapplet.web.mvc.advice;
 import com.asialjim.microapplet.commons.standard.context.Res;
 import com.asialjim.microapplet.commons.standard.context.ResCode;
 import com.asialjim.microapplet.commons.standard.context.Result;
+import com.asialjim.microapplet.commons.standard.utils.JsonUtil;
 import com.asialjim.microapplet.web.client.MamsHttpHeaders;
 import com.asialjim.microapplet.web.mvc.annotation.RwIgnore;
 import jakarta.servlet.http.HttpServletResponse;
@@ -162,12 +163,12 @@ public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
 
         if (body instanceof Result<?> result) {
             setHeaderIfAbsent(responseHeaders, RES_STATUS, String.valueOf(result.getStatus()));
-            setHeaderIfAbsent(responseHeaders, RES_SUCCESS, String.valueOf(result.isThr()));
+            setHeaderIfAbsent(responseHeaders, RES_SUCCESS, String.valueOf(result.isSuccess()));
             setHeaderIfAbsent(responseHeaders, RES_CODE, result.getCode());
             setHeaderIfAbsent(responseHeaders, RES_MSG, URLEncoder.encode(result.getMsg(), StandardCharsets.UTF_8));
             List<String> errs = result.getErrs();
             if (CollectionUtils.isNotEmpty(errs)) {
-                String errStr = String.join(",", errs);
+                String errStr = JsonUtil.instance.toStr(errs);
                 setHeaderIfAbsent(responseHeaders, RES_ERRS, URLEncoder.encode(errStr, StandardCharsets.UTF_8));
             }
             if (exceptionHappen)
@@ -178,7 +179,7 @@ public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
         if (body instanceof ResCode resCode) {
             response.setStatusCode(HttpStatusCode.valueOf(resCode.getStatus()));
             setHeaderIfAbsent(responseHeaders, RES_STATUS, String.valueOf(resCode.getStatus()));
-            setHeaderIfAbsent(responseHeaders, RES_SUCCESS, String.valueOf(resCode.isThr()));
+            setHeaderIfAbsent(responseHeaders, RES_SUCCESS, String.valueOf(resCode.isSuccess()));
             setHeaderIfAbsent(responseHeaders, RES_CODE, resCode.getCode());
             setHeaderIfAbsent(responseHeaders, RES_MSG, URLEncoder.encode(resCode.getMsg(), StandardCharsets.UTF_8));
             return resCode.create();

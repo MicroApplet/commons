@@ -73,6 +73,14 @@ public class MvcSessionCtx implements SessionCtx {
         return session;
     }
 
+    @Override
+    public void login(Session session) {
+        HttpServletRequest request = currentRequest();
+        if (Objects.isNull(request))
+            return ;
+        request.setAttribute(SESSION_ATTR,session);
+    }
+
 
     @Override
     public Session auth(Set<String> tokens) {

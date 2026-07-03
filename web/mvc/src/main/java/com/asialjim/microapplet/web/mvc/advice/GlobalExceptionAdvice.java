@@ -18,6 +18,8 @@ package com.asialjim.microapplet.web.mvc.advice;
 
 import com.asialjim.microapplet.commons.standard.context.Res;
 import com.asialjim.microapplet.commons.standard.context.Result;
+import com.asialjim.microapplet.commons.standard.exception.BusinessException;
+import com.asialjim.microapplet.commons.standard.exception.RsEx;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -114,9 +116,18 @@ public class GlobalExceptionAdvice {
         return Res._404.ex(Collections.singletonList(e.getMessage())).result();
     }
 
+    @ExceptionHandler(RsEx.class)
+    public Result<?> handleThrowable(RsEx e) {
+        return e.result();
+    }
+    @ExceptionHandler(BusinessException.class)
+    public Result<?> handleThrowable(BusinessException e) {
+        return e.create();
+    }
+
     @ExceptionHandler(Throwable.class)
     public Result<?> handleThrowable(Throwable e) {
-        log.error("未知错误异常:{} - {}", e.getClass(), e.getMessage());
+        log.error("未知错误异常:{} - {}", e.getClass(), e.getMessage(),e);
         return Res.SysErr.ex(Collections.singletonList(e.getMessage())).result();
     }
 

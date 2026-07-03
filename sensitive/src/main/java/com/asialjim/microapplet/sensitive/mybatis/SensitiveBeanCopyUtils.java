@@ -42,7 +42,7 @@ public class SensitiveBeanCopyUtils {
             return (T) constructor.newInstance();
         } catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
                  IllegalAccessException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -109,6 +109,8 @@ public class SensitiveBeanCopyUtils {
 
         //noinspection unchecked
         T target = (T) newInstance(aClass);
+        if (Objects.isNull(target))
+            return source;
 
         List<Field> fields = allFields(aClass);
         for (Field field : fields) {

@@ -16,14 +16,18 @@
 
 package com.asialjim.microapplet.web.restclient;
 
+import com.asialjim.microapplet.commons.standard.utils.JsonUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
+import tools.jackson.databind.JsonNode;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 public class CachedClientHttpResponse implements ClientHttpResponse {
     private final ClientHttpResponse response;
@@ -35,13 +39,14 @@ public class CachedClientHttpResponse implements ClientHttpResponse {
     }
 
     public byte[] buffer(){
+
         return this.buffer;
     }
 
     @Override
     @SuppressWarnings("NullableProblems")
     public HttpHeaders getHeaders() {
-        return response.getHeaders();
+       return response.getHeaders();
     }
 
     @Override

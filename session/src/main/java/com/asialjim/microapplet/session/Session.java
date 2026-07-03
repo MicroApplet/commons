@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 @Data
 public class Session implements Serializable {
@@ -54,7 +55,7 @@ public class Session implements Serializable {
 
     public static Session tourist(){
         Session session = new Session();
-        session.setId("TOURIST-" + RandomUtils.secureStrong().toString());
+        session.setId("TOURIST-" + UUID.randomUUID().toString().replace("-",StringUtils.EMPTY));
         session.setUserid(session.getId());
         session.setOpenid(session.getId());
         session.setUnionid(session.getId());
@@ -88,6 +89,6 @@ public class Session implements Serializable {
     }
 
     public String platformTypeCode() {
-        return Optional.ofNullable(platformAppType()).map(PlatformAppType::getCode).orElse(StringUtils.EMPTY);
+        return Optional.ofNullable(platformAppType()).map(item -> item.getPlatformType()).map(item -> item.getCode()).orElse(StringUtils.EMPTY);
     }
 }
